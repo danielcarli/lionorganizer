@@ -807,5 +807,15 @@
   "overview.coverage.system.darwin": "macOS hält Speicher vor, den keine App lesen kann: das Systemvolume, lokale Time-Machine-Snapshots und freigebbaren Speicher.",
   "overview.coverage.system.linux": "Ein Teil des belegten Speichers gehört dem System: reservierte Blöcke, Ordner anderer Benutzer und Daten des Dateisystems selbst.",
   "overview.coverage.otherFolders": "Der übrige belegte Speicher liegt in anderen Ordnern des Datenträgers, außerhalb von „{folder}“.",
-  "overview.coverage.complete": "Praktisch der gesamte belegte Speicher des Datenträgers wurde analysiert."
+  "overview.coverage.complete": "Praktisch der gesamte belegte Speicher des Datenträgers wurde analysiert.",
+  "treemap.gate.title": "Platzkarte",
+  "treemap.gate.text": "Jede Datei wird zu einem Block, dessen Fläche ihre Größe ist, verschachtelt in ihren Ordnern und nach Typ eingefärbt. Ein Klick auf einen Block wechselt in seinen Ordner.",
+  "treemap.gate.heavy.one": "Das Zeichnen der Karte braucht viel Rechenleistung und kann dauern, vor allem bei großen Analysen (diese hat {count} Datei).",
+  "treemap.gate.heavy.other": "Das Zeichnen der Karte braucht viel Rechenleistung und kann dauern, vor allem bei großen Analysen (diese hat {count} Dateien).",
+  "treemap.gate.activate": "Platzkarte einschalten",
+  "treemap.gate.session": "Sie bleibt eingeschaltet, bis Sie LionOrganizer schließen. Der Rest der App funktioniert weiter, während sie lädt.",
+  "treemap.building.title": "Platzkarte wird vorbereitet…",
+  "treemap.building.group": "{pct} % · Dateien werden nach Ordnern gruppiert ({done} von {total})",
+  "treemap.building.sort": "{pct} % · Ordner werden nach Größe sortiert ({done} von {total})",
+  "treemap.building.note": "Läuft im Hintergrund: Sie können zu einem anderen Tab wechseln, die Karte erscheint, sobald sie fertig ist."
 }

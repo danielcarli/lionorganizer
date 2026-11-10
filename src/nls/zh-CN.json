@@ -807,5 +807,15 @@
   "overview.coverage.system.darwin": "macOS 保留了任何 App 都无法读取的空间：系统卷宗、本地 Time Machine 快照和可清除空间。",
   "overview.coverage.system.linux": "部分已用空间属于系统本身：保留块、其他用户的文件夹以及文件系统自身的数据。",
   "overview.coverage.otherFolders": "其余已用空间位于该磁盘上“{folder}”之外的其他文件夹中。",
-  "overview.coverage.complete": "磁盘上几乎所有已用空间都已分析。"
+  "overview.coverage.complete": "磁盘上几乎所有已用空间都已分析。",
+  "treemap.gate.title": "空间地图",
+  "treemap.gate.text": "每个文件都是一个方块，面积代表其大小，嵌套在所属文件夹中并按类型着色。点击方块即可进入其文件夹。",
+  "treemap.gate.heavy.one": "绘制地图需要大量计算，可能需要一些时间，尤其是大型分析（本次分析有 {count} 个文件）。",
+  "treemap.gate.heavy.other": "绘制地图需要大量计算，可能需要一些时间，尤其是大型分析（本次分析有 {count} 个文件）。",
+  "treemap.gate.activate": "启用空间地图",
+  "treemap.gate.session": "在关闭 LionOrganizer 之前会一直保持启用。加载期间应用的其他部分照常可用。",
+  "treemap.building.title": "正在准备空间地图…",
+  "treemap.building.group": "{pct}% · 正在按文件夹归组文件（{done} / {total}）",
+  "treemap.building.sort": "{pct}% · 正在按大小排序文件夹（{done} / {total}）",
+  "treemap.building.note": "正在后台加载：你可以切换到其他标签页，准备好后地图会自动显示。"
 }

@@ -2,6 +2,13 @@
 
 All notable changes to LionOrganizer are documented here. The project follows [Semantic Versioning](https://semver.org).
 
+## [1.1.6] — 2026-11-10
+
+### Space map: only when you turn it on
+- The space map no longer computes anything when the app starts, not even if it was the tab left open: its tab shows what it does, warns that it takes a lot of processing (with the number of files of the analysis) and offers "Turn on the space map". It stays on until LionOrganizer is closed.
+- Once turned on, its index is built in the background in small slices — the window never freezes — with a progress bar (grouping files by folder, then sorting folders by size) and "Cancel"; you can switch tabs meanwhile, and the map shows up when it is ready.
+- Drawing is lighter: every folder's files and subfolders are sorted once, and each view only takes the blocks big enough to be seen.
+
 ## [1.1.5] — 2026-11-10
 
 ### Back to the AI's answer

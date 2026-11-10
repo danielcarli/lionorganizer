@@ -311,9 +311,13 @@ app.on('browser-window-created', (_e, win) => {
       await js(`window.dispatchEvent(new KeyboardEvent('keydown', { key: 'F5' }))`);
       check(await until(`!document.querySelector('.tree-note')?.textContent.includes('ignore list') && !document.querySelector('.statusbar.busy')`), 'turned off again, every folder is read');
 
-      // ---- 1.1.5: space map (treemap) with zoom
+      // ---- 1.1.6: space map (treemap): off until the person turns it on, then built in the background
       await key('7');
-      check(await until(`!!document.querySelector('.view-treemap:not([hidden]) canvas') && document.querySelector('.view-treemap canvas').width > 300`), 'Ctrl+7 opens the space map');
+      check(await until(`!!document.querySelector('.view-treemap:not([hidden]) .tmv-activate')`), 'Ctrl+7 opens the space map tab, which asks to be turned on first');
+      check(await js(`document.querySelector('.tmv-gate').textContent.includes('a lot of processing') && document.querySelector('.view-treemap .tmv-stage').hidden && document.querySelector('.view-treemap canvas').width <= 300`), 'it warns that it is heavy, and nothing is computed or drawn yet');
+      await shot('59-treemap-off');
+      await click('.tmv-activate');
+      check(await until(`!!document.querySelector('.view-treemap:not([hidden]) canvas') && document.querySelector('.view-treemap canvas').width > 300 && document.querySelector('.tmv-gate').hidden`), 'turned on, it is prepared in the background and then shown');
       check(await js(`document.querySelector('.tmv-up').disabled`), 'at the top level "Up" is disabled');
       await shot('60-treemap');
       await js(`(() => { const c = document.querySelector('.view-treemap canvas'); const r = c.getBoundingClientRect(); c.dispatchEvent(new MouseEvent('click', { clientX: r.left + 30, clientY: r.top + 30, bubbles: true })); })()`);
@@ -368,6 +372,9 @@ app.on('browser-window-created', (_e, win) => {
       await wait(1500);
       check(await js(`!document.querySelector('.statusbar.busy') && document.querySelector('.restore-banner').textContent.includes('Analisar agora')`), 'nothing is analyzed automatically: the banner offers "Analyze now"');
       check(await js(`!!document.querySelector('.view-overview:not([hidden]) .hero')`), 'the saved data is on screen');
+      await key('7');
+      check(await until(`!!document.querySelector('.view-treemap:not([hidden]) .tmv-activate')`), 'after a restart the space map is off again until turned on');
+      await key('1');
       await shot('70-reopened');
       await click('.restore-banner .btn-primary');
       check(await until(`document.querySelector('.restore-banner')?.textContent.includes('segundo plano')`), '"Analyze now" analyzes the folder again in the background, keeping the data on screen');

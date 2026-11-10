@@ -11,7 +11,7 @@ Voyez ce qui occupe de l’espace dans vos dossiers, trouvez les vrais doublons 
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · **Français** · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.1.5](https://img.shields.io/badge/version-1.1.5-161214)
+![Version 1.1.6](https://img.shields.io/badge/version-1.1.6-161214)
 ![Licence : GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Plateforme : Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -79,7 +79,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 | **Analyser** | Parcourt un dossier et ses sous-dossiers — 3 niveaux par défaut, jusqu’à 50 niveaux ou sans limite. Arborescence des dossiers avec leurs tailles, fil d’Ariane et tableau triable et filtrable de tous les fichiers. |
 | **Grands dossiers** | La dernière analyse se rouvre instantanément depuis le catalogue, avec sa date ; le dossier n’est réanalysé que si vous le demandez, en arrière-plan. L’espace analysé est affiché à côté de l’espace utilisé sur le disque, avec la raison de l’écart (éléments inaccessibles, limite de niveaux, fichiers système). Liste facultative de dossiers à ignorer (`node_modules`, `.git`, dossiers système) — désactivée par défaut. Les éléments que le système n’a pas laissé lire sont listés avec la raison ; sous Windows, on peut analyser à nouveau en tant qu’administrateur. |
 | **Visualiser** | Espace par type de fichier (diagramme en rose), plus gros sous-dossiers (treemap), matrice de 100 points où chaque point représente 1 % de l’espace, extensions les plus volumineuses et ancienneté des fichiers. |
-| **Carte de l’espace** | Treemap en plein écran : chaque fichier est un bloc, imbriqué dans ses dossiers et coloré selon son type. Cliquez sur un bloc pour entrer dans son dossier ; Retour arrière ou le clic droit remonte. |
+| **Carte de l’espace** | Treemap en plein écran : chaque fichier est un bloc, imbriqué dans ses dossiers et coloré selon son type. Cliquez sur un bloc pour entrer dans son dossier ; Retour arrière ou le clic droit remonte. Lourde pour les grandes analyses, elle n’est construite que lorsque vous l’activez — en arrière-plan, avec une barre de progression. |
 | **Nettoyer** | Suggestions regroupées par motif : sauvegardes SketchUp/Revit/AutoCAD, fichiers temporaires, journaux, téléchargements inachevés, programmes d’installation, gros fichiers anciens. |
 | **Encore plus à nettoyer** | Caches de rendu et de CAO (Twinmotion, Lumion, Enscape, V-Ray, Corona, journaux Revit, Media Cache d’Adobe), fichiers vides et dossiers vides — les dossiers ne vont eux aussi dans la Corbeille qu’après le code saisi. |
 | **Vrais doublons** | Comparaison du contenu avec SHA-256, lu seulement quand c’est nécessaire (taille → 64 Ko de début et de fin → fichier entier). Choisissez la copie à conserver ; voyez si le même fichier existe aussi dans un autre dossier catalogué (par exemple un disque de sauvegarde). |

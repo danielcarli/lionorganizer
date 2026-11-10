@@ -5,11 +5,13 @@
  *--------------------------------------------------------------------------------------------*/
 // Space map (WinDirStat style): every file is a block whose area is its size, nested inside its folders and
 // colored by type. Click a block to zoom into its folder, go up with the button, Backspace or a right-click.
+// It is heavy for big analyses, so nothing is computed until the person turns it on (each session): the
+// index it needs is then built in small slices, without freezing the window, with a progress bar.
 // Drawn on a canvas, so it stays fast with hundreds of thousands of files.
 import { ViewPane } from '../../browser/viewPane.js';
 import { h, setChildren, cssVar } from '../../../base/browser/dom.js';
 import { icon } from '../../../base/browser/icons.js';
-import { formatBytes, formatDate, splitRel, baseName } from '../../../base/common/format.js';
+import { formatBytes, formatDate, formatNumber, splitRel, baseName } from '../../../base/common/format.js';
 import { t, tn } from '../../../base/common/nls.js';
 import { CATEGORIES, CATEGORY_BY_ID } from '../../services/analysis/common/fileCategories.js';
 import { categoryColor } from '../../browser/chartTheme.js';
@@ -26,15 +28,24 @@ export class TreemapView extends ViewPane {
     this.stage = h('div.tmv-stage', this.canvas, this.tooltip);
     this.toolbar = h('div.tmv-toolbar');
     this.legend = h('div.tmv-legend');
-    this.element.append(this.toolbar, this.stage, this.legend);
+    this.gate = h('div.tmv-gate');
+    this.element.append(this.gate, this.toolbar, this.stage, this.legend);
     this.blocks = [];
     this.hover = null;
+    /** off: not turned on in this session · building: index in progress · ready: drawn */
+    this.state = 'off';
+    this.progress = { done: 0, total: 0, phase: 'group' };
 
-    const inv = () => { this.#byFolder = null; this.invalidate(); };
-    this.analysis.onDidChangeData(inv);
+    // new data: the index is rebuilt (only if the map is on, and only once it is visible)
+    this.analysis.onDidChangeData(() => {
+      this.#cancelBuild();
+      this.#index = null;
+      if (this.state !== 'off') this.state = 'stale';
+      this.invalidate();
+    });
     this.analysis.onDidChangeFilter(() => { if (this.lastFolder !== this.analysis.filter.folder) this.invalidate(); });
     this.layout.onDidChangeTheme(() => this.invalidate());
-    new ResizeObserver(() => { if (this.visible) this.#draw(); }).observe(this.stage);
+    new ResizeObserver(() => { if (this.visible && this.state === 'ready') this.#draw(); }).observe(this.stage);
     document.addEventListener('fullscreenchange', () => { if (this.visible) this.render(); });
 
     this.canvas.addEventListener('pointermove', (e) => this.#onMove(e));
@@ -45,22 +56,108 @@ export class TreemapView extends ViewPane {
     window.addEventListener('keydown', (e) => {
       if (!this.visible || e.defaultPrevented || /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || '')) return;
       if (document.querySelector('.cm-overlay')) return;
-      if (e.key === 'Backspace') { e.preventDefault(); this.#up(); }
+      if (e.key === 'Backspace' && this.state === 'ready') { e.preventDefault(); this.#up(); }
     });
   }
 
-  #byFolder = null;
-  /** Files of the analysis grouped by folder (relative path → files). */
-  #files() {
-    if (!this.#byFolder) {
-      this.#byFolder = new Map();
-      for (const f of this.analysis.files) {
-        let list = this.#byFolder.get(f.folder);
-        if (!list) this.#byFolder.set(f.folder, (list = []));
-        list.push(f);
-      }
+  #index = null;    // relative folder path → { files: sorted by size (largest first), dirs: sorted subfolders }
+  #buildToken = null;
+
+  #cancelBuild() {
+    if (this.#buildToken) this.#buildToken.cancelled = true;
+    this.#buildToken = null;
+  }
+
+  /** Turns the map on for this session and builds its index in the background. */
+  activate() {
+    if (!this.analysis.hasData) return;
+    this.state = 'stale';
+    this.render();
+  }
+
+  /**
+   * Groups the files by folder and sorts every folder's files and subfolders by size, a slice at a time
+   * (about 12 ms of work, then the window gets the turn back), reporting progress. Cancellable.
+   */
+  async #build() {
+    this.#cancelBuild();
+    const token = (this.#buildToken = { cancelled: false });
+    const files = this.analysis.files;
+    const folders = new Map();
+    const total = files.length;
+    this.state = 'building';
+    this.progress = { done: 0, total, phase: 'group' };
+    this.#renderProgress();
+    const yieldNow = () => (globalThis.scheduler?.yield ? globalThis.scheduler.yield() : new Promise((r) => setTimeout(r, 0)));
+    let t0 = performance.now();
+    const slice = async (done, phase, count) => {
+      if (performance.now() - t0 < 12) return true;
+      this.progress = { done, total: count, phase };
+      this.#renderProgress();
+      await yieldNow();
+      t0 = performance.now();
+      return !token.cancelled;
+    };
+    // 1) files by folder
+    for (let i = 0; i < total; i++) {
+      const f = files[i];
+      let entry = folders.get(f.folder);
+      if (!entry) folders.set(f.folder, (entry = { files: [], dirs: null }));
+      if (f.size > 0) entry.files.push(f);
+      if ((i & 1023) === 0 && !(await slice(i, 'group', total))) return;
     }
-    return this.#byFolder;
+    // 2) every folder sorted, largest first (subfolders come from the analysis tree)
+    const nodes = [];
+    const walk = (node) => { nodes.push(node); for (const c of node.children.values()) walk(c); };
+    walk(this.analysis.tree);
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i];
+      let entry = folders.get(node.rel);
+      if (!entry) folders.set(node.rel, (entry = { files: [], dirs: null }));
+      entry.files.sort((a, b) => b.size - a.size);
+      entry.dirs = [...node.children.values()].filter((c) => c.size > 0).sort((a, b) => b.size - a.size);
+      if ((i & 255) === 0 && !(await slice(i, 'sort', nodes.length))) return;
+    }
+    if (token.cancelled) return;
+    this.#buildToken = null;
+    this.#index = folders;
+    this.state = 'ready';
+    if (this.visible) this.render();
+  }
+
+  #renderProgress() {
+    if (!this.visible) return;
+    const { done, total, phase } = this.progress;
+    const pct = total ? Math.min(99, Math.round((phase === 'group' ? done / total * 0.8 : 0.8 + done / total * 0.2) * 100)) : 0;
+    let bar = this.gate.querySelector('.tmv-progress-fill');
+    if (!bar) {
+      setChildren(this.gate,
+        h('div.tmv-gate-card.tmv-building', { role: 'status', 'aria-live': 'polite' },
+          h('span.tmv-gate-icon', { html: icon('map', 28) }),
+          h('h2', t('treemap.building.title')),
+          h('div.tmv-progress', { role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': '100' }, h('div.tmv-progress-fill')),
+          h('p.tmv-progress-text'),
+          h('p.muted.small', t('treemap.building.note')),
+          h('button.btn.btn-secondary.btn-sm.tmv-cancel', { onclick: () => { this.#cancelBuild(); this.state = 'off'; this.render(); } }, t('common.cancel'))));
+      bar = this.gate.querySelector('.tmv-progress-fill');
+    }
+    bar.style.width = `${pct}%`;
+    this.gate.querySelector('.tmv-progress').setAttribute('aria-valuenow', String(pct));
+    this.gate.querySelector('.tmv-progress-text').textContent = phase === 'group'
+      ? t('treemap.building.group', { pct, done: formatNumber(done), total: formatNumber(total) })
+      : t('treemap.building.sort', { pct, done: formatNumber(done), total: formatNumber(total) });
+  }
+
+  #renderGate() {
+    const files = this.analysis.files.length;
+    setChildren(this.gate,
+      h('div.tmv-gate-card',
+        h('span.tmv-gate-icon', { html: icon('map', 28) }),
+        h('h2', t('treemap.gate.title')),
+        h('p', t('treemap.gate.text')),
+        h('p.tmv-gate-warn', h('span', { html: icon('warning', 15) }), h('span', tn('treemap.gate.heavy', files))),
+        h('button.btn.btn-primary.tmv-activate', { onclick: () => this.activate() }, h('span', { html: icon('map', 15) }), t('treemap.gate.activate')),
+        h('p.muted.small', t('treemap.gate.session'))));
   }
 
   #node(rel) {
@@ -80,6 +177,12 @@ export class TreemapView extends ViewPane {
     const { analysis } = this;
     if (!analysis.hasData) return;
     this.lastFolder = analysis.filter.folder;
+    const ready = this.state === 'ready';
+    this.gate.hidden = ready;
+    this.toolbar.hidden = this.stage.hidden = this.legend.hidden = !ready;
+    if (this.state === 'off') { this.#renderGate(); return; }
+    if (this.state === 'stale') { setChildren(this.gate); this.#build(); return; }
+    if (this.state === 'building') { this.#renderProgress(); return; }
     const node = this.#node(analysis.filter.folder) || analysis.tree;
     const isRoot = !analysis.filter.folder;
     const full = document.fullscreenElement === this.element;
@@ -95,8 +198,7 @@ export class TreemapView extends ViewPane {
         title: full ? t('treemap.exitFullScreen') : t('treemap.fullScreenTitle'),
         onclick: () => (full ? document.exitFullscreen() : this.element.requestFullscreen()).catch(() => {}),
       }, h('span', { html: icon(full ? 'close' : 'arrowUpRight', 14) }), full ? t('treemap.exitFullScreen') : t('treemap.fullScreen')));
-    const present = new Set();
-    for (const f of analysis.scopeFiles()) present.add(f.cat);
+    const present = new Set(analysis.summary().byCategory.map((c) => c.id));
     setChildren(this.legend, CATEGORIES.filter((c) => present.has(c.id)).map((c) =>
       h('span.tmv-legend-item', h('span.swatch', { style: { background: categoryColor(c.id) } }), c.label)));
     this.canvas.setAttribute('aria-label', t('treemap.ariaLabel', { folder: isRoot ? baseName(analysis.root) : node.name }));
@@ -106,7 +208,7 @@ export class TreemapView extends ViewPane {
   // ---------------------------------------------------------------- layout
   #draw() {
     const { analysis } = this;
-    if (!analysis.hasData) return;
+    if (!analysis.hasData || this.state !== 'ready' || !this.#index) return;
     const W = this.stage.clientWidth;
     const H = this.stage.clientHeight;
     if (!W || !H) return;
@@ -129,21 +231,25 @@ export class TreemapView extends ViewPane {
 
   /** Lays out a folder's subfolders and files inside rect. top: the block of the first level (for zooming). */
   #layoutFolder(node, rect, level, top) {
-    const items = [];
-    for (const c of node.children.values()) if (c.size > 0) items.push({ kind: 'folder', node: c, value: c.size });
-    for (const f of this.#files().get(node.rel) || []) if (f.size > 0) items.push({ kind: 'file', file: f, value: f.size });
-    if (!items.length) return;
-    items.sort((a, b) => b.value - a.value);
-    const total = items.reduce((s, i) => s + i.value, 0);
+    const entry = this.#index.get(node.rel);
+    if (!entry || node.size <= 0) return;
+    const { files, dirs } = entry;
+    const total = node.size;
     const scale = (rect.w * rect.h) / total;
-    // tiny blocks would be invisible: merge them into one
-    let cut = items.length;
-    while (cut > 1 && items[cut - 1].value * scale < MIN_AREA) cut--;
-    const list = items.slice(0, cut);
-    if (cut < items.length) {
-      const rest = items.slice(cut);
-      list.push({ kind: 'rest', value: rest.reduce((s, i) => s + i.value, 0), count: rest.length, folder: node });
+    // merge the two sorted lists, largest first, until blocks get too small to see
+    const list = [];
+    let fi = 0, di = 0, taken = 0;
+    while (fi < files.length || di < dirs.length) {
+      const f = files[fi], d = dirs[di];
+      const useDir = d && (!f || d.size >= f.size);
+      const value = useDir ? d.size : f.size;
+      if (list.length && value * scale < MIN_AREA) break;
+      list.push(useDir ? { kind: 'folder', node: d, value } : { kind: 'file', file: f, value });
+      taken += value;
+      if (useDir) di++; else fi++;
     }
+    const restCount = (files.length - fi) + (dirs.length - di);
+    if (restCount && total - taken > 0) list.push({ kind: 'rest', value: total - taken, count: restCount, folder: node });
     for (const r of squarify(list, rect, scale)) {
       const it = r.item;
       const block = { x: r.x, y: r.y, w: r.w, h: r.h, kind: it.kind, level, top: null, file: it.file, node: it.node, count: it.count, value: it.value, parent: node };

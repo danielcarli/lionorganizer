@@ -807,5 +807,15 @@
   "overview.coverage.system.darwin": "macOS keeps space that no app can read: the system volume, local Time Machine snapshots and purgeable space.",
   "overview.coverage.system.linux": "Part of the used space belongs to the system: reserved blocks, other users' folders and the file system's own data.",
   "overview.coverage.otherFolders": "The rest of the used space is in other folders of the disk, outside “{folder}”.",
-  "overview.coverage.complete": "Practically all the space used on the disk was analyzed."
+  "overview.coverage.complete": "Practically all the space used on the disk was analyzed.",
+  "treemap.gate.title": "Space map",
+  "treemap.gate.text": "Every file becomes a block whose area is its size, nested in its folders and colored by type. Click a block to zoom into its folder.",
+  "treemap.gate.heavy.one": "Drawing the map takes a lot of processing and may take a while, especially in big analyses (this one has {count} file).",
+  "treemap.gate.heavy.other": "Drawing the map takes a lot of processing and may take a while, especially in big analyses (this one has {count} files).",
+  "treemap.gate.activate": "Turn on the space map",
+  "treemap.gate.session": "It stays on until you close LionOrganizer. The rest of the app keeps working while it loads.",
+  "treemap.building.title": "Preparing the space map…",
+  "treemap.building.group": "{pct}% · grouping files by folder ({done} of {total})",
+  "treemap.building.sort": "{pct}% · sorting folders by size ({done} of {total})",
+  "treemap.building.note": "Running in the background: you can switch to another tab, the map shows up when it is ready."
 }

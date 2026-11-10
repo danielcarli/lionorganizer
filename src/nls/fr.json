@@ -807,5 +807,15 @@
   "overview.coverage.system.darwin": "macOS réserve de l’espace qu’aucune app ne peut lire : le volume système, les instantanés locaux de Time Machine et l’espace purgeable.",
   "overview.coverage.system.linux": "Une partie de l’espace utilisé appartient au système : blocs réservés, dossiers d’autres utilisateurs et données du système de fichiers.",
   "overview.coverage.otherFolders": "Le reste de l’espace utilisé se trouve dans d’autres dossiers du disque, en dehors de « {folder} ».",
-  "overview.coverage.complete": "Pratiquement tout l’espace utilisé du disque a été analysé."
+  "overview.coverage.complete": "Pratiquement tout l’espace utilisé du disque a été analysé.",
+  "treemap.gate.title": "Carte de l’espace",
+  "treemap.gate.text": "Chaque fichier devient un bloc dont la surface est sa taille, imbriqué dans ses dossiers et coloré selon son type. Cliquez sur un bloc pour entrer dans son dossier.",
+  "treemap.gate.heavy.one": "Dessiner la carte demande beaucoup de calcul et peut prendre du temps, surtout pour les grandes analyses (celle-ci compte {count} fichier).",
+  "treemap.gate.heavy.other": "Dessiner la carte demande beaucoup de calcul et peut prendre du temps, surtout pour les grandes analyses (celle-ci compte {count} fichiers).",
+  "treemap.gate.activate": "Activer la carte de l’espace",
+  "treemap.gate.session": "Elle reste active jusqu’à la fermeture de LionOrganizer. Le reste de l’app continue de fonctionner pendant le chargement.",
+  "treemap.building.title": "Préparation de la carte de l’espace…",
+  "treemap.building.group": "{pct} % · regroupement des fichiers par dossier ({done} sur {total})",
+  "treemap.building.sort": "{pct} % · tri des dossiers par taille ({done} sur {total})",
+  "treemap.building.note": "Chargement en arrière-plan : vous pouvez passer à un autre onglet, la carte s’affichera une fois prête."
 }

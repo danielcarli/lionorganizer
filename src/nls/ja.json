@@ -807,5 +807,15 @@
   "overview.coverage.system.darwin": "macOS はどのアプリも読み取れない領域を確保しています：システムボリューム、Time Machine のローカルスナップショット、パージ可能な領域。",
   "overview.coverage.system.linux": "使用領域の一部はシステムのものです：予約ブロック、他のユーザーのフォルダー、ファイルシステム自体のデータ。",
   "overview.coverage.otherFolders": "残りの使用領域は、このディスク上の「{folder}」以外のフォルダーにあります。",
-  "overview.coverage.complete": "ディスクの使用領域はほぼすべて分析されました。"
+  "overview.coverage.complete": "ディスクの使用領域はほぼすべて分析されました。",
+  "treemap.gate.title": "スペースマップ",
+  "treemap.gate.text": "各ファイルがサイズに応じた面積のブロックになり、フォルダーの中に入れ子で種類ごとに色分けされます。ブロックをクリックするとそのフォルダーに入ります。",
+  "treemap.gate.heavy.one": "マップの描画には多くの処理が必要で、特に大きな分析では時間がかかることがあります（この分析には {count} 個のファイルがあります）。",
+  "treemap.gate.heavy.other": "マップの描画には多くの処理が必要で、特に大きな分析では時間がかかることがあります（この分析には {count} 個のファイルがあります）。",
+  "treemap.gate.activate": "スペースマップを有効にする",
+  "treemap.gate.session": "LionOrganizer を閉じるまで有効のままです。読み込み中もアプリの他の機能は使えます。",
+  "treemap.building.title": "スペースマップを準備しています…",
+  "treemap.building.group": "{pct}% · ファイルをフォルダーごとにまとめています（{done} / {total}）",
+  "treemap.building.sort": "{pct}% · フォルダーをサイズ順に並べています（{done} / {total}）",
+  "treemap.building.note": "バックグラウンドで読み込んでいます。他のタブに移動しても、準備ができるとマップが表示されます。"
 }

@@ -807,5 +807,15 @@
   "overview.coverage.system.darwin": "macOS는 어떤 앱도 읽을 수 없는 공간을 확보해 둡니다: 시스템 볼륨, Time Machine 로컬 스냅샷, 제거 가능한 공간.",
   "overview.coverage.system.linux": "사용 공간의 일부는 시스템의 것입니다: 예약 블록, 다른 사용자의 폴더, 파일 시스템 자체 데이터.",
   "overview.coverage.otherFolders": "나머지 사용 공간은 이 디스크의 '{folder}' 밖에 있는 다른 폴더에 있습니다.",
-  "overview.coverage.complete": "디스크의 사용 공간은 거의 모두 분석되었습니다."
+  "overview.coverage.complete": "디스크의 사용 공간은 거의 모두 분석되었습니다.",
+  "treemap.gate.title": "공간 지도",
+  "treemap.gate.text": "각 파일이 크기만큼의 면적을 가진 블록이 되어 폴더 안에 중첩되고 유형별로 색이 칠해집니다. 블록을 클릭하면 그 폴더로 들어갑니다.",
+  "treemap.gate.heavy.one": "지도를 그리려면 처리량이 많아 시간이 걸릴 수 있습니다. 특히 큰 분석에서 그렇습니다(이 분석에는 파일이 {count}개 있습니다).",
+  "treemap.gate.heavy.other": "지도를 그리려면 처리량이 많아 시간이 걸릴 수 있습니다. 특히 큰 분석에서 그렇습니다(이 분석에는 파일이 {count}개 있습니다).",
+  "treemap.gate.activate": "공간 지도 켜기",
+  "treemap.gate.session": "LionOrganizer를 닫을 때까지 켜져 있습니다. 불러오는 동안에도 앱의 나머지 기능은 계속 작동합니다.",
+  "treemap.building.title": "공간 지도를 준비하는 중…",
+  "treemap.building.group": "{pct}% · 파일을 폴더별로 묶는 중({done}/{total})",
+  "treemap.building.sort": "{pct}% · 폴더를 크기순으로 정렬하는 중({done}/{total})",
+  "treemap.building.note": "백그라운드에서 불러오는 중입니다. 다른 탭으로 이동해도 준비되면 지도가 표시됩니다."
 }

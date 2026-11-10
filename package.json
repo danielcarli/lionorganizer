@@ -1,6 +1,6 @@
 {
   "name": "lionorganizer",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "LionOrganizer — disk space analysis & cleanup. See what takes up space in your folders, find true duplicates by content and safely free up what you no longer need.",
   "main": "src/code/electron-main/main.js",
   "desktopName": "lionorganizer.desktop",
