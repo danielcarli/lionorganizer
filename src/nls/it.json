@@ -617,7 +617,7 @@
   "update.dialog.errorText": "Controlla la connessione a Internet e riprova.",
   "update.dialog.checkAgain": "Controlla di nuovo",
   "update.dialog.autoCheck": "Cerca automaticamente nuove versioni",
-  "update.dialog.privacy": "La verifica legge solo un piccolo file dalle versioni pubblicate su GitHub. Non viene inviato alcun dato su di te o sui tuoi file.",
+  "update.dialog.privacy": "La verifica legge solo un piccolo file dalle versioni pubblicate su GitHub; quando c’è una nuova versione, il programma di installazione che esegue l’aggiornamento può essere scaricato in anticipo (circa 2 MB, verificato). Non viene inviato alcun dato su di te o sui tuoi file.",
   "update.dialog.closing": "Chiusura di LionOrganizer per l’aggiornamento…",
   "update.failed": "Impossibile avviare l’aggiornamento: {error}",
   "update.downloadOpened": "La pagina di download è stata aperta nel browser.",

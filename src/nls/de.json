@@ -617,7 +617,7 @@
   "update.dialog.errorText": "Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
   "update.dialog.checkAgain": "Erneut prüfen",
   "update.dialog.autoCheck": "Automatisch nach neuen Versionen suchen",
-  "update.dialog.privacy": "Die Prüfung liest nur eine kleine Datei aus den auf GitHub veröffentlichten Versionen. Es werden keine Daten über Sie oder Ihre Dateien gesendet.",
+  "update.dialog.privacy": "Die Prüfung liest nur eine kleine Datei aus den auf GitHub veröffentlichten Versionen; gibt es eine neue Version, kann das Setup, das die Aktualisierung durchführt, vorab geladen werden (etwa 2 MB, geprüft). Es werden keine Daten über Sie oder Ihre Dateien gesendet.",
   "update.dialog.closing": "LionOrganizer wird für das Update geschlossen …",
   "update.failed": "Das Update konnte nicht gestartet werden: {error}",
   "update.downloadOpened": "Die Download-Seite wurde im Browser geöffnet.",

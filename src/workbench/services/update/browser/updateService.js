@@ -38,15 +38,25 @@ export class UpdateService {
     this.#onDidChange.fire();
   }
 
+  /** true while a check runs (status stays 'available' meanwhile when a new version is already known) */
+  refreshing = false;
+
   async check() {
-    if (this.status === 'checking' || !this.host.update) return this.info;
-    this.status = 'checking';
+    if (this.refreshing || !this.host.update) return this.info;
+    this.refreshing = true;
+    // A known new version stays on screen, and its button usable, while it is checked again: the user
+    // does not wait for the network to update (the installer always fetches the latest version anyway).
+    const known = this.status === 'available' ? this.info : null;
+    if (!known) this.status = 'checking';
     this.#onDidChange.fire();
     let info;
     try { info = await this.host.update.check(); } catch (err) { info = { ok: false, error: String(err?.message || err) }; }
+    // a failed new check does not hide a version that is known to exist
+    if (!info.ok && known) info = known;
     this.info = info;
     if (info.current) this.version = info.current;
     this.status = !info.ok ? 'error' : info.available ? 'available' : 'current';
+    this.refreshing = false;
     this.#onDidChange.fire();
     return info;
   }

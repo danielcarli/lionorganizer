@@ -11,7 +11,7 @@ See what takes up space in your folders, find true duplicates by content and saf
 
 **English** · [Português (Brasil)](docs/README.pt-BR.md) · [Português (Portugal)](docs/README.pt-PT.md) · [Español](docs/README.es.md) · [Français](docs/README.fr.md) · [Deutsch](docs/README.de.md) · [Italiano](docs/README.it.md) · [简体中文](docs/README.zh-CN.md) · [日本語](docs/README.ja.md) · [한국어](docs/README.ko.md)
 
-![Version 1.2.0](https://img.shields.io/badge/version-1.2.0-161214)
+![Version 1.2.1](https://img.shields.io/badge/version-1.2.1-161214)
 ![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Platforms: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -216,7 +216,7 @@ $env:E2E_FOLDER="C:\temp\lion-test"; $env:E2E_OUT="C:\temp\lion-out"; npm run te
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) — current version: **1.2.0**.
+See [CHANGELOG.md](CHANGELOG.md) — current version: **1.2.1**.
 
 ## Contributing
 

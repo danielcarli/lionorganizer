@@ -617,7 +617,7 @@
   "update.dialog.errorText": "Vérifiez votre connexion Internet et réessayez.",
   "update.dialog.checkAgain": "Vérifier à nouveau",
   "update.dialog.autoCheck": "Rechercher automatiquement les nouvelles versions",
-  "update.dialog.privacy": "La vérification lit seulement un petit fichier parmi les versions publiées sur GitHub. Aucune donnée sur vous ni sur vos fichiers n’est envoyée.",
+  "update.dialog.privacy": "La vérification lit seulement un petit fichier parmi les versions publiées sur GitHub ; quand une nouvelle version existe, l’installateur qui fait la mise à jour peut être téléchargé à l’avance (environ 2 Mo, vérifié). Aucune donnée sur vous ni sur vos fichiers n’est envoyée.",
   "update.dialog.closing": "Fermeture de LionOrganizer pour la mise à jour…",
   "update.failed": "Impossible de lancer la mise à jour : {error}",
   "update.downloadOpened": "La page de téléchargement s’est ouverte dans votre navigateur.",

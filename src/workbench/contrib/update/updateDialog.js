@@ -26,7 +26,13 @@ export function showUpdateDialog({ update, notifications }) {
       actions));
 
   let busy = false;
+  let closing = false; // the installer is being started: a check that ends now must not redraw the dialog
+  const showClosing = () => {
+    setChildren(body, h('header.update-head', h('span.update-icon.spin', { html: icon('refresh', 20) }), h('h2#update-title', t('update.dialog.closing'))));
+    setChildren(actions);
+  };
   const render = () => {
+    if (closing) return;
     const { status, info } = update;
     const version = info?.current || update.version;
     const head = (iconName, title, cls = '') => h(`header.update-head${cls}`, h('span.update-icon', { html: icon(iconName, 20) }), h('h2#update-title', title));
@@ -63,19 +69,22 @@ export function showUpdateDialog({ update, notifications }) {
 
   const run = async () => {
     busy = true;
-    render();
+    // installer / script: say at once that the app closes and the installer takes over
+    if (update.info?.method === 'download') render();
+    else { closing = true; showClosing(); }
     const res = await update.install().catch((err) => ({ ok: false, error: String(err?.message || err) }));
     busy = false;
-    if (!res.ok) { notifications.warn(t('update.failed', { error: res.error || '' })); render(); return; }
+    if (!res.ok) { closing = false; notifications.warn(t('update.failed', { error: res.error || '' })); render(); return; }
     if (res.action === 'download') { close(); notifications.info(t('update.downloadOpened'), 8000); return; }
-    // installer / script: the app closes and the installer takes over
-    setChildren(body, h('header.update-head', h('span.update-icon.spin', { html: icon('refresh', 20) }), h('h2#update-title', t('update.dialog.closing'))));
-    setChildren(actions);
+    closing = true;
+    showClosing();
   };
 
   const sub = update.onDidChange(render);
   render();
   document.addEventListener('keydown', onKey, true);
   document.body.append(overlay);
-  update.check(); // always fresh: the saved state may be hours old (it is a tiny file)
+  // Checked again on every opening (the last check may be hours old); a new version already known is shown,
+  // with its button, right away while this runs.
+  update.check();
 }

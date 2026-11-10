@@ -2,6 +2,16 @@
 
 All notable changes to LionOrganizer are documented here. The project follows [Semantic Versioning](https://semver.org).
 
+## [1.2.1] — 2026-11-10
+
+### Faster updates, and an installer that never freezes
+- **From the click to the installer:** the update dialog shows a new version already found (and its "Update now" button) at once, checking again in the background instead of making you wait for the network; after the click it says right away that LionOrganizer is closing, and the app closes as soon as the installer has started (it no longer waits a fixed time). If the installer cannot start, the app stays open and says why.
+- **No second confirmation:** in update mode the wizard no longer stops on "Ready to Install" — the update was already confirmed in the app (or by choosing the "Update LionOrganizer" shortcut).
+- **The installer window stays responsive:** downloading and checking the app no longer blocks the wizard. It shows each step and the download as it goes ("28 MB of 105 MB downloaded"), and gives up with a clear message if nothing happens for 3 minutes.
+- **Much smaller updates:** when the new version uses the same Electron runtime as the installed one (most updates), the runtime is reused instead of downloading about 110 MB again; an update then downloads only the app itself, a few hundred KB. The icon tool (rcedit) is kept between updates too, checked again by SHA-256 every time.
+- **The update installer keeps itself current:** the copy of the wizard kept for updates could never replace itself, so every update kept running the very first installer downloaded — with none of these improvements. Now, when a new version is found, the app fetches that release's wizard in the background (about 2 MB, kept only if its SHA-256 matches the release's SHA256SUMS, the same check the installers make), and it takes the copy's place right before the update starts; the wizard does the same during an update started from the "Update LionOrganizer" shortcut. The update dialog's privacy note says so.
+- Updating from 1.2.0 or earlier still runs the installer those versions kept; the improvements above apply from the next update on (or right away, by running a freshly downloaded `LionOrganizer-Setup.exe`).
+
 ## [1.2.0] — 2026-11-10
 
 ### Fluid with very large folders

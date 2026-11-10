@@ -617,7 +617,7 @@
   "update.dialog.errorText": "Check your internet connection and try again.",
   "update.dialog.checkAgain": "Check again",
   "update.dialog.autoCheck": "Check for new versions automatically",
-  "update.dialog.privacy": "The check only reads a small file from the versions published on GitHub. No data about you or your files is sent.",
+  "update.dialog.privacy": "The check only reads a small file from the versions published on GitHub; when there is a new version, the setup it updates with may be fetched in advance (about 2 MB, verified). No data about you or your files is sent.",
   "update.dialog.closing": "Closing LionOrganizer to update…",
   "update.failed": "Could not start the update: {error}",
   "update.downloadOpened": "The download page was opened in your browser.",

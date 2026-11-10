@@ -11,7 +11,7 @@ Sehen, was in den Ordnern Platz belegt, echte Duplikate anhand ihres Inhalts fin
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · **Deutsch** · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.2.0](https://img.shields.io/badge/version-1.2.0-161214)
+![Version 1.2.1](https://img.shields.io/badge/version-1.2.1-161214)
 ![Lizenz: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Plattform: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)

@@ -617,7 +617,7 @@
   "update.dialog.errorText": "请检查网络连接后重试。",
   "update.dialog.checkAgain": "重新检查",
   "update.dialog.autoCheck": "自动检查新版本",
-  "update.dialog.privacy": "检查时只会从 GitHub 上已发布的版本中读取一个小文件。不会发送任何关于你或你的文件的数据。",
+  "update.dialog.privacy": "检查时只会从 GitHub 上已发布的版本中读取一个小文件；有新版本时，可能会提前下载用于更新的安装程序（约 2 MB，已校验）。不会发送任何关于你或你的文件的数据。",
   "update.dialog.closing": "正在关闭 LionOrganizer 以进行更新…",
   "update.failed": "无法开始更新：{error}",
   "update.downloadOpened": "已在浏览器中打开下载页面。",

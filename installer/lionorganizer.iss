@@ -7,7 +7,7 @@
 ; file (SHA-256 for the release files, Electron's own checksums for the runtime) and assembles LionOrganizer in a
 ; temporary folder. The assembled files are then installed like with any installer.
 ;
-; Build:  iscc /DAppVersion=1.2.0 installer\lionorganizer.iss    (creates dist-installer\LionOrganizer-Setup.exe)
+; Build:  iscc /DAppVersion=1.2.1 installer\lionorganizer.iss    (creates dist-installer\LionOrganizer-Setup.exe)
 ; The release workflow builds it on every v* tag. Signing (recommended once there is a certificate): define a
 ; SignTool with the code-signing certificate and uncomment SignTool= below.
 
@@ -234,6 +234,39 @@ chinesesimplified.Incomplete=下载脚本未完成即退出（代码 %1）。
 japanese.Incomplete=ダウンロード スクリプトが完了せずに終了しました（コード %1）。
 korean.Incomplete=다운로드 스크립트가 완료되지 않고 종료되었습니다(코드 %1).
 
+english.Step3Reuse=Using the Electron runtime already installed (nothing to download)…
+brazilianportuguese.Step3Reuse=Usando o Electron já instalado (nada para baixar)…
+portuguese.Step3Reuse=A usar o Electron já instalado (nada para transferir)…
+spanish.Step3Reuse=Usando el Electron ya instalado (nada que descargar)…
+french.Step3Reuse=Utilisation de l’environnement Electron déjà installé (rien à télécharger)…
+german.Step3Reuse=Bereits installierte Electron-Laufzeit wird verwendet (kein Download) …
+italian.Step3Reuse=Uso dell’ambiente Electron già installato (niente da scaricare)…
+chinesesimplified.Step3Reuse=正在使用已安装的 Electron 运行时（无需下载）…
+japanese.Step3Reuse=インストール済みの Electron ランタイムを使用しています（ダウンロード不要）…
+korean.Step3Reuse=이미 설치된 Electron 런타임을 사용하는 중(다운로드 없음)…
+
+english.Downloaded=%1 MB of %2 MB downloaded
+brazilianportuguese.Downloaded=%1 MB de %2 MB baixados
+portuguese.Downloaded=%1 MB de %2 MB transferidos
+spanish.Downloaded=%1 MB de %2 MB descargados
+french.Downloaded=%1 Mo sur %2 Mo téléchargés
+german.Downloaded=%1 MB von %2 MB heruntergeladen
+italian.Downloaded=%1 MB di %2 MB scaricati
+chinesesimplified.Downloaded=已下载 %1 MB / %2 MB
+japanese.Downloaded=%2 MB 中 %1 MB をダウンロードしました
+korean.Downloaded=%2MB 중 %1MB 다운로드됨
+
+english.Stalled=The download stopped responding for more than three minutes.
+brazilianportuguese.Stalled=O download parou de responder por mais de três minutos.
+portuguese.Stalled=A transferência deixou de responder durante mais de três minutos.
+spanish.Stalled=La descarga dejó de responder durante más de tres minutos.
+french.Stalled=Le téléchargement ne répond plus depuis plus de trois minutes.
+german.Stalled=Der Download hat länger als drei Minuten nicht mehr reagiert.
+italian.Stalled=Il download non risponde da più di tre minuti.
+chinesesimplified.Stalled=下载已超过三分钟没有响应。
+japanese.Stalled=ダウンロードが 3 分以上応答していません。
+korean.Stalled=다운로드가 3분 넘게 응답하지 않습니다.
+
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
@@ -280,11 +313,36 @@ const
   TOTAL_STEPS = 4;
   SCRIPT_UNINSTALL_KEY = 'Software\Microsoft\Windows\CurrentVersion\Uninstall\LionOrganizer';
 
+type
+  { room for a Windows MSG structure on a 32-bit or 64-bit Setup }
+  TMsgBuffer = array[0..15] of Cardinal;
+
 var
   ProgressPage: TOutputProgressWizardPage;
   Staging, Version, ErrorText: String;
-  Step: Integer;
-  Done: Boolean;
+  Step, ExitedWith: Integer;
+  Done, Exited, Reusing: Boolean;
+
+function PeekMessage(var Msg: TMsgBuffer; Wnd: HWND; FilterMin, FilterMax, RemoveMsg: Cardinal): BOOL;
+  external 'PeekMessageW@user32.dll stdcall';
+function TranslateMessage(var Msg: TMsgBuffer): BOOL;
+  external 'TranslateMessage@user32.dll stdcall';
+function DispatchMessage(var Msg: TMsgBuffer): Integer;
+  external 'DispatchMessageW@user32.dll stdcall';
+function GetTickCount: Cardinal;
+  external 'GetTickCount@kernel32.dll stdcall';
+
+{ Lets the window repaint and react while the download runs (instead of freezing until it ends). }
+procedure PumpMessages;
+var
+  Msg: TMsgBuffer;
+begin
+  while PeekMessage(Msg, 0, 0, 0, 1 { PM_REMOVE }) do
+  begin
+    TranslateMessage(Msg);
+    DispatchMessage(Msg);
+  end;
+end;
 
 function AssembledDir(Param: String): String;
 begin
@@ -312,10 +370,57 @@ begin
     (PageID = wpSelectTasks) or (PageID = wpReady) or (PageID = wpFinished));
 end;
 
+function SetupCopyFile: String;
+begin
+  Result := ExpandConstant('{localappdata}\LionOrganizer-Installer\LionOrganizer-Setup.exe');
+end;
+
+function NewSetupFile: String;
+begin
+  Result := ExpandConstant('{localappdata}\LionOrganizer-Installer\LionOrganizer-Setup.new.exe');
+end;
+
 function NotRunningFromCopy: Boolean;
 begin
-  Result := CompareText(ExpandConstant('{srcexe}'),
-    ExpandConstant('{localappdata}\LionOrganizer-Installer\LionOrganizer-Setup.exe')) <> 0;
+  Result := CompareText(ExpandConstant('{srcexe}'), SetupCopyFile) <> 0;
+end;
+
+{ The copy kept for updates is what runs an update, so it cannot overwrite itself ([Files] skips it then).
+  install.ps1 downloads the release's wizard next to it (LionOrganizer-Setup.new.exe) when it differs.
+  Here it takes the copy's place when this wizard is not the copy; otherwise Setup still has its own file
+  open, so the new wizard waits and the app puts it in place right before starting the next update. }
+procedure KeepNewSetup;
+var
+  OldFile: String;
+begin
+  if not FileExists(NewSetupFile) then Exit;
+  if not NotRunningFromCopy then
+  begin
+    Log('New setup kept for the next update: ' + NewSetupFile);
+    Exit;
+  end;
+  OldFile := ExpandConstant('{localappdata}\LionOrganizer-Installer\LionOrganizer-Setup.old.exe');
+  DeleteFile(OldFile);
+  if FileExists(SetupCopyFile) and not RenameFile(SetupCopyFile, OldFile) then
+  begin
+    Log('The setup kept for updates is in use: the new one waits for the next update');
+    Exit;
+  end;
+  if RenameFile(NewSetupFile, SetupCopyFile) then
+  begin
+    Log('Setup kept for updates refreshed');
+    DeleteFile(OldFile);
+  end
+  else
+    RenameFile(OldFile, SetupCopyFile);
+end;
+
+{ /UPDATE: the update was already confirmed (in the app, or by choosing the "Update" shortcut), so the
+  "Ready to install" page - which Setup always shows when it is the first page - starts it right away. }
+procedure CurPageChanged(CurPageID: Integer);
+begin
+  if (CurPageID = wpReady) and UpdateMode and not WizardSilent then
+    PostMessage(WizardForm.NextButton.Handle, $00F5 { BM_CLICK }, 0, 0);
 end;
 
 function StepText(N: Integer): String;
@@ -323,7 +428,7 @@ begin
   case N of
     1: Result := CustomMessage('Step1');
     2: Result := CustomMessage('Step2');
-    3: Result := CustomMessage('Step3');
+    3: if Reusing then Result := CustomMessage('Step3Reuse') else Result := CustomMessage('Step3');
     4: Result := CustomMessage('Step4');
   else
     Result := CustomMessage('Starting');
@@ -331,25 +436,45 @@ begin
   if Version <> '' then Result := Result + '   ' + FmtMessage(CustomMessage('VersionSuffix'), [Version]);
 end;
 
-{ receives the output of install.ps1 line by line: "@@STEP|n|total|text", "@@VERSION|x.y.z", "@@DONE", "@@ERROR|text" }
-procedure OnOutputLine(const S: String; const Error, FirstLine: Boolean);
+{ receives the lines of install.ps1: "@@STEP|n|total|text", "@@BYTES|done|total", "@@REUSE", "@@VERSION|x.y.z",
+  "@@DONE", "@@ERROR|text", "@@EXIT|code" }
+procedure OnOutputLine(const S: String);
 var
   Rest: String;
   P: Integer;
+  DoneBytes, TotalBytes: Int64;
 begin
-  if Error then
-  begin
-    Log('Could not read the output: ' + S);
-    Exit;
-  end;
-  Log(S);
+  if Copy(S, 1, 8) <> '@@BYTES|' then Log(S);
   if Copy(S, 1, 7) = '@@STEP|' then
   begin
     Rest := Copy(S, 8, Length(S));
     P := Pos('|', Rest);
     if P > 0 then Step := StrToIntDef(Copy(Rest, 1, P - 1), Step);
     ProgressPage.SetText(StepText(Step), '');
-    ProgressPage.SetProgress(Step - 1, TOTAL_STEPS);
+    ProgressPage.SetProgress((Step - 1) * 100, TOTAL_STEPS * 100);
+  end
+  else if Copy(S, 1, 8) = '@@BYTES|' then
+  begin
+    Rest := Copy(S, 9, Length(S));
+    P := Pos('|', Rest);
+    if P > 0 then
+    begin
+      DoneBytes := StrToInt64Def(Copy(Rest, 1, P - 1), 0);
+      TotalBytes := StrToInt64Def(Copy(Rest, P + 1, Length(Rest)), 0);
+      if TotalBytes > 0 then
+      begin
+        { (a line of [Code] must not start with "[": the compiler would read it as a new section) }
+        ProgressPage.SetText(StepText(Step), FmtMessage(CustomMessage('Downloaded'), [IntToStr(DoneBytes div 1048576), IntToStr(TotalBytes div 1048576)]));
+        ProgressPage.SetProgress((Step - 1) * 100 + (DoneBytes * 100) div TotalBytes, TOTAL_STEPS * 100);
+      end;
+    end;
+  end
+  else if Trim(S) = '@@REUSE' then
+    Reusing := True
+  else if Copy(S, 1, 7) = '@@EXIT|' then
+  begin
+    ExitedWith := StrToIntDef(Trim(Copy(S, 8, Length(S))), 1);
+    Exited := True;
   end
   else if Copy(S, 1, 10) = '@@VERSION|' then
     Version := Trim(Copy(S, 11, Length(S)))
@@ -361,42 +486,98 @@ begin
     ProgressPage.SetText(StepText(Step), Copy(Trim(S), 1, 120));
 end;
 
+{ Runs install.ps1 without waiting on it: it appends its progress to a file that is read here every
+  ~50 ms while the window keeps processing its messages, so the installer never looks frozen. }
+function RunAssembler(const ProgressFile: String): Boolean;
+var
+  PowerShell, Params, AppDir: String;
+  Lines: TArrayOfString;
+  Handled, Count, Limit, I, ResultCode: Integer;
+  LastActivity: Cardinal;
+begin
+  Result := False;
+  PowerShell := ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe');
+  Params := '-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' +
+    ExpandConstant('{tmp}\install.ps1') + '" -AssembleTo "' + Staging + '" -ProgressFile "' + ProgressFile + '"';
+  { an update: the Electron runtime already installed is reused when it is the same version }
+  AppDir := RemoveBackslashUnlessRoot(ExpandConstant('{app}'));
+  if FileExists(AddBackslash(AppDir) + 'LionOrganizer.exe') then Params := Params + ' -ReuseFrom "' + AppDir + '"';
+  { the release's wizard, when it differs from this one, is kept for the next update (see KeepNewSetup) }
+  Params := Params + ' -RunningSetup "' + ExpandConstant('{srcexe}') + '" -NewSetupTo "' + NewSetupFile + '"';
+  if not Exec(PowerShell, Params, ExpandConstant('{tmp}'), SW_HIDE, ewNoWait, ResultCode) then
+  begin
+    ErrorText := SysErrorMessage(ResultCode);
+    Exit;
+  end;
+  Handled := 0;
+  LastActivity := GetTickCount;
+  WizardForm.CancelButton.Enabled := False;
+  try
+    while not Exited do
+    begin
+      PumpMessages;
+      Sleep(50);
+      if LoadStringsFromFile(ProgressFile, Lines) then
+      begin
+        Count := GetArrayLength(Lines);
+        { the last line may still be being written: wait for the next one, except for the final line }
+        Limit := Count - 1;
+        if (Count > 0) and (Copy(Lines[Count - 1], 1, 7) = '@@EXIT|') then Limit := Count;
+        if Limit > Handled then
+        begin
+          for I := Handled to Limit - 1 do OnOutputLine(Lines[I]);
+          Handled := Limit;
+          LastActivity := GetTickCount;
+        end;
+      end;
+      if GetTickCount - LastActivity > 180000 then
+      begin
+        ErrorText := CustomMessage('Stalled');
+        Exit;
+      end;
+    end;
+  finally
+    WizardForm.CancelButton.Enabled := True;
+  end;
+  Result := ExitedWith = 0;
+end;
+
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 var
-  ExitCode: Integer;
+  ProgressFile: String;
   Ok: Boolean;
-  PowerShell, Params: String;
 begin
   Result := '';
   Version := '';
   ErrorText := '';
   Step := 0;
   Done := False;
+  Exited := False;
+  ExitedWith := -1;
+  Reusing := False;
   Staging := ExpandConstant('{localappdata}\LionOrganizer-Installer\staging');
   ExtractTemporaryFile('install.ps1');
+  ProgressFile := ExpandConstant('{tmp}\progress.txt');
+  DeleteFile(ProgressFile);
   ProgressPage := CreateOutputProgressPage(CustomMessage('PageCaption'), CustomMessage('PageDescription'));
   ProgressPage.SetText(CustomMessage('Starting'), '');
-  ProgressPage.SetProgress(0, TOTAL_STEPS);
+  ProgressPage.SetProgress(0, TOTAL_STEPS * 100);
   ProgressPage.Show;
   try
-    PowerShell := ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe');
-    Params := '-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' +
-      ExpandConstant('{tmp}\install.ps1') + '" -AssembleTo "' + Staging + '"';
     try
-      Ok := ExecAndLogOutput(PowerShell, Params, ExpandConstant('{tmp}'), SW_HIDE, ewWaitUntilTerminated,
-        ExitCode, @OnOutputLine);
+      Ok := RunAssembler(ProgressFile);
     except
       Ok := False;
       ErrorText := GetExceptionMessage;
     end;
-    if Ok and (ExitCode = 0) and Done and FileExists(AddBackslash(Staging) + 'LionOrganizer.exe') then
-      ProgressPage.SetProgress(TOTAL_STEPS, TOTAL_STEPS)
+    if Ok and Done and FileExists(AddBackslash(Staging) + 'LionOrganizer.exe') then
+      ProgressPage.SetProgress(TOTAL_STEPS * 100, TOTAL_STEPS * 100)
     else
     begin
-      if (ErrorText = '') and Ok and (ExitCode = 0) then
-        ErrorText := FmtMessage(CustomMessage('Incomplete'), [IntToStr(ExitCode)])
+      if (ErrorText = '') and Exited and (ExitedWith = 0) then
+        ErrorText := FmtMessage(CustomMessage('Incomplete'), [IntToStr(ExitedWith)])
       else if ErrorText = '' then
-        ErrorText := FmtMessage(CustomMessage('ExitCode'), [IntToStr(ExitCode)]);
+        ErrorText := FmtMessage(CustomMessage('ExitCode'), [IntToStr(ExitedWith)]);
       Result := CustomMessage('Failed') + #13#10#13#10 + ErrorText + #13#10#13#10 +
         FmtMessage(CustomMessage('SeeLog'), [ExpandConstant('{log}')]);
       DelTree(Staging, True, True, True);
@@ -436,6 +617,7 @@ begin
   begin
     { the assembled copy is no longer needed }
     DelTree(Staging, True, True, True);
+    KeepNewSetup;
     { an earlier install made with install.ps1 in the same folder: drop its entry in Settings > Apps,
       so only this installer's entry remains }
     if RegQueryStringValue(HKCU, SCRIPT_UNINSTALL_KEY, 'InstallLocation', Location) and

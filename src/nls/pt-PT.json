@@ -617,7 +617,7 @@
   "update.dialog.errorText": "Verifique a sua ligação à Internet e tente novamente.",
   "update.dialog.checkAgain": "Verificar novamente",
   "update.dialog.autoCheck": "Procurar novas versões automaticamente",
-  "update.dialog.privacy": "A verificação apenas lê um ficheiro pequeno das versões publicadas no GitHub. Nenhum dado seu ou dos seus ficheiros é enviado.",
+  "update.dialog.privacy": "A verificação apenas lê um ficheiro pequeno das versões publicadas no GitHub; quando há uma versão nova, o instalador que faz a atualização pode ser transferido antes (cerca de 2 MB, verificado). Nenhum dado seu ou dos seus ficheiros é enviado.",
   "update.dialog.closing": "A fechar o LionOrganizer para atualizar…",
   "update.failed": "Não foi possível iniciar a atualização: {error}",
   "update.downloadOpened": "A página de transferência foi aberta no navegador.",

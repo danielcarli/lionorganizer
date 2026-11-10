@@ -107,7 +107,9 @@ app.on('browser-window-created', (_e, win) => {
       check(await js(`document.querySelector('.status-version').textContent.includes('9.9.9') && !!document.querySelector('.status-right-wrap > .status-version:last-child')`), 'it shows the new version, in the bottom-right corner');
       await click('.status-version');
       check(await until(`!!document.querySelector('.update-dialog')`), 'clicking it opens the update dialog');
-      await until(`document.querySelector('.update-dialog')?.textContent.includes('Do you want to update now?')`); // it checks again on open
+      // it checks again on open, but the version already known is offered at once (no wait for the network)
+      check(await js(`document.querySelector('.update-dialog').textContent.includes('Do you want to update now?') && !!document.querySelector('.update-dialog .cm-actions .btn-primary')`),
+        'the known new version and its button show at once, while it is checked again');
       const upd = await js(`document.querySelector('.update-dialog').textContent`);
       check(upd.includes('9.9.9') && upd.includes(APP_VERSION) && upd.includes('Do you want to update now?'), 'it shows both versions and asks whether to update');
       await shot('06-update');

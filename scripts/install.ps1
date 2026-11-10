@@ -29,8 +29,13 @@
 .EXAMPLE
   .\install.ps1 -AssembleTo C:\temp\lion   # only download, verify and assemble the app into a folder
   Used by the graphical installer (LionOrganizer-Setup.exe, Inno Setup), which then installs the files.
-  Progress is written as "@@STEP|n|total|text" lines; at the end "@@VERSION|x.y.z" and "@@DONE", or
-  "@@ERROR|message" and exit code 1.
+  Progress is written as "@@STEP|n|total|text" and "@@BYTES|done|total" lines; at the end "@@VERSION|x.y.z"
+  and "@@DONE", or "@@ERROR|message"; then "@@EXIT|code". With -ProgressFile the same lines are also
+  appended to that file, so the installer can follow them without waiting on this process.
+  -ReuseFrom <folder>: an installed copy whose Electron runtime is the same version is reused instead of
+  downloading it again (an update then only downloads the app itself, a few hundred KB).
+  -RunningSetup <exe> -NewSetupTo <exe>: when the release's LionOrganizer-Setup.exe differs from the one
+  running, it is downloaded and verified to -NewSetupTo (the wizard then keeps it for the next update).
 #>
 [CmdletBinding()]
 param(
@@ -42,7 +47,11 @@ param(
   [switch] $Yes,
   [switch] $Uninstall,
   [switch] $Purge,
-  [string] $AssembleTo = ''
+  [string] $AssembleTo = '',
+  [string] $ProgressFile = '',
+  [string] $ReuseFrom = '',
+  [string] $RunningSetup = '',
+  [string] $NewSetupTo = ''
 )
 
 Set-StrictMode -Version 3.0
@@ -73,14 +82,26 @@ $VersionPattern = '^\d+\.\d+\.\d+(-[0-9A-Za-z.]+)?$'
 $FilePattern = '^[A-Za-z0-9._-]+$'
 
 # --------------------------------------------------------------------------------------- output
+# Lines for the graphical installer: on the output and, with -ProgressFile, appended to that file (one
+# write per line, so a reader never sees half of one).
+$Utf8 = New-Object System.Text.UTF8Encoding($false)
+function Send-Line([string] $Text) {
+  if (-not $AssembleTo) { return }
+  Write-Output $Text
+  if ($ProgressFile) {
+    for ($i = 0; $i -lt 5; $i++) {
+      try { [IO.File]::AppendAllText($ProgressFile, "$Text`r`n", $Utf8); break } catch { Start-Sleep -Milliseconds 20 }
+    }
+  }
+}
 function Write-Step([string] $Text) { Write-Host "==> $Text" -ForegroundColor Cyan }
-function Write-Ok([string] $Text) { Write-Host "  [ok] $Text" -ForegroundColor Green }
-function Write-Note([string] $Text) { Write-Host "  [!] $Text" -ForegroundColor Yellow }
+function Write-Ok([string] $Text) { if ($AssembleTo) { Send-Line "  [ok] $Text" } else { Write-Host "  [ok] $Text" -ForegroundColor Green } }
+function Write-Note([string] $Text) { if ($AssembleTo) { Send-Line "  [!] $Text" } else { Write-Host "  [!] $Text" -ForegroundColor Yellow } }
 function Stop-Install([string] $Text) { throw "LionOrganizer installer: $Text" }
 # Progress for the graphical installer (only in -AssembleTo mode); Write-Step for the console.
 $StepTotal = 4
 function Write-Stage([int] $N, [string] $Text) {
-  if ($AssembleTo) { Write-Output "@@STEP|$N|$StepTotal|$Text" }
+  Send-Line "@@STEP|$N|$StepTotal|$Text"
   Write-Step $Text
 }
 
@@ -91,12 +112,42 @@ function Assert-SecureUrl([string] $Url) {
   Stop-Install "Refusing insecure URL: $Url"
 }
 
+# Streams the download to the file; for the graphical installer, reports the bytes about 3 times a second.
+function Save-Url([string] $Url, [string] $OutFile) {
+  $req = [Net.HttpWebRequest]::Create($Url)
+  $req.UserAgent = 'LionOrganizer-Installer'
+  $req.AllowAutoRedirect = $true
+  $req.MaximumAutomaticRedirections = 10
+  $req.Timeout = 30000
+  $req.ReadWriteTimeout = 60000
+  $res = $req.GetResponse()
+  try {
+    $final = $res.ResponseUri.AbsoluteUri
+    if (-not $final.StartsWith('https://')) { Assert-SecureUrl $final }
+    $total = $res.ContentLength
+    $in = $res.GetResponseStream()
+    $out = [IO.File]::Create($OutFile)
+    try {
+      $buf = New-Object byte[] 262144
+      $done = [long] 0
+      $last = [Environment]::TickCount
+      while (($n = $in.Read($buf, 0, $buf.Length)) -gt 0) {
+        $out.Write($buf, 0, $n)
+        $done += $n
+        if ($total -gt 1048576 -and ([Environment]::TickCount - $last) -ge 300) { Send-Line "@@BYTES|$done|$total"; $last = [Environment]::TickCount }
+      }
+      if ($total -gt 1048576) { Send-Line "@@BYTES|$done|$total" }
+    } finally { $out.Dispose(); $in.Dispose() }
+  } finally { $res.Close() }
+}
+
 function Get-Download([string] $Url, [string] $OutFile) {
   Assert-SecureUrl $Url
   $attempt = 0
   while ($true) {
     try {
-      Invoke-WebRequest -Uri $Url -OutFile $OutFile -UseBasicParsing -MaximumRedirection 10 -Headers @{ 'User-Agent' = 'LionOrganizer-Installer' }
+      if ($AssembleTo) { Save-Url $Url $OutFile }
+      else { Invoke-WebRequest -Uri $Url -OutFile $OutFile -UseBasicParsing -MaximumRedirection 10 -Headers @{ 'User-Agent' = 'LionOrganizer-Installer' } }
       return
     } catch {
       $attempt++
@@ -120,13 +171,17 @@ function Expand-Zip([string] $Path, [string] $Destination) {
   [IO.Compression.ZipFile]::ExtractToDirectory($Path, $Destination)
 }
 
-function Assert-Checksum([string] $Path, [string] $SumsFile, [string] $Name) {
-  $expected = $null
+function Get-PublishedSum([string] $SumsFile, [string] $Name) {
   foreach ($line in Get-Content -LiteralPath $SumsFile) {
     $parts = $line.Trim() -split '\s+', 2
-    if ($parts.Count -eq 2 -and $parts[1].TrimStart('*') -eq $Name) { $expected = $parts[0].ToLowerInvariant(); break }
+    if ($parts.Count -eq 2 -and $parts[1].TrimStart('*') -eq $Name -and $parts[0] -match '^[0-9a-fA-F]{64}$') { return $parts[0].ToLowerInvariant() }
   }
-  if (-not $expected -or $expected -notmatch '^[0-9a-f]{64}$') { Stop-Install "No checksum published for $Name - refusing to install." }
+  return ''
+}
+
+function Assert-Checksum([string] $Path, [string] $SumsFile, [string] $Name) {
+  $expected = Get-PublishedSum $SumsFile $Name
+  if (-not $expected) { Stop-Install "No checksum published for $Name - refusing to install." }
   $actual = Get-Sha256 $Path
   if ($actual -ne $expected) {
     Stop-Install "Checksum mismatch for $Name (expected $expected, got $actual). The download may be corrupted or tampered with. Nothing was installed."
@@ -189,6 +244,56 @@ function Get-Locations {
     StartMenu = [Environment]::GetFolderPath('Programs')
     Desktop  = [Environment]::GetFolderPath('Desktop')
     RegKey   = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\$AppName"
+  }
+}
+
+# An installed copy whose Electron runtime can be reused: same Electron version and architecture.
+function Find-ReusableRuntime([string] $Dir, [string] $Electron, [string] $Arch) {
+  if (-not $Dir -or -not (Test-Path -LiteralPath (Join-Path $Dir $Marker))) { return '' }
+  $info = @{}
+  foreach ($line in Get-Content -LiteralPath (Join-Path $Dir $Marker)) { if ($line -match '^(\w+)=(.*)$') { $info[$Matches[1]] = $Matches[2].Trim() } }
+  if ($info['electron'] -ne $Electron) { return '' }
+  if ($info.ContainsKey('arch') -and $info['arch'] -ne $Arch) { return '' }
+  foreach ($need in "$AppName.exe", 'resources', 'locales', 'icudtl.dat') { if (-not (Test-Path -LiteralPath (Join-Path $Dir $need))) { return '' } }
+  return $Dir
+}
+
+# Copies the Electron runtime of an installed copy into the stage: everything except the app itself
+# (resources\app), the installer's own files and the uninstaller.
+# The wizard keeps a copy of itself for updates, and that copy cannot replace itself while it runs. When
+# the release's wizard differs from the running one, it is downloaded and verified to -NewSetupTo; the
+# wizard puts it in place at the end, so the next update already runs the new wizard. Optional: if it
+# fails, the current wizard simply stays.
+function Save-NewSetup([string] $Base, [string] $SumsFile, [string] $Tmp) {
+  if (-not $NewSetupTo -or -not $RunningSetup) { return }
+  $name = "$AppName-Setup.exe"
+  try {
+    Remove-Item -LiteralPath $NewSetupTo -Force -ErrorAction SilentlyContinue
+    $expected = Get-PublishedSum $SumsFile $name
+    if (-not $expected) { return }
+    if ((Test-Path -LiteralPath $RunningSetup) -and (Get-Sha256 $RunningSetup) -eq $expected) { return }
+    $file = Join-Path $Tmp $name
+    Get-Download "$Base/$name" $file
+    Assert-Checksum $file $SumsFile $name
+    Move-Item -LiteralPath $file -Destination $NewSetupTo -Force
+    Write-Ok 'Setup kept for updates refreshed'
+  } catch { Write-Note "Keeping the current setup for updates ($($_.Exception.Message))." }
+}
+
+function Copy-Runtime([string] $From, [string] $Stage) {
+  New-Item -ItemType Directory -Path $Stage -Force | Out-Null
+  foreach ($item in Get-ChildItem -LiteralPath $From -Force) {
+    if ($item.Name -match '^unins' -or $item.Name -in @('install.ps1', $Marker)) { continue }
+    if ($item.Name -eq 'resources') {
+      $res = Join-Path $Stage 'resources'
+      New-Item -ItemType Directory -Path $res -Force | Out-Null
+      foreach ($r in Get-ChildItem -LiteralPath $item.FullName -Force) {
+        if ($r.Name -in @('app', 'default_app.asar')) { continue }
+        Copy-Item -LiteralPath $r.FullName -Destination $res -Recurse -Force
+      }
+      continue
+    }
+    Copy-Item -LiteralPath $item.FullName -Destination $Stage -Recurse -Force
   }
 }
 
@@ -256,7 +361,7 @@ function Invoke-Install {
     Get-Download "$base/SHA256SUMS" $sums
     Assert-Checksum (Join-Path $tmp 'manifest.txt') $sums 'manifest.txt'
     Write-Ok "Release $($m.version) (Electron $($m.electron))"
-    if ($AssembleTo) { Write-Output "@@VERSION|$($m.version)" }
+    Send-Line "@@VERSION|$($m.version)"
 
     $current = if ($AssembleTo) { '' } else { Get-InstalledVersion $loc.Dir }
     if ($current -and $current -eq $m.version -and -not $Force) { Write-Ok "$AppName $($m.version) is already installed and up to date."; return }
@@ -281,31 +386,48 @@ function Invoke-Install {
     Get-Download "$base/install.ps1" $setup                  # kept next to the app for updates/uninstall
     Assert-Checksum $setup $sums 'install.ps1'
 
-    $ezip = "electron-v$($m.electron)-win32-$arch.zip"
-    Write-Stage 3 "Downloading the Electron $($m.electron) runtime (win32-$arch)"
-    $esums = Join-Path $tmp 'ELECTRON-SHASUMS256.txt'
-    Get-Download "$ElectronMirror/v$($m.electron)/SHASUMS256.txt" $esums
-    Get-Download "$ElectronMirror/v$($m.electron)/$ezip" (Join-Path $tmp $ezip)
-    Assert-Checksum (Join-Path $tmp $ezip) $esums $ezip
-
-    Write-Stage 4 'Assembling the application'
     $stage = Join-Path $tmp 'stage'
-    Expand-Zip (Join-Path $tmp $ezip) $stage
+    # An update keeps the same Electron most of the time: reuse the installed runtime instead of
+    # downloading about 110 MB again. It was verified against Electron's checksums when it was installed.
+    $reuseDir = if ($ReuseFrom) { $ReuseFrom } elseif (-not $AssembleTo) { $loc.Dir } else { '' }
+    $reuse = if ($Force) { '' } else { Find-ReusableRuntime $reuseDir $m.electron $arch }
+    if ($reuse) {
+      Send-Line '@@REUSE'
+      Write-Stage 3 "Reusing the installed Electron $($m.electron) runtime"
+      Copy-Runtime $reuse $stage
+      Write-Ok "Electron $($m.electron) already installed: nothing to download"
+      Write-Stage 4 'Assembling the application'
+    } else {
+      $ezip = "electron-v$($m.electron)-win32-$arch.zip"
+      Write-Stage 3 "Downloading the Electron $($m.electron) runtime (win32-$arch)"
+      $esums = Join-Path $tmp 'ELECTRON-SHASUMS256.txt'
+      Get-Download "$ElectronMirror/v$($m.electron)/SHASUMS256.txt" $esums
+      Get-Download "$ElectronMirror/v$($m.electron)/$ezip" (Join-Path $tmp $ezip)
+      Assert-Checksum (Join-Path $tmp $ezip) $esums $ezip
+      Write-Stage 4 'Assembling the application'
+      Expand-Zip (Join-Path $tmp $ezip) $stage
+    }
     Expand-Zip $srcZip (Join-Path $tmp 'src')
     $srcRoot = @(Get-ChildItem -LiteralPath (Join-Path $tmp 'src') -Directory)[0].FullName
     if (-not (Test-Path (Join-Path $srcRoot 'package.json')) -or -not (Test-Path (Join-Path $srcRoot 'src'))) { Stop-Install 'Unexpected source bundle layout.' }
     Remove-Item -LiteralPath (Join-Path $stage 'resources\default_app.asar') -Force -ErrorAction SilentlyContinue
     Move-Item -LiteralPath $srcRoot -Destination (Join-Path $stage 'resources\app')
     $exe = Join-Path $stage "$AppName.exe"
-    Move-Item -LiteralPath (Join-Path $stage 'electron.exe') -Destination $exe
+    if (Test-Path -LiteralPath (Join-Path $stage 'electron.exe')) { Move-Item -LiteralPath (Join-Path $stage 'electron.exe') -Destination $exe -Force }
     Copy-Item -LiteralPath $setup -Destination (Join-Path $stage 'install.ps1')
-    Set-Content -LiteralPath (Join-Path $stage $Marker) -Encoding ASCII -Value @("version=$($m.version)", "electron=$($m.electron)", "scope=$Scope", "installed=$((Get-Date).ToUniversalTime().ToString('s'))Z")
+    Set-Content -LiteralPath (Join-Path $stage $Marker) -Encoding ASCII -Value @("version=$($m.version)", "electron=$($m.electron)", "arch=$arch", "scope=$Scope", "installed=$((Get-Date).ToUniversalTime().ToString('s'))Z")
 
     # Icon and version info of the executable (optional: skipped if rcedit cannot be verified)
     try {
+      # kept between updates next to the installer copy (checked again by SHA-256 every time)
+      $rceditCache = if ($AssembleTo -and $env:LOCALAPPDATA) { Join-Path $env:LOCALAPPDATA 'LionOrganizer-Installer\rcedit-x64.exe' } else { '' }
       $rcedit = Join-Path $tmp 'rcedit-x64.exe'
-      Get-Download $RceditUrl $rcedit
+      if ($rceditCache -and (Test-Path -LiteralPath $rceditCache) -and (Get-Sha256 $rceditCache) -eq $RceditSha256) { Copy-Item -LiteralPath $rceditCache -Destination $rcedit }
+      else { Get-Download $RceditUrl $rcedit }
       if ((Get-Sha256 $rcedit) -ne $RceditSha256) { throw 'rcedit checksum mismatch' }
+      if ($rceditCache -and -not (Test-Path -LiteralPath $rceditCache)) {
+        try { New-Item -ItemType Directory -Path (Split-Path $rceditCache -Parent) -Force | Out-Null; Copy-Item -LiteralPath $rcedit -Destination $rceditCache } catch { Write-Verbose 'rcedit not cached' }
+      }
       $ico = Join-Path $stage 'resources\app\build\icon.ico'
       & $rcedit $exe --set-icon $ico --set-file-version $m.version --set-product-version $m.version `
         --set-version-string ProductName $AppName --set-version-string FileDescription $AppName `
@@ -324,7 +446,8 @@ function Invoke-Install {
       if ($parent -and -not (Test-Path -LiteralPath $parent)) { New-Item -ItemType Directory -Path $parent | Out-Null }
       Move-Item -LiteralPath $stage -Destination $AssembleTo
       Write-Ok "Assembled in $AssembleTo"
-      Write-Output '@@DONE'
+      Save-NewSetup $base $sums $tmp
+      Send-Line '@@DONE'
       return
     }
 
@@ -368,10 +491,13 @@ function Invoke-Install {
 # Dot-sourcing (". .\install.ps1") only loads the functions - used by the test suite.
 if ($MyInvocation.InvocationName -ne '.') {
   if ($AssembleTo) {
+    $code = 0
     try { Invoke-Install }
     catch {
-      Write-Output ('@@ERROR|' + ($_.Exception.Message -replace '^LionOrganizer installer: ', '' -replace '[\r\n]+', ' '))
-      exit 1
+      Send-Line ('@@ERROR|' + ($_.Exception.Message -replace '^LionOrganizer installer: ', '' -replace '[\r\n]+', ' '))
+      $code = 1
     }
+    Send-Line "@@EXIT|$code"
+    exit $code
   } elseif ($Uninstall) { Invoke-Uninstall } else { Invoke-Install }
 }

@@ -617,7 +617,7 @@
   "update.dialog.errorText": "인터넷 연결을 확인한 뒤 다시 시도하세요.",
   "update.dialog.checkAgain": "다시 확인",
   "update.dialog.autoCheck": "새 버전 자동 확인",
-  "update.dialog.privacy": "확인할 때는 GitHub에 게시된 버전에서 작은 파일 하나만 읽습니다. 사용자나 파일에 관한 데이터는 전송되지 않습니다.",
+  "update.dialog.privacy": "확인할 때는 GitHub에 게시된 버전에서 작은 파일 하나만 읽습니다. 새 버전이 있으면 업데이트에 쓰는 설치 프로그램을 미리 내려받을 수 있습니다(약 2MB, 검증됨). 사용자나 파일에 관한 데이터는 전송되지 않습니다.",
   "update.dialog.closing": "업데이트를 위해 LionOrganizer를 닫는 중…",
   "update.failed": "업데이트를 시작하지 못했습니다: {error}",
   "update.downloadOpened": "브라우저에서 다운로드 페이지를 열었습니다.",

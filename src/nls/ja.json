@@ -617,7 +617,7 @@
   "update.dialog.errorText": "インターネット接続を確認して、もう一度お試しください。",
   "update.dialog.checkAgain": "もう一度確認",
   "update.dialog.autoCheck": "新しいバージョンを自動的に確認する",
-  "update.dialog.privacy": "確認では、GitHub で公開されているバージョンから小さなファイルを 1 つ読み込むだけです。あなたやファイルに関するデータは送信されません。",
+  "update.dialog.privacy": "確認では、GitHub で公開されているバージョンから小さなファイルを 1 つ読み込むだけです。新しいバージョンがある場合は、更新に使うインストーラーを事前にダウンロードすることがあります (約 2 MB、検証済み)。あなたやファイルに関するデータは送信されません。",
   "update.dialog.closing": "更新のため LionOrganizer を閉じています…",
   "update.failed": "更新を開始できませんでした: {error}",
   "update.downloadOpened": "ダウンロード ページをブラウザーで開きました。",
