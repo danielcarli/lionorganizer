@@ -1,0 +1,91 @@
+# LionOrganizer — continuous integration.
+# Runs on every push and pull request, and is reused by release.yml before anything is published.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint installers
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: shellcheck install.sh
+        run: shellcheck -s bash -S warning scripts/install.sh
+      - name: PSScriptAnalyzer install.ps1
+        shell: pwsh
+        run: |
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
+          $issues = Invoke-ScriptAnalyzer -Path scripts/install.ps1 -Severity Warning,Error `
+            -ExcludeRule PSAvoidUsingWriteHost,PSUseShouldProcessForStateChangingFunctions,PSUseSingularNouns,PSReviewUnusedParameter
+          $issues | Format-Table -AutoSize
+          if ($issues) { exit 1 }
+      - name: install.ps1 is ASCII (Windows PowerShell 5.1 reads BOM-less files as ANSI)
+        run: "! LC_ALL=C grep -nP '[^\\x00-\\x7F]' scripts/install.ps1 scripts/install.cmd"
+
+  test:
+    name: Tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Allow Chromium's sandbox on Ubuntu 24.04 runners
+        run: |
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          sudo apt-get update -qq && sudo apt-get install -y -qq xvfb >/dev/null
+      - name: Translations
+        run: npm run test:i18n
+      - name: End-to-end (light and dark)
+        run: |
+          for theme in light dark; do
+            E2E_FOLDER="$RUNNER_TEMP/e2e-$theme" E2E_OUT="$RUNNER_TEMP/e2e-out" E2E_THEME="$theme" \
+              xvfb-run -a npx electron tools/e2e.js
+          done
+      - name: Release assets are reproducible
+        run: |
+          node tools/make-release.js --out "$RUNNER_TEMP/r1"
+          node tools/make-release.js --out "$RUNNER_TEMP/r2"
+          diff "$RUNNER_TEMP/r1/SHA256SUMS" "$RUNNER_TEMP/r2/SHA256SUMS"
+      - name: Installer end to end (local release, per-user install)
+        run: |
+          set -euo pipefail
+          v="$(node -p "require('./package.json').version")"
+          mkdir -p "$RUNNER_TEMP/srv/releases/latest/download" "$RUNNER_TEMP/srv/releases/download/v$v"
+          cp "$RUNNER_TEMP"/r1/* "$RUNNER_TEMP/srv/releases/latest/download/"
+          cp "$RUNNER_TEMP"/r1/* "$RUNNER_TEMP/srv/releases/download/v$v/"
+          python3 -m http.server 8765 --bind 127.0.0.1 --directory "$RUNNER_TEMP/srv" >/dev/null 2>&1 &
+          server=$!
+          trap 'kill "$server"' EXIT
+          sleep 1
+          export LIONORGANIZER_ALLOW_INSECURE_FOR_TESTS=1 LIONORGANIZER_RELEASES_URL=http://127.0.0.1:8765/releases
+          bash scripts/install.sh --user --yes --no-deps
+          test -x "$HOME/.local/share/lionorganizer/lionorganizer"
+          test -f "$HOME/.local/share/lionorganizer/resources/app/package.json"
+          test -f "$HOME/.local/share/applications/lionorganizer.desktop"
+          app="$HOME/.local/share/lionorganizer/lionorganizer"
+          xvfb-run -a "$HOME/.local/bin/lionorganizer" --disable-gpu >/dev/null 2>&1 &
+          sleep 10
+          pgrep -f "$app" >/dev/null || { echo "the installed app did not start"; exit 1; }
+          pkill -f "$app" || true
+          sleep 2
+          printf 'x' >> "$RUNNER_TEMP/srv/releases/download/v$v/lionorganizer-$v.tar.gz"
+          if bash scripts/install.sh --user --yes --no-deps --force; then echo "tampered bundle was accepted"; exit 1; fi
+          bash scripts/install.sh --uninstall --purge --yes
+          test ! -e "$HOME/.local/share/lionorganizer"

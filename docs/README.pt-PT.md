@@ -4,16 +4,16 @@
 
 # LionOrganizer
 
-**Análise e limpeza de espaço em disco para Windows.**<br>
+**Análise e limpeza de espaço em disco para Windows, macOS e Linux.**<br>
 Veja o que ocupa espaço nas suas pastas, encontre duplicados verdadeiros pelo conteúdo e liberte em segurança aquilo de que já não precisa.
 
 <sub>pela <b>LionOrganizer Team</b> · criado e idealizado por <b>Daniel Michelon De Carli</b></sub>
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · **Português (Portugal)** · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.0.0](https://img.shields.io/badge/version-1.0.0-161214)
+![Version 1.0.1](https://img.shields.io/badge/version-1.0.1-161214)
 ![Licença: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
-![Plataforma: Windows](https://img.shields.io/badge/platform-Windows-161214)
+![Plataforma: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
 ![Idiomas: 10](https://img.shields.io/badge/UI%20languages-10-0a8bb5)
 
@@ -68,6 +68,24 @@ As restantes capturas de ecrã mostram a interface em inglês.
 <img src="screenshots/languages.png" alt="A interface em dez idiomas" width="900">
 <br><sub>O mesmo ecrã nos dez idiomas suportados.</sub>
 </div>
+
+## Instalação
+
+O instalador é um pequeno script que transfere a versão mais recente do GitHub, verifica cada ficheiro (SHA-256 e proveniência assinada do build) e instala o LionOrganizer da mesma forma que o VS Code é instalado em cada sistema. Execute-o novamente a qualquer momento para atualizar.
+
+**Windows** — no PowerShell (não precisa de ser administrador):
+
+```powershell
+irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
+```
+
+**macOS e Linux** (Debian/Ubuntu, Fedora/RHEL, openSUSE, Arch e derivadas):
+
+```bash
+curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
+```
+
+Consulte **[INSTALL.md](INSTALL.md)** (em inglês) para opções, como verificar o script antes de o executar, o modelo de segurança e como desinstalar.
 
 ## Introdução
 

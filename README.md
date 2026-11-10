@@ -4,16 +4,16 @@
 
 # LionOrganizer
 
-**Disk space analysis & cleanup for Windows.**<br>
+**Disk space analysis & cleanup for Windows, macOS and Linux.**<br>
 See what takes up space in your folders, find true duplicates by content and safely free up what you no longer need.
 
 <sub>by the <b>LionOrganizer Team</b> · created and conceived by <b>Daniel Michelon De Carli</b></sub>
 
 **English** · [Português (Brasil)](docs/README.pt-BR.md) · [Português (Portugal)](docs/README.pt-PT.md) · [Español](docs/README.es.md) · [Français](docs/README.fr.md) · [Deutsch](docs/README.de.md) · [Italiano](docs/README.it.md) · [简体中文](docs/README.zh-CN.md) · [日本語](docs/README.ja.md) · [한국어](docs/README.ko.md)
 
-![Version 1.0.0](https://img.shields.io/badge/version-1.0.0-161214)
+![Version 1.0.1](https://img.shields.io/badge/version-1.0.1-161214)
 ![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
-![Platform: Windows](https://img.shields.io/badge/platform-Windows-161214)
+![Platforms: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
 ![Languages: 10](https://img.shields.io/badge/UI%20languages-10-0a8bb5)
 
@@ -66,6 +66,27 @@ Deleting the wrong file is worse than a full disk, so LionOrganizer is deliberat
 <img src="docs/screenshots/languages.png" alt="The interface in ten languages" width="900">
 <br><sub>The same screen in the ten supported languages.</sub>
 </div>
+
+## Install
+
+The installer is a small script that downloads the latest release from GitHub, checks every file
+(SHA-256 and signed build provenance) and installs LionOrganizer the way VS Code is installed on each system.
+Run it again at any time to update.
+
+**Windows** — in PowerShell (no administrator needed):
+
+```powershell
+irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
+```
+
+**macOS and Linux** (Debian/Ubuntu, Fedora/RHEL, openSUSE, Arch and derivatives):
+
+```bash
+curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
+```
+
+See **[docs/INSTALL.md](docs/INSTALL.md)** for options (all users, a specific version), how to check the
+script before running it, how it stays safe, and how to uninstall.
 
 ## Getting started
 
@@ -157,6 +178,7 @@ Security: `contextIsolation` and `sandbox` on, no `nodeIntegration`, a strict Co
 | `npm run dist` | Build the Windows installer and portable app |
 | `npm run test:e2e` | End-to-end test: analyzes a **disposable** folder and exercises duplicates, deletion, organize, rename, undo and the catalog, checking the results on disk |
 | `npm run docs:screenshots` | Regenerate the screenshots in `docs/screenshots` |
+| `npm run release:assets` | Build the release assets used by the installers in `dist-release/` (published automatically when a `v*` tag is pushed) |
 
 ```powershell
 # the end-to-end test changes files: always point it to a throwaway folder
@@ -165,7 +187,7 @@ $env:E2E_FOLDER="C:\temp\lion-test"; $env:E2E_OUT="C:\temp\lion-out"; npm run te
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) — current version: **1.0.0**.
+See [CHANGELOG.md](CHANGELOG.md) — current version: **1.0.1**.
 
 ## Contributing
 

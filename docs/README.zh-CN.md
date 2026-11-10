@@ -4,16 +4,16 @@
 
 # LionOrganizer
 
-**适用于 Windows 的磁盘空间分析与清理工具。**<br>
+**适用于 Windows、macOS 和 Linux 的磁盘空间分析与清理工具。**<br>
 查看文件夹中是什么占用了空间，按内容找出真正的重复文件，并安全地释放不再需要的空间。
 
 <sub>由 <b>LionOrganizer Team</b> 开发 · 由 <b>Daniel Michelon De Carli</b> 创建和构思</sub>
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · **简体中文** · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.0.0](https://img.shields.io/badge/version-1.0.0-161214)
+![Version 1.0.1](https://img.shields.io/badge/version-1.0.1-161214)
 ![许可证：GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
-![平台：Windows](https://img.shields.io/badge/platform-Windows-161214)
+![平台：Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
 ![界面语言：10 种](https://img.shields.io/badge/UI%20languages-10-0a8bb5)
 
@@ -68,6 +68,24 @@
 <img src="screenshots/languages.png" alt="十种语言的界面" width="900">
 <br><sub>同一界面在十种受支持语言中的显示效果。</sub>
 </div>
+
+## 安装
+
+安装程序是一个小脚本：它从 GitHub 下载最新版本，校验每个文件（SHA-256 和签名的构建来源证明），并按照 VS Code 在各系统上的安装方式安装 LionOrganizer。随时再次运行即可更新。
+
+**Windows** — 在 PowerShell 中运行（无需管理员权限）：
+
+```powershell
+irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
+```
+
+**macOS 和 Linux**（Debian/Ubuntu、Fedora/RHEL、openSUSE、Arch 及其衍生版）：
+
+```bash
+curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
+```
+
+选项、运行前如何检查脚本、安全模型以及卸载方法，请参阅 **[INSTALL.md](INSTALL.md)**（英文）。
 
 ## 快速上手
 

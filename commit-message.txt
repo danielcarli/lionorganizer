@@ -1,0 +1,39 @@
+feat: release LionOrganizer 1.0.0
+
+First public release of LionOrganizer, a free and open-source disk space
+analyzer and organizer for Windows. Created and conceived by Daniel
+Michelon De Carli; maintained by the LionOrganizer Team.
+
+Analyze
+- Folder scan with configurable depth (3 levels by default, up to 50 or
+  unlimited), folder tree, breadcrumbs and a sortable file table with
+  CSV export
+- Charts: space by file type, biggest subfolders (treemap), 100-dot
+  matrix, largest extensions and file age
+
+Clean up safely
+- Cleanup suggestions: SketchUp/Revit/AutoCAD backups, temp files, logs,
+  unfinished downloads, installers, large old files
+- Typed confirmation code, generated and verified by the main process,
+  before every deletion, organize, rename, undo and catalog clear
+- Deleted files go to the Recycle Bin
+
+Duplicates, organize and catalog
+- True duplicate detection by SHA-256 (size, then first/last 64 KB,
+  then full file), with hashes cached in the catalog
+- Organize loose files by type and batch rename with {name}, {date},
+  {n} and {folder} patterns, both undoable
+- Local SQLite catalog: search across analyzed folders, scan history
+  and comparison, recent operations log
+
+Interface
+- 10 languages (en, pt-BR, pt-PT, es, fr, de, it, zh-CN, ja, ko) with
+  locale-aware numbers, dates and size units
+- Light, dark and automatic themes; VS Code-inspired architecture
+- About dialog with credits and license
+
+Project
+- Source code, comments and documentation in English
+- README in 10 languages, CONTRIBUTING guide, CHANGELOG, screenshots
+- End-to-end test, i18n checker and screenshot generator in tools/
+- Licensed under GPL-3.0-or-later

@@ -76,7 +76,8 @@ app.on('browser-window-created', (_e, win) => {
       await click('.activity-bottom .activity-item:last-child');
       check(await until(`!!document.querySelector('.about-dialog')`), 'About dialog opened');
       const about = await js(`document.querySelector('.about-dialog').textContent`);
-      check(/Daniel Michelon De Carli/.test(about) && /LionOrganizer Team/.test(about) && /1\.0\.0/.test(about), 'About shows the creator, the team and version 1.0.0');
+      const version = require('../package.json').version;
+      check(/Daniel Michelon De Carli/.test(about) && /LionOrganizer Team/.test(about) && about.includes(version), `About shows the creator, the team and version ${version}`);
       await shot('05-about');
       await click('.about-dialog .btn-primary');
 

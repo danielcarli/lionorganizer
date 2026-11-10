@@ -4,16 +4,16 @@
 
 # LionOrganizer
 
-**Analyse et nettoyage de l’espace disque pour Windows.**<br>
+**Analyse et nettoyage de l’espace disque pour Windows, macOS et Linux.**<br>
 Voyez ce qui occupe de l’espace dans vos dossiers, trouvez les vrais doublons par leur contenu et libérez en toute sécurité ce dont vous n’avez plus besoin.
 
 <sub>par la <b>LionOrganizer Team</b> · créé et conçu par <b>Daniel Michelon De Carli</b></sub>
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · **Français** · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.0.0](https://img.shields.io/badge/version-1.0.0-161214)
+![Version 1.0.1](https://img.shields.io/badge/version-1.0.1-161214)
 ![Licence : GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
-![Plateforme : Windows](https://img.shields.io/badge/platform-Windows-161214)
+![Plateforme : Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
 ![Langues : 10](https://img.shields.io/badge/UI%20languages-10-0a8bb5)
 
@@ -68,6 +68,24 @@ Supprimer le mauvais fichier est pire qu’un disque plein ; LionOrganizer est
 <img src="screenshots/languages.png" alt="L’interface en dix langues" width="900">
 <br><sub>Le même écran dans les dix langues prises en charge.</sub>
 </div>
+
+## Installation
+
+L'installateur est un petit script qui télécharge la dernière version depuis GitHub, vérifie chaque fichier (SHA-256 et provenance signée du build) et installe LionOrganizer comme VS Code s'installe sur chaque système. Relancez-le à tout moment pour mettre à jour.
+
+**Windows** — dans PowerShell (pas besoin des droits administrateur) :
+
+```powershell
+irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
+```
+
+**macOS et Linux** (Debian/Ubuntu, Fedora/RHEL, openSUSE, Arch et dérivées) :
+
+```bash
+curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
+```
+
+Voir **[INSTALL.md](INSTALL.md)** (en anglais) pour les options, comment vérifier le script avant de l'exécuter, le modèle de sécurité et la désinstallation.
 
 ## Premiers pas
 

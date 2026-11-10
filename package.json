@@ -1,14 +1,20 @@
 {
   "name": "lionorganizer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "LionOrganizer — disk space analysis & cleanup. See what takes up space in your folders, find true duplicates by content and safely free up what you no longer need.",
   "main": "src/code/electron-main/main.js",
+  "desktopName": "lionorganizer.desktop",
   "scripts": {
     "start": "electron .",
-    "dist": "npx --yes electron-builder@26 --win nsis portable",
+    "dist": "npx --yes electron-builder@26.18.0 --publish never",
+    "dist:win": "npx --yes electron-builder@26.18.0 --win --publish never",
+    "dist:mac": "npx --yes electron-builder@26.18.0 --mac --publish never",
+    "dist:linux": "npx --yes electron-builder@26.18.0 --linux --publish never",
     "test:e2e": "electron tools/e2e.js",
+    "test:i18n": "node tools/check-i18n.js",
     "shots": "electron tools/screenshot.js",
-    "docs:screenshots": "electron tools/docs-screenshots.js"
+    "docs:screenshots": "electron tools/docs-screenshots.js",
+    "release:assets": "node tools/make-release.js"
   },
   "author": "LionOrganizer Team",
   "license": "GPL-3.0-or-later",
@@ -19,6 +25,7 @@
   "build": {
     "appId": "br.dmdc.lionorganizer",
     "productName": "LionOrganizer",
+    "copyright": "Copyright © 2026 LionOrganizer Team",
     "directories": {
       "buildResources": "build",
       "output": "dist"
@@ -27,13 +34,28 @@
       "src/**/*",
       "package.json"
     ],
+    "asar": true,
+    "publish": null,
     "win": {
       "target": [
-        "nsis",
-        "portable"
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ],
       "icon": "build/icon.ico",
-      "legalTrademarks": "LionOrganizer"
+      "legalTrademarks": "LionOrganizer",
+      "artifactName": "LionOrganizer-${version}-win-${arch}.${ext}"
     },
     "nsis": {
       "oneClick": false,
@@ -54,12 +76,74 @@
         "ja_JP",
         "ko_KR"
       ],
-      "license": "LICENSE"
+      "license": "LICENSE",
+      "perMachine": false,
+      "allowElevation": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "deleteAppDataOnUninstall": false,
+      "artifactName": "LionOrganizer-Setup-${version}-${arch}.${ext}"
     },
-    "portable": {
-      "artifactName": "LionOrganizer-${version}-portatil.exe"
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "category": "public.app-category.utilities",
+      "icon": "build/icon.png",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "artifactName": "LionOrganizer-${version}-mac-${arch}.${ext}"
     },
-    "copyright": "Copyright © 2026 LionOrganizer Team"
+    "dmg": {
+      "title": "LionOrganizer ${version}"
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "rpm",
+        "AppImage",
+        "tar.gz"
+      ],
+      "category": "Utility",
+      "icon": "build/icons",
+      "executableName": "lionorganizer",
+      "synopsis": "Disk space analysis & cleanup",
+      "description": "See what takes up space in your folders, find true duplicates by content (SHA-256) and safely free up what you no longer need. Every file change requires a typed confirmation code.",
+      "vendor": "LionOrganizer Team",
+      "maintainer": "LionOrganizer Team <danielcarli@users.noreply.github.com>",
+      "desktop": {
+        "entry": {
+          "Name": "LionOrganizer",
+          "GenericName": "Disk Space Analyzer",
+          "Comment": "Disk space analysis & cleanup",
+          "Keywords": "disk;space;usage;duplicates;cleanup;organize;",
+          "StartupWMClass": "LionOrganizer"
+        }
+      },
+      "artifactName": "LionOrganizer-${version}-linux-${arch}.${ext}"
+    },
+    "deb": {
+      "artifactName": "lionorganizer_${version}_${arch}.${ext}"
+    },
+    "rpm": {
+      "artifactName": "lionorganizer-${version}.${arch}.${ext}"
+    },
+    "appImage": {
+      "artifactName": "LionOrganizer-${version}-${arch}.${ext}"
+    }
   },
   "keywords": [
     "disk-space",
@@ -72,5 +156,13 @@
   ],
   "contributors": [
     "Daniel Michelon De Carli (creator)"
-  ]
+  ],
+  "homepage": "https://github.com/danielcarli/lionorganizer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danielcarli/lionorganizer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/danielcarli/lionorganizer/issues"
+  }
 }

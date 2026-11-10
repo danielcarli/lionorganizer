@@ -4,16 +4,16 @@
 
 # LionOrganizer
 
-**Windows 向けのディスク容量の分析とクリーンアップ。**<br>
+**Windows・macOS・Linux 向けのディスク容量の分析とクリーンアップ。**<br>
 フォルダーの容量を何が使っているかを確認し、内容に基づいて本当の重複ファイルを見つけ、不要になったものを安全に片付けて空き容量を増やせます。
 
 <sub>開発：<b>LionOrganizer Team</b> · 制作・考案：<b>Daniel Michelon De Carli</b></sub>
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · **日本語** · [한국어](README.ko.md)
 
-![Version 1.0.0](https://img.shields.io/badge/version-1.0.0-161214)
+![Version 1.0.1](https://img.shields.io/badge/version-1.0.1-161214)
 ![ライセンス：GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
-![プラットフォーム：Windows](https://img.shields.io/badge/platform-Windows-161214)
+![プラットフォーム：Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
 ![UI 言語：10](https://img.shields.io/badge/UI%20languages-10-0a8bb5)
 
@@ -68,6 +68,24 @@
 <img src="screenshots/languages.png" alt="10 言語で表示したインターフェイス" width="900">
 <br><sub>同じ画面を、サポートされている 10 言語で表示したもの。</sub>
 </div>
+
+## インストール
+
+インストーラーは小さなスクリプトです。GitHub から最新リリースをダウンロードし、すべてのファイルを検証（SHA-256 と署名付きビルド来歴）して、各 OS での VS Code と同じ方法で LionOrganizer をインストールします。もう一度実行すればいつでも更新できます。
+
+**Windows** — PowerShell で実行（管理者権限は不要）：
+
+```powershell
+irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
+```
+
+**macOS と Linux**（Debian/Ubuntu、Fedora/RHEL、openSUSE、Arch とその派生）：
+
+```bash
+curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
+```
+
+オプション、実行前にスクリプトを確認する方法、セキュリティモデル、アンインストールについては **[INSTALL.md](INSTALL.md)**（英語）を参照してください。
 
 ## はじめに
 

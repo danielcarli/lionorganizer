@@ -4,16 +4,16 @@
 
 # LionOrganizer
 
-**Windows용 디스크 공간 분석 및 청소 도구.**<br>
+**Windows, macOS, Linux용 디스크 공간 분석 및 청소 도구.**<br>
 폴더에서 무엇이 공간을 차지하는지 확인하고, 내용을 기준으로 진짜 중복 파일을 찾아 더 이상 필요 없는 항목을 안전하게 정리하세요.
 
 <sub>개발: <b>LionOrganizer Team</b> · 제작 및 기획: <b>Daniel Michelon De Carli</b></sub>
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · **한국어**
 
-![Version 1.0.0](https://img.shields.io/badge/version-1.0.0-161214)
+![Version 1.0.1](https://img.shields.io/badge/version-1.0.1-161214)
 ![라이선스: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
-![플랫폼: Windows](https://img.shields.io/badge/platform-Windows-161214)
+![플랫폼: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
 ![UI 언어: 10개](https://img.shields.io/badge/UI%20languages-10-0a8bb5)
 
@@ -68,6 +68,24 @@
 <img src="screenshots/languages.png" alt="10개 언어로 표시한 인터페이스" width="900">
 <br><sub>지원되는 10개 언어로 표시한 같은 화면입니다.</sub>
 </div>
+
+## 설치
+
+설치 프로그램은 작은 스크립트입니다. GitHub에서 최신 릴리스를 내려받아 모든 파일을 검증(SHA-256 및 서명된 빌드 출처)하고, 각 운영체제에서 VS Code가 설치되는 방식대로 LionOrganizer를 설치합니다. 언제든 다시 실행하면 업데이트됩니다.
+
+**Windows** — PowerShell에서 실행(관리자 권한 불필요):
+
+```powershell
+irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
+```
+
+**macOS 및 Linux** (Debian/Ubuntu, Fedora/RHEL, openSUSE, Arch 및 파생 배포판):
+
+```bash
+curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
+```
+
+옵션, 실행 전 스크립트 확인 방법, 보안 모델, 제거 방법은 **[INSTALL.md](INSTALL.md)**(영어)를 참고하세요.
 
 ## 시작하기
 

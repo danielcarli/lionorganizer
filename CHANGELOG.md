@@ -2,6 +2,21 @@
 
 All notable changes to LionOrganizer are documented here. The project follows [Semantic Versioning](https://semver.org).
 
+## [1.0.1] — 2026-11-09
+
+### Install
+- New lightweight installers that download the latest release from GitHub and install it the way VS Code is installed on each system:
+  - **Windows:** `install.ps1` (or double-click `install.cmd`) — per-user install in `%LOCALAPPDATA%\Programs` by default, or for all users in `%ProgramFiles%`; Start menu and desktop shortcuts; entry in Settings › Apps.
+  - **macOS:** `install.sh` — `/Applications/LionOrganizer.app` (or `~/Applications`), ad-hoc signed for Apple Silicon.
+  - **Linux:** `install.sh` — `~/.local/share` per user or `/opt` for all users, `lionorganizer` command, menu entry and icons; installs missing libraries with apt, dnf/yum, zypper or pacman.
+- Every download is checked: HTTPS only, SHA-256 for the release files, Electron's own checksums for the runtime, and optional verification of the signed build provenance with the GitHub CLI.
+- Updates replace the app atomically and keep your settings and catalog. Run the installer again to update; `--uninstall` / `-Uninstall` removes it.
+
+### Project
+- GitHub Actions: CI (installer linting, translations, end-to-end tests in light and dark themes, an installer end-to-end test) and automatic releases with build-provenance attestations when a `v*` tag is pushed.
+- `npm run release:assets` builds reproducible release assets (the app bundle is under 1 MB).
+- Linux: `desktopName` set so the window is matched with its menu entry.
+
 ## [1.0.0] — 2026-11-09
 
 First public release. Created and conceived by Daniel Michelon De Carli · LionOrganizer Team.

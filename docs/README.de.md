@@ -4,16 +4,16 @@
 
 # LionOrganizer
 
-**Speicherplatz analysieren und aufräumen unter Windows.**<br>
+**Speicherplatz analysieren und aufräumen unter Windows, macOS und Linux.**<br>
 Sehen, was in den Ordnern Platz belegt, echte Duplikate anhand ihres Inhalts finden und sicher freigeben, was nicht mehr gebraucht wird.
 
 <sub>vom <b>LionOrganizer Team</b> · erdacht und entwickelt von <b>Daniel Michelon De Carli</b></sub>
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · **Deutsch** · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.0.0](https://img.shields.io/badge/version-1.0.0-161214)
+![Version 1.0.1](https://img.shields.io/badge/version-1.0.1-161214)
 ![Lizenz: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
-![Plattform: Windows](https://img.shields.io/badge/platform-Windows-161214)
+![Plattform: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
 ![Sprachen: 10](https://img.shields.io/badge/UI%20languages-10-0a8bb5)
 
@@ -68,6 +68,24 @@ Die falsche Datei zu löschen ist schlimmer als ein voller Datenträger, deshalb
 <img src="screenshots/languages.png" alt="Die Oberfläche in zehn Sprachen" width="900">
 <br><sub>Derselbe Bildschirm in den zehn unterstützten Sprachen.</sub>
 </div>
+
+## Installation
+
+Der Installer ist ein kleines Skript: Es lädt die neueste Version von GitHub, prüft jede Datei (SHA-256 und signierte Build-Herkunft) und installiert LionOrganizer so, wie VS Code auf dem jeweiligen System installiert wird. Zum Aktualisieren einfach erneut ausführen.
+
+**Windows** — in PowerShell (keine Administratorrechte nötig):
+
+```powershell
+irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
+```
+
+**macOS und Linux** (Debian/Ubuntu, Fedora/RHEL, openSUSE, Arch und Derivate):
+
+```bash
+curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
+```
+
+Optionen, Prüfung des Skripts vor dem Ausführen, Sicherheitsmodell und Deinstallation: siehe **[INSTALL.md](INSTALL.md)** (auf Englisch).
 
 ## Erste Schritte
 
