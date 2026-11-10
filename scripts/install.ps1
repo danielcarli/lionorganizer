@@ -46,6 +46,15 @@ param(
 )
 
 Set-StrictMode -Version 3.0
+# Started from PowerShell 7 (e.g. a setup launched from a pwsh terminal), Windows PowerShell 5.1 inherits
+# PowerShell 7's module folders and then cannot load its own modules. Use the standard 5.1 folders.
+if ($PSVersionTable.PSEdition -eq 'Desktop') {
+  $env:PSModulePath = @(
+    (Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'WindowsPowerShell\Modules'),
+    (Join-Path $env:ProgramFiles 'WindowsPowerShell\Modules'),
+    (Join-Path $PSHOME 'Modules')
+  ) -join ';'
+}
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'   # Invoke-WebRequest is much faster without the progress bar
 try { [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12 }
@@ -97,7 +106,19 @@ function Get-Download([string] $Url, [string] $OutFile) {
   }
 }
 
-function Get-Sha256([string] $Path) { (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant() }
+# Hashing and unzipping use .NET directly, so they work without any PowerShell module.
+function Get-Sha256([string] $Path) {
+  $stream = [IO.File]::OpenRead($Path)
+  $sha = [Security.Cryptography.SHA256]::Create()
+  try { -join ($sha.ComputeHash($stream) | ForEach-Object { $_.ToString('x2') }) }
+  finally { $sha.Dispose(); $stream.Dispose() }
+}
+
+function Expand-Zip([string] $Path, [string] $Destination) {
+  # ZipFile refuses entries that would land outside the destination folder.
+  Add-Type -AssemblyName System.IO.Compression.FileSystem
+  [IO.Compression.ZipFile]::ExtractToDirectory($Path, $Destination)
+}
 
 function Assert-Checksum([string] $Path, [string] $SumsFile, [string] $Name) {
   $expected = $null
@@ -267,8 +288,8 @@ function Invoke-Install {
 
     Write-Stage 4 'Assembling the application'
     $stage = Join-Path $tmp 'stage'
-    Expand-Archive -LiteralPath (Join-Path $tmp $ezip) -DestinationPath $stage
-    Expand-Archive -LiteralPath $srcZip -DestinationPath (Join-Path $tmp 'src')
+    Expand-Zip (Join-Path $tmp $ezip) $stage
+    Expand-Zip $srcZip (Join-Path $tmp 'src')
     $srcRoot = @(Get-ChildItem -LiteralPath (Join-Path $tmp 'src') -Directory)[0].FullName
     if (-not (Test-Path (Join-Path $srcRoot 'package.json')) -or -not (Test-Path (Join-Path $srcRoot 'src'))) { Stop-Install 'Unexpected source bundle layout.' }
     Remove-Item -LiteralPath (Join-Path $stage 'resources\default_app.asar') -Force -ErrorAction SilentlyContinue
