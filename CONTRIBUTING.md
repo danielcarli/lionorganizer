@@ -9,7 +9,7 @@ LionOrganizer was created and conceived by Daniel Michelon De Carli and is maint
 - **Safety is a feature.** Any change that deletes, moves or renames files must go through the operations service (`src/platform/operations`) so it is validated in the main process and protected by the typed confirmation code. Never call `fs.unlink`, `fs.rename` or `shell.trashItem` from anywhere else.
 - **Respect the layers.** `base` must not import from `platform` or `workbench`; the renderer (`workbench`) never uses Node.js directly — it talks to the main process through `window.host` (see `src/code/electron-sandbox/preload.js`).
 - **No hard-coded UI text.** Every user-visible string goes through `t()` / `tn()` and lives in `src/nls/en.json`.
-- **English code.** Identifiers, comments and commit messages are written in English.
+- **English code.** Identifiers, comments and commit messages are written in English. `npm run test:english` checks the code and CI checks it and every pushed commit message; to have Git refuse a message that is not in English before the commit is made, run once `git config core.hooksPath .githooks`. Text in other languages belongs in `src/nls/*.json` (or the installer's own translations); a line that really needs another language — a test of the translated UI, a legacy alias — ends with a `lang-ok` comment.
 
 ## Getting set up
 
@@ -18,7 +18,12 @@ npm install
 npm start
 ```
 
-Before opening a pull request, run the end-to-end test against a throwaway folder:
+Before opening a pull request, check the language and run the end-to-end test against a throwaway folder:
+
+```powershell
+git config core.hooksPath .githooks   # once: commit messages must be in English
+npm run test:english
+```
 
 ```powershell
 $env:E2E_FOLDER="C:\temp\lion-test"; $env:E2E_OUT="C:\temp\lion-out"; npm run test:e2e

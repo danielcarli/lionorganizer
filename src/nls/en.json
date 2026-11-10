@@ -817,5 +817,11 @@
   "treemap.building.title": "Preparing the space map…",
   "treemap.building.group": "{pct}% · grouping files by folder ({done} of {total})",
   "treemap.building.sort": "{pct}% · sorting folders by size ({done} of {total})",
-  "treemap.building.note": "Running in the background: you can switch to another tab, the map shows up when it is ready."
+  "treemap.building.note": "Running in the background: you can switch to another tab, the map shows up when it is ready.",
+  "files.sorting": "Sorting…",
+  "sidebar.savingCatalog": "Saving to the catalog…",
+  "boot.readingCount": "{pct}% · {done} of {total} files",
+  "overview.hero.preparing": "Preparing the cleanup suggestions…",
+  "cleanup.preparing.title": "Preparing the cleanup suggestions…",
+  "cleanup.preparing.text": "This is a large analysis: the suggestions are computed in the background and appear here in a moment."
 }

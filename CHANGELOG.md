@@ -2,6 +2,30 @@
 
 All notable changes to LionOrganizer are documented here. The project follows [Semantic Versioning](https://semver.org).
 
+## [1.2.0] — 2026-11-10
+
+### Fluid with very large folders
+Measured with `tools/perf.js` on a folder of 1,000,000 files (before → after):
+
+| | 1.1.6 | 1.2.0 |
+|---|---:|---:|
+| Longest freeze of the main process (window, menus, every request) | 4.5 s | 0.08 s |
+| Sort the file list by name | 16.9 s, window frozen | 0.85 s, window free (longest block 0.08 s) |
+| Back to the whole folder after zooming into one | 1.2 s | 0.08 s |
+| Reopen the saved analysis | 3.0 s, window frozen for 2.4 s | 3.3 s with progress, longest block 0.12 s |
+| Longest block of the window during the first analysis | over 1 s | 0.16 s |
+
+- **Background worker:** reading folders, the catalog (SQLite) and the content hashes moved to a worker thread. The main process only relays messages, so the window, menus and buttons always answer — also while a million files are saved to the catalog. It holds the only connection to the catalog, so writes never wait on each other.
+- **Compact transfer:** the files travel between the worker, the main process and the window as columns (one table of folders, numbers in typed arrays) instead of a million objects, and are turned into objects in the window a slice at a time, with progress on the loading screen ("Opening the last saved analysis… 45% · 450,000 of 1,000,000 files").
+- **Sorting in a Web Worker:** large lists are sorted off the UI thread (ignoring case and accents, numbers in natural order); meanwhile the list stays usable and shows "Sorting…". Each column is sorted once per analysis.
+- **Cached per folder:** totals, suggestions and lists are kept for each folder in focus, so going back to a folder already seen is instant. The folder tree and the totals are built from the folders (thousands) instead of the files (millions), and deleting files only subtracts them.
+- **Cleanup suggestions in the background:** each rule runs once per file, and for large analyses the suggestions (and the duplicate heuristic, now grouped by size first) are prepared in slices after the first screen; the Overview and the Cleanup tab say "Preparing the cleanup suggestions…" for that moment.
+- **Lighter checks before deleting:** the main process finds a file among the few of its folder instead of building a million-entry list; deleting one file in a 1,000,000-file analysis no longer freezes it.
+- **Smaller things:** a single collator for sorting text (creating one per comparison made it 50× slower), the largest files picked in one pass, search over lowercase names kept per file and per folder, the count of suggestions on the side bar computed when the app is idle.
+- **Performance test:** `npm run test:perf` (and CI, with 100,000 files) measures every step and fails if the window is blocked for too long or a step goes over its budget, so the app does not become heavy again without anyone noticing.
+- **English everywhere in the code:** `npm run test:english` (also in CI) checks that code and comments are in English, and CI checks every pushed commit message; `.githooks/commit-msg` refuses a message in another language before the commit is made (`git config core.hooksPath .githooks`).
+- Measured and left as it is: bundling the interface into one file would save about 40 ms at startup (7%) — not worth a build step.
+
 ## [1.1.6] — 2026-11-10
 
 ### Space map: only when you turn it on

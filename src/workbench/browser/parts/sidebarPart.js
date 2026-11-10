@@ -137,7 +137,8 @@ export class SidebarPart {
     if (!this.progressEl || !this.scan.busy || !p) return;
     this.progressEl.hidden = false;
     setChildren(this.progressEl, 
-      this.scan.state === 'refreshing' ? h('div.progress-label', t('sidebar.refreshing')) : null,
+      p.phase === 'catalog' ? h('div.progress-label', t('sidebar.savingCatalog'))
+        : this.scan.state === 'refreshing' ? h('div.progress-label', t('sidebar.refreshing')) : null,
       h('div.progress-track', h('div.progress-indeterminate')),
       h('div.progress-stats', `${tn('common.files', p.files)} · ${formatBytes(p.bytes)}`),
       h('div.progress-path', { title: p.current }, p.current));

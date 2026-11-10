@@ -74,15 +74,15 @@ class ShellMainService {
     return shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles').then(() => true, () => false);
   }
 
-  #allowed(p) {
+  async #allowed(p) {
     if (typeof p !== 'string') return false;
     if (p === this.scan.currentRoot || this.scan.isInsideRoot(p)) return true;
-    return this.catalog.available && this.catalog.db.hasPath(p);
+    return this.catalog.available && !!(await this.catalog.db.hasPath(p).catch(() => false));
   }
 
   /** @returns {Promise<'ok'|'missing'|'failed'>} */
   async reveal(p) {
-    if (!this.#allowed(p)) return 'failed';
+    if (!(await this.#allowed(p))) return 'failed';
     const st = await fs.promises.stat(p).catch(() => null);
     if (!st) return (await isGone(p)) ? 'missing' : 'failed';
     if (st.isDirectory()) {
@@ -96,7 +96,9 @@ class ShellMainService {
   /** Which of these paths no longer exist (deleted, moved, or their folder is gone). */
   async missing(paths) {
     if (!Array.isArray(paths)) return [];
-    const list = [...new Set(paths)].slice(0, MAX_CHECK).filter((p) => this.#allowed(p));
+    const candidates = [...new Set(paths)].slice(0, MAX_CHECK);
+    const ok = await Promise.all(candidates.map((p) => this.#allowed(p)));
+    const list = candidates.filter((_, i) => ok[i]);
     const gone = await Promise.all(list.map((p) => isGone(p)));
     return list.filter((_, i) => gone[i]);
   }

@@ -67,6 +67,12 @@ jobs:
             -ExcludeRule PSAvoidUsingWriteHost,PSUseShouldProcessForStateChangingFunctions,PSUseSingularNouns,PSReviewUnusedParameter
           $issues | Format-Table -AutoSize
           if ($issues) { exit 1 }
+      - name: Code, comments and commit messages in English
+        env:
+          COMMIT_MESSAGES: ${{ toJSON(github.event.commits.*.message) }}
+        run: |
+          node tools/check-english.js
+          node tools/check-english.js --messages-env
       - name: install.ps1 is ASCII (Windows PowerShell 5.1 reads BOM-less files as ANSI)
         run: "! LC_ALL=C grep -nP '[^\\x00-\\x7F]' scripts/install.ps1 scripts/install.cmd"
 
@@ -106,6 +112,11 @@ jobs:
             E2E_FOLDER="$RUNNER_TEMP/e2e-$theme" E2E_OUT="$RUNNER_TEMP/e2e-out" E2E_THEME="$theme" \
               xvfb-run -a npx electron tools/e2e.js
           done
+      - name: Performance (100,000 files, nothing may freeze the window)
+        timeout-minutes: 10
+        run: |
+          PERF_FOLDER="$RUNNER_TEMP/perf" PERF_OUT="$RUNNER_TEMP/perf-out" PERF_FILES=100000 PERF_STRICT=1 PERF_SLACK=2 \
+            xvfb-run -a npx electron tools/perf.js
       - name: Release assets are reproducible
         run: |
           node tools/make-release.js --out "$RUNNER_TEMP/r1"

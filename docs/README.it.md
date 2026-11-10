@@ -11,7 +11,7 @@ Scopri cosa occupa spazio nelle tue cartelle, trova i veri duplicati in base al 
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · **Italiano** · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.1.6](https://img.shields.io/badge/version-1.1.6-161214)
+![Version 1.2.0](https://img.shields.io/badge/version-1.2.0-161214)
 ![Licenza: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Piattaforma: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -77,7 +77,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 | | |
 |---|---|
 | **Analizza** | Esamina una cartella e le sue sottocartelle: 3 livelli per impostazione predefinita, configurabile fino a 50 livelli o senza limiti. Albero delle cartelle con le dimensioni, percorso di navigazione e una tabella ordinabile e filtrabile di tutti i file. |
-| **Cartelle grandi** | L’ultima analisi si riapre subito dal catalogo, con la sua data; la cartella viene rianalizzata solo quando lo chiedi, in background. Mostra lo spazio analizzato accanto allo spazio usato sul disco e il perché della differenza (elementi inaccessibili, limite di livelli, file di sistema). Elenco facoltativo di cartelle da ignorare (`node_modules`, `.git`, cartelle di sistema), disattivato per impostazione predefinita. Gli elementi che il sistema non ha lasciato leggere sono elencati con il motivo; su Windows si può analizzare di nuovo come amministratore. |
+| **Cartelle grandi** | L’ultima analisi si riapre subito dal catalogo, con la sua data; la cartella viene rianalizzata solo quando lo chiedi, in background. Mostra lo spazio analizzato accanto allo spazio usato sul disco e il perché della differenza (elementi inaccessibili, limite di livelli, file di sistema). Elenco facoltativo di cartelle da ignorare (`node_modules`, `.git`, cartelle di sistema), disattivato per impostazione predefinita. Gli elementi che il sistema non ha lasciato leggere sono elencati con il motivo; su Windows si può analizzare di nuovo come amministratore. Pensato per milioni di file: il lavoro pesante gira in background e le liste grandi vengono ordinate fuori dall’interfaccia, così la finestra non si blocca mai. |
 | **Visualizza** | Spazio per tipo di file (grafico a rosa), sottocartelle più grandi (treemap), una matrice di 100 punti in cui ogni punto è l'1% dello spazio, estensioni più pesanti ed età dei file. |
 | **Mappa dello spazio** | Treemap a schermo intero: ogni file è un blocco, annidato nelle sue cartelle e colorato per tipo. Fai clic su un blocco per entrare nella sua cartella; Backspace o il clic destro risale. È pesante nelle analisi grandi, quindi viene costruita solo quando la attivi, in background e con una barra di avanzamento. |
 | **Pulizia** | Suggerimenti raggruppati per motivo: backup di SketchUp/Revit/AutoCAD, file temporanei, log, download non completati, programmi di installazione, file grandi e vecchi. |

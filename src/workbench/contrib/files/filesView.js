@@ -87,6 +87,7 @@ export class FilesView extends ViewPane {
       groupLabel ? chip(t('files.filter.cleanupChip', { group: groupLabel }), () => analysis.setFilter({ group: null })) : null,
       hasFilters ? h('button.link', { onclick: () => analysis.resetFilters() }, t('files.filter.clear')) : null,
       h('div.toolbar-spacer'),
+      analysis.sorting ? h('span.toolbar-sorting', { role: 'status' }, h('span.spin', { html: icon('refresh', 13) }), t('files.sorting')) : null,
       h('span.toolbar-count', tn('files.toolbar.count', list.length, { size: formatBytes(total) })),
       h('button.btn.btn-secondary.btn-sm', { onclick: () => this.actions.exportCsv(list), title: t('files.toolbar.exportTitle') },
         h('span', { html: icon('download', 14) }), t('files.toolbar.export')),

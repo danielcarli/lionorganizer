@@ -149,15 +149,15 @@ class OperationsMainService {
     const gone = await Promise.all(known.map((p) => isGone(p)));
     const valid = known.filter((_, i) => !gone[i]);
     if (!valid.length) throw new Error(tn('main.ops.trash.errors.allMissing', known.length));
-    const bytes = valid.reduce((s, p) => s + (this.scan.files.get(p)?.size || 0), 0);
+    const bytes = valid.reduce((s, p) => s + (this.scan.fileInfo(p)?.size || 0), 0);
     const root = this.scan.currentRoot;
-    const sizes = Object.fromEntries(valid.map((p) => [p, this.scan.files.get(p)?.size || 0]));
+    const sizes = Object.fromEntries(valid.map((p) => [p, this.scan.fileInfo(p)?.size || 0]));
     return {
       paths: valid, bytes, sizes,
       view: {
         title: tn('main.ops.trash.title', valid.length),
         message: tn('main.ops.trash.message', valid.length, { size: formatBytes(bytes) }),
-        items: valid.slice(0, PREVIEW).map((p) => ({ label: path.basename(p), detail: path.relative(root, path.dirname(p)) || t('common.rootFolder'), size: this.scan.files.get(p)?.size })),
+        items: valid.slice(0, PREVIEW).map((p) => ({ label: path.basename(p), detail: path.relative(root, path.dirname(p)) || t('common.rootFolder'), size: this.scan.fileInfo(p)?.size })),
         more: Math.max(0, valid.length - PREVIEW),
         count: valid.length, bytes,
         confirmLabel: t('common.moveToTrash'), danger: true,
@@ -184,8 +184,8 @@ class OperationsMainService {
     let opId = null;
     if (this.db && removed.length) {
       try {
-        this.db.markTrashed(removed);
-        opId = this.db.logOperation({ kind: 'trash', root: this.scan.currentRoot, summary: tn('main.ops.trash.summary', removed.length), bytes, items: removed.map((src) => ({ src })) });
+        await this.db.markTrashed(removed);
+        opId = await this.db.logOperation({ kind: 'trash', root: this.scan.currentRoot, summary: tn('main.ops.trash.summary', removed.length), bytes, items: removed.map((src) => ({ src })) });
       } catch (err) { console.error(err); }
     }
     return { removed, failed, missing, opId, bytes };
@@ -243,7 +243,7 @@ class OperationsMainService {
     let opId = null;
     if (this.db && removed.length) {
       try {
-        opId = this.db.logOperation({ kind: 'trash', root: this.scan.currentRoot, summary: tn('main.ops.trashDirs.summary', removed.length), bytes: 0, items: removed.map((src) => ({ src })) });
+        opId = await this.db.logOperation({ kind: 'trash', root: this.scan.currentRoot, summary: tn('main.ops.trashDirs.summary', removed.length), bytes: 0, items: removed.map((src) => ({ src })) });
       } catch (err) { console.error(err); }
     }
     return { removed, failed, missing, notEmpty, opId, bytes: 0 };
@@ -324,7 +324,7 @@ class OperationsMainService {
   // ------------------------------------------------------------------ Undo
   async #planUndo({ opId }) {
     if (!this.db) throw new Error(t('main.ops.errors.catalogUnavailable'));
-    const op = this.db.operation(Number(opId));
+    const op = await this.db.operation(Number(opId));
     if (!op || !op.undoable) throw new Error(t('main.ops.undo.errors.notUndoable'));
     if (op.undone_at) throw new Error(t('main.ops.undo.errors.alreadyUndone'));
     const moves = op.items.filter((i) => i.dst && !i.created_dir).reverse();
@@ -357,18 +357,18 @@ class OperationsMainService {
     }
     if (this.db) {
       try {
-        this.db.applyMoves(res.moved, this.scan.currentRoot);
-        this.db.markUndone(plan.opId);
-        this.db.logOperation({ kind: 'undo', root: plan.op.root, summary: t('main.ops.undo.summary', { summary: plan.op.summary }), items: res.moved });
+        await this.db.applyMoves(res.moved, this.scan.currentRoot);
+        await this.db.markUndone(plan.opId);
+        await this.db.logOperation({ kind: 'undo', root: plan.op.root, summary: t('main.ops.undo.summary', { summary: plan.op.summary }), items: res.moved });
       } catch (err) { console.error(err); }
     }
     return res;
   }
 
   // ------------------------------------------------------------------ Clear catalog
-  #planCatalogClear() {
+  async #planCatalogClear() {
     if (!this.db) throw new Error(t('main.ops.errors.catalogUnavailable'));
-    const s = this.db.stats();
+    const s = await this.db.stats();
     return {
       view: {
         title: t('main.ops.catalogClear.title'),
@@ -381,8 +381,8 @@ class OperationsMainService {
     };
   }
 
-  #runCatalogClear() {
-    this.db.clear();
+  async #runCatalogClear() {
+    await this.db.clear();
     return {};
   }
 
@@ -393,11 +393,11 @@ class OperationsMainService {
     let opId = null;
     if (this.db && res.moved.length) {
       try {
-        this.db.applyMoves(res.moved, root);
+        await this.db.applyMoves(res.moved, root);
         const summary = kind === 'organize'
           ? tn('main.ops.organize.summary', res.moved.length)
           : tn('main.ops.rename.summary', res.moved.length);
-        opId = this.db.logOperation({
+        opId = await this.db.logOperation({
           kind, root, summary, undoable: true,
           items: [...res.moved, ...res.createdDirs.map((d) => ({ src: d, createdDir: true }))],
         });

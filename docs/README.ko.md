@@ -11,7 +11,7 @@
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · **한국어**
 
-![Version 1.1.6](https://img.shields.io/badge/version-1.1.6-161214)
+![Version 1.2.0](https://img.shields.io/badge/version-1.2.0-161214)
 ![라이선스: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![플랫폼: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -77,7 +77,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 | | |
 |---|---|
 | **분석** | 폴더와 하위 폴더를 스캔합니다. 기본값은 3단계이며, 최대 50단계 또는 무제한으로 설정할 수 있습니다. 크기가 표시되는 폴더 트리, 이동 경로, 모든 파일을 정렬하고 필터링할 수 있는 표를 제공합니다. |
-| **큰 폴더** | 마지막 분석이 카탈로그에서 날짜와 함께 바로 다시 열리며, 폴더는 요청할 때만 백그라운드에서 다시 분석합니다. 분석한 공간과 디스크 사용 공간을 나란히 보여 주고 차이의 이유(읽지 못한 항목, 단계 제한, 시스템 파일)도 알려 줍니다. 제외할 폴더 목록(`node_modules`, `.git`, 시스템 폴더)은 선택 사항이며 기본값은 꺼짐입니다. 시스템이 읽기를 허용하지 않은 항목은 이유와 함께 표시되고, Windows에서는 관리자 권한으로 다시 분석할 수 있습니다. |
+| **큰 폴더** | 마지막 분석이 카탈로그에서 날짜와 함께 바로 다시 열리며, 폴더는 요청할 때만 백그라운드에서 다시 분석합니다. 분석한 공간과 디스크 사용 공간을 나란히 보여 주고 차이의 이유(읽지 못한 항목, 단계 제한, 시스템 파일)도 알려 줍니다. 제외할 폴더 목록(`node_modules`, `.git`, 시스템 폴더)은 선택 사항이며 기본값은 꺼짐입니다. 시스템이 읽기를 허용하지 않은 항목은 이유와 함께 표시되고, Windows에서는 관리자 권한으로 다시 분석할 수 있습니다. 수백만 개의 파일을 위해 설계: 무거운 작업은 백그라운드에서 처리하고 큰 목록은 UI 밖에서 정렬하므로 창이 멈추지 않습니다. |
 | **시각화** | 파일 유형별 공간(로즈 차트), 가장 큰 하위 폴더(트리맵), 점 하나가 공간의 1%를 나타내는 100개 점 매트릭스, 공간을 가장 많이 차지하는 확장자, 파일 경과 기간을 보여 줍니다. |
 | **공간 지도** | 전체 화면 트리맵: 각 파일은 폴더 안에 중첩된 블록이며 유형별로 색이 다릅니다. 블록을 클릭하면 그 폴더로 들어가고, Backspace나 오른쪽 클릭으로 위로 갑니다. 큰 분석에서는 처리량이 많아, 켰을 때만 백그라운드에서 진행률 표시줄과 함께 만듭니다. |
 | **청소** | 이유별로 묶은 제안: SketchUp/Revit/AutoCAD 백업, 임시 파일, 로그, 완료되지 않은 다운로드, 설치 파일, 크고 오래된 파일. |

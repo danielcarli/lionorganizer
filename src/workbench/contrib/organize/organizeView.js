@@ -33,7 +33,7 @@ function folderName(cat) {
 const FOLDER_NAMES = Object.freeze(Object.defineProperties({}, Object.fromEntries(CATEGORIES.map((c) => [c.id, { get: () => folderName(c.id), enumerable: true }]))));
 
 // Batch-rename tokens: canonical English tokens plus the old Portuguese ones as aliases.
-const TOKEN_ALIASES = { '{nome}': '{name}', '{data}': '{date}', '{pasta}': '{folder}' };
+const TOKEN_ALIASES = { '{nome}': '{name}', '{data}': '{date}', '{pasta}': '{folder}' }; // lang-ok: tokens typed by users of 1.0
 
 export class OrganizeView extends ViewPane {
   // the user's choices

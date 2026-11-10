@@ -1,0 +1,4 @@
+#!/bin/sh
+# Refuses commit messages that are not in English (see CONTRIBUTING.md).
+# Turn it on once per clone:  git config core.hooksPath .githooks
+exec node "$(git rev-parse --show-toplevel)/tools/check-english.js" --message "$1"

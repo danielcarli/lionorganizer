@@ -41,7 +41,20 @@ const REVIT_JOURNAL = /^journal\.\d{4}\.(txt|log)$/i;
 export function isRenderCache(f) {
   if (CACHE_EXTS.has(f.ext) || REVIT_JOURNAL.test(f.name)) return true;
   if (!f.folder) return false;
-  const segs = f.folder.split(/[\\/]/);
+  // the folder part only depends on the folder: checked once per folder, not once per file
+  let hit = cacheFolders.get(f.folder);
+  if (hit === undefined) {
+    if (cacheFolders.size > 500000) cacheFolders.clear();
+    hit = isCacheFolder(f.folder);
+    cacheFolders.set(f.folder, hit);
+  }
+  return hit;
+}
+
+const cacheFolders = new Map();
+
+function isCacheFolder(folder) {
+  const segs = folder.split(/[\\/]/);
   let app = false;
   for (const seg of segs) {
     const low = seg.toLowerCase();
@@ -108,22 +121,69 @@ export const CLEANUP_RULES = [
 ];
 
 /** Possible duplicates: same name and same size in different folders. Keeps the oldest one. */
-export function findDuplicates(files) {
-  const groups = new Map();
-  for (const f of files) {
-    if (f.size < 1024) continue; // ignore tiny files
-    const key = f.name.toLowerCase() + '|' + f.size;
-    let g = groups.get(key);
-    if (!g) groups.set(key, (g = []));
-    g.push(f);
+/** Same as findDuplicates, pausing when `pause()` asks (returns null if it was stopped). */
+export async function findDuplicatesSliced(files, pause) {
+  const bySize = new Map();
+  for (let i = 0; i < files.length; i++) {
+    const f = files[i];
+    if (f.size >= 1024) {
+      const g = bySize.get(f.size);
+      if (g === undefined) bySize.set(f.size, f);
+      else if (Array.isArray(g)) g.push(f);
+      else bySize.set(f.size, [g, f]);
+    }
+    if ((i & 4095) === 0 && !(await pause())) return null;
   }
   const extras = [];
   let groupCount = 0;
-  for (const g of groups.values()) {
-    if (g.length < 2) continue;
-    groupCount++;
-    g.sort((a, b) => a.mtime - b.mtime);
-    extras.push(...g.slice(1)); // the first (oldest) copy is left out
+  let k = 0;
+  for (const g of bySize.values()) {
+    if ((++k & 1023) === 0 && !(await pause())) return null;
+    if (!Array.isArray(g)) continue;
+    const byName = new Map();
+    for (const f of g) {
+      const key = f.name.toLowerCase();
+      let n = byName.get(key);
+      if (!n) byName.set(key, (n = []));
+      n.push(f);
+    }
+    for (const n of byName.values()) {
+      if (n.length < 2) continue;
+      groupCount++;
+      n.sort((a, b) => a.mtime - b.mtime);
+      for (let i = 1; i < n.length; i++) extras.push(n[i]);
+    }
+  }
+  return { extras, groupCount };
+}
+
+export function findDuplicates(files) {
+  // same size first (numbers: cheap), then same name only among those — most files have a unique size
+  const bySize = new Map();
+  for (const f of files) {
+    if (f.size < 1024) continue; // ignore tiny files
+    const g = bySize.get(f.size);
+    if (g === undefined) bySize.set(f.size, f);
+    else if (Array.isArray(g)) g.push(f);
+    else bySize.set(f.size, [g, f]);
+  }
+  const extras = [];
+  let groupCount = 0;
+  for (const g of bySize.values()) {
+    if (!Array.isArray(g)) continue;
+    const byName = new Map();
+    for (const f of g) {
+      const key = f.name.toLowerCase();
+      let n = byName.get(key);
+      if (!n) byName.set(key, (n = []));
+      n.push(f);
+    }
+    for (const n of byName.values()) {
+      if (n.length < 2) continue;
+      groupCount++;
+      n.sort((a, b) => a.mtime - b.mtime);
+      for (let i = 1; i < n.length; i++) extras.push(n[i]); // the first (oldest) copy is left out
+    }
   }
   return { extras, groupCount };
 }

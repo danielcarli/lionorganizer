@@ -817,5 +817,11 @@
   "treemap.building.title": "Preparando o mapa de espaço…",
   "treemap.building.group": "{pct}% · agrupando os arquivos por pasta ({done} de {total})",
   "treemap.building.sort": "{pct}% · ordenando as pastas por tamanho ({done} de {total})",
-  "treemap.building.note": "Carregando em segundo plano: você pode ir para outra aba, o mapa aparece quando estiver pronto."
+  "treemap.building.note": "Carregando em segundo plano: você pode ir para outra aba, o mapa aparece quando estiver pronto.",
+  "files.sorting": "Ordenando…",
+  "sidebar.savingCatalog": "Salvando no catálogo…",
+  "boot.readingCount": "{pct}% · {done} de {total} arquivos",
+  "overview.hero.preparing": "Preparando as sugestões de limpeza…",
+  "cleanup.preparing.title": "Preparando as sugestões de limpeza…",
+  "cleanup.preparing.text": "Esta análise é grande: as sugestões são calculadas em segundo plano e aparecem aqui em instantes."
 }

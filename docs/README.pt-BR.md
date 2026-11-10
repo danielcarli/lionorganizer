@@ -11,7 +11,7 @@ Veja o que ocupa espaço nas suas pastas, encontre duplicados de verdade pelo co
 
 [English](../README.md) · **Português (Brasil)** · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.1.6](https://img.shields.io/badge/version-1.1.6-161214)
+![Version 1.2.0](https://img.shields.io/badge/version-1.2.0-161214)
 ![Licença: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Plataforma: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -77,7 +77,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 | | |
 |---|---|
 | **Analisar** | Varre uma pasta e suas subpastas — 3 níveis de profundidade por padrão, configurável até 50 níveis ou sem limite. Árvore de pastas com tamanhos, trilha de navegação e uma tabela de todos os arquivos, com ordenação e filtros. |
-| **Pastas grandes** | A última análise reabre na hora a partir do catálogo, marcada com a data; a pasta só é analisada de novo quando você pede, em segundo plano. Mostra o espaço analisado ao lado do espaço usado no disco, e o porquê da diferença (itens inacessíveis, limite de níveis, arquivos do sistema). Lista opcional de pastas a ignorar (`node_modules`, `.git`, pastas do sistema) — desligada por padrão. Os itens que o sistema não deixou ler aparecem com o motivo; no Windows dá para analisar de novo como administrador. |
+| **Pastas grandes** | A última análise reabre na hora a partir do catálogo, marcada com a data; a pasta só é analisada de novo quando você pede, em segundo plano. Mostra o espaço analisado ao lado do espaço usado no disco, e o porquê da diferença (itens inacessíveis, limite de níveis, arquivos do sistema). Lista opcional de pastas a ignorar (`node_modules`, `.git`, pastas do sistema) — desligada por padrão. Os itens que o sistema não deixou ler aparecem com o motivo; no Windows dá para analisar de novo como administrador. Feito para milhões de arquivos: o trabalho pesado roda num processo de fundo e as listas grandes são ordenadas fora da interface, então a janela não trava. |
 | **Visualizar** | Espaço por tipo de arquivo (gráfico de rosa), maiores subpastas (treemap), uma matriz de 100 pontos em que cada ponto é 1 % do espaço, as extensões que mais ocupam e a idade dos arquivos. |
 | **Mapa de espaço** | Treemap em tela cheia: cada arquivo é um bloco, aninhado nas suas pastas e colorido por tipo. Clique num bloco para entrar na pasta; Backspace ou o botão direito sobe. Pesado em análises grandes, por isso só é montado quando você o ativa — em segundo plano, com barra de progresso. |
 | **Limpar** | Sugestões agrupadas por motivo: backups do SketchUp/Revit/AutoCAD, arquivos temporários, logs, downloads incompletos, instaladores, arquivos grandes e antigos. |

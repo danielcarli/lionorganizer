@@ -32,7 +32,7 @@ import { CatalogView } from '../contrib/catalog/catalogView.js';
 import { TreemapView } from '../contrib/treemap/treemapView.js';
 import { h } from '../../base/browser/dom.js';
 import { t, tn, consumeRescanFlag } from '../../base/common/nls.js';
-import { baseName } from '../../base/common/format.js';
+import { baseName, formatNumber } from '../../base/common/format.js';
 import { bootStatus, bootSkip, bootDone } from './boot.js';
 import { VIEWS } from '../services/layout/browser/layoutService.js';
 
@@ -99,9 +99,10 @@ root.append(
     bootSkip(t('boot.skip'), () => { skipped = true; bootDone(); });
     await services.scan.reopen(folder, {
       isCancelled: () => skipped,
-      onStatus: (stage, value) => stage === 'reading'
-        ? bootStatus(t('boot.reading', { folder: baseName(folder) || folder }), folder)
-        : bootStatus(tn('boot.preparing', value), folder),
+      onStatus: (stage, value, done) => stage === 'reading'
+        ? bootStatus(t('boot.reading', { folder: baseName(folder) || folder }),
+          value?.total ? t('boot.readingCount', { done: formatNumber(value.done), total: formatNumber(value.total), pct: Math.min(99, Math.round(value.done / value.total * 100)) }) : folder)
+        : bootStatus(tn('boot.preparing', value), done ? t('boot.readingCount', { done: formatNumber(done), total: formatNumber(value), pct: Math.min(99, Math.round(done / (value || 1) * 100)) }) : folder),
     });
   } catch (err) {
     console.error(err);

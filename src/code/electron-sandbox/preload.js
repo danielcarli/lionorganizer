@@ -30,6 +30,7 @@ contextBridge.exposeInMainWorld('host', {
   restoreScan: (root) => ipcRenderer.invoke('scan:restore', root),
   cancelScan: () => ipcRenderer.invoke('scan:cancel'),
   onScanProgress: on('scan:progress'),
+  onRestoreProgress: on('scan:restoreProgress'),
   reveal: (p) => ipcRenderer.invoke('shell:reveal', p),
   missingFiles: (paths) => ipcRenderer.invoke('shell:missing', paths),
   copyText: (text) => ipcRenderer.invoke('shell:copyText', text),

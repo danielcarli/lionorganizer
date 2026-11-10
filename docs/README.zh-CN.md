@@ -11,7 +11,7 @@
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · **简体中文** · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.1.6](https://img.shields.io/badge/version-1.1.6-161214)
+![Version 1.2.0](https://img.shields.io/badge/version-1.2.0-161214)
 ![许可证：GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![平台：Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -77,7 +77,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 | | |
 |---|---|
 | **分析** | 扫描文件夹及其子文件夹——默认深入 3 层，可设置为最多 50 层或无限制。提供带大小信息的文件夹树、路径导航栏，以及一个可排序、可筛选、列出所有文件的表格。 |
-| **大文件夹** | 上次的分析会从索引库立即重新打开并标明日期；只有在你要求时才会在后台重新分析该文件夹。并排显示已分析空间与磁盘已用空间，并说明差异原因（无法读取的项目、层级限制、系统文件）。可选的忽略文件夹列表（`node_modules`、`.git`、系统文件夹），默认关闭。系统不允许读取的项目会列出原因；在 Windows 上可以以管理员身份重新分析。 |
+| **大文件夹** | 上次的分析会从索引库立即重新打开并标明日期；只有在你要求时才会在后台重新分析该文件夹。并排显示已分析空间与磁盘已用空间，并说明差异原因（无法读取的项目、层级限制、系统文件）。可选的忽略文件夹列表（`node_modules`、`.git`、系统文件夹），默认关闭。系统不允许读取的项目会列出原因；在 Windows 上可以以管理员身份重新分析。为数百万个文件而设计：繁重的工作在后台进行，大列表在界面线程之外排序，窗口不会卡住。 |
 | **可视化** | 按文件类型划分的空间（玫瑰图）、最大的子文件夹（矩形树图）、100 点矩阵（每个点代表 1% 的空间）、占用最多的扩展名以及文件新旧。 |
 | **空间地图** | 全屏树状图：每个文件是一个方块，嵌套在其文件夹中并按类型着色。点击方块进入其文件夹；Backspace 或右键返回上一级。大型分析时计算量较大，因此只在你启用后才在后台构建，并显示进度条。 |
 | **清理** | 按原因分组的建议：SketchUp/Revit/AutoCAD 备份、临时文件、日志、未完成的下载、安装程序、大且旧的文件。 |

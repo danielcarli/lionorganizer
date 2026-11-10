@@ -817,5 +817,11 @@
   "treemap.building.title": "Préparation de la carte de l’espace…",
   "treemap.building.group": "{pct} % · regroupement des fichiers par dossier ({done} sur {total})",
   "treemap.building.sort": "{pct} % · tri des dossiers par taille ({done} sur {total})",
-  "treemap.building.note": "Chargement en arrière-plan : vous pouvez passer à un autre onglet, la carte s’affichera une fois prête."
+  "treemap.building.note": "Chargement en arrière-plan : vous pouvez passer à un autre onglet, la carte s’affichera une fois prête.",
+  "files.sorting": "Tri en cours…",
+  "sidebar.savingCatalog": "Enregistrement dans le catalogue…",
+  "boot.readingCount": "{pct} % · {done} sur {total} fichiers",
+  "overview.hero.preparing": "Préparation des suggestions de nettoyage…",
+  "cleanup.preparing.title": "Préparation des suggestions de nettoyage…",
+  "cleanup.preparing.text": "Cette analyse est volumineuse : les suggestions sont calculées en arrière-plan et apparaissent ici dans un instant."
 }

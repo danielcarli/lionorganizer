@@ -26,12 +26,22 @@ export class ActivitybarPart {
         h('button.activity-item', { title: t('activitybar.toggleSidebar', { key: 'Ctrl+B' }), html: icon('sidebar', 20), onclick: () => layout.toggleSidebar() }),
         h('button.activity-item', { title: t('about.title'), 'aria-label': t('about.title'), html: icon('info', 20), onclick: () => showAboutDialog(host) })));
     layout.onDidChangeView(() => this.render());
-    analysis.onDidChangeData(() => this.#updateBadge(analysis));
-    analysis.onDidChangeFilter(() => this.#updateBadge(analysis));
+    // the count of cleanup suggestions waits for a quiet moment: the first screen comes first
+    analysis.onDidChangeData(() => this.#scheduleBadge(analysis));
+    analysis.onDidChangeFilter(() => this.#scheduleBadge(analysis));
+    analysis.onDidPrepare(() => this.#scheduleBadge(analysis));
     this.render();
   }
 
+  #badgeTimer = null;
+  #scheduleBadge(analysis) {
+    if (this.#badgeTimer) return;
+    const run = () => { this.#badgeTimer = null; this.#updateBadge(analysis); };
+    this.#badgeTimer = typeof requestIdleCallback === 'function' ? requestIdleCallback(run, { timeout: 2000 }) : setTimeout(run, 300);
+  }
+
   #updateBadge(analysis) {
+    if (analysis.hasData && !analysis.cleanupReady) return; // computed in the background; updated when ready
     const n = analysis.hasData ? analysis.cleanupGroups().length : 0;
     this.badge.textContent = n ? String(n) : '';
     this.badge.hidden = !n;

@@ -22,6 +22,19 @@ import { showAccessDialog } from '../access/accessDialog.js';
 import { formatDuration, baseName } from '../../../base/common/format.js';
 
 const TOP_FOLDERS = 14;
+
+/** The n largest files, without sorting the whole list (a million files: one pass). */
+function topBySize(files, n) {
+  const top = [];
+  for (const f of files) {
+    if (top.length === n && f.size <= top[n - 1].size) continue;
+    let i = top.length;
+    while (i > 0 && top[i - 1].size < f.size) i--;
+    top.splice(i, 0, f);
+    if (top.length > n) top.pop();
+  }
+  return top;
+}
 const TOP_EXTS = 10;
 const TOP_FILES = 10;
 
@@ -32,6 +45,7 @@ export class OverviewView extends ViewPane {
     this.analysis.onDidChangeData(inv);
     this.analysis.onDidChangeFilter(() => { if (this.lastFolder !== this.analysis.filter.folder) inv(); });
     this.layout.onDidChangeTheme(inv);
+    this.analysis.onDidPrepare(inv);
   }
 
   render() {
@@ -53,7 +67,8 @@ export class OverviewView extends ViewPane {
 
   // ---------- headline numbers ----------
   #hero(s) {
-    const freeable = this.#freeable();
+    const ready = this.analysis.cleanupReady;
+    const freeable = ready ? this.analysis.freeable() : null;
     const top = s.byCategory[0];
     return h('section.hero',
       h('div.hero-main',
@@ -65,15 +80,9 @@ export class OverviewView extends ViewPane {
           s.largest ? fact(t('overview.hero.largestFile'), `${formatBytes(s.largest.size)} · ${s.largest.name}`, s.largest.path) : null)),
       h('button.hero-block', { onclick: () => this.layout.openView('cleanup'), title: t('overview.hero.openCleanup') },
         h('div.hero-block-top', h('span.eyebrow', h('span.hb-icon', '!'), t('overview.hero.freeable')), h('span.hb-arrow', { html: icon('arrowUpRight', 18) })),
-        bigNumber(freeable.bytes, 'hero-block-number'),
-        h('div.hero-block-sub', tn('overview.hero.freeableFiles', freeable.count)),
-        hatchStrip(freeable.bytes / (s.bytes || 1))));
-  }
-
-  #freeable() {
-    const m = new Map();
-    for (const g of this.analysis.cleanupGroups()) for (const f of g.files) m.set(f.path, f.size);
-    return { count: m.size, bytes: [...m.values()].reduce((a, b) => a + b, 0) };
+        freeable
+          ? [bigNumber(freeable.bytes, 'hero-block-number'), h('div.hero-block-sub', tn('overview.hero.freeableFiles', freeable.count)), hatchStrip(freeable.bytes / (s.bytes || 1))]
+          : [h('div.hero-block-number.hero-pending', h('span.spin', { html: icon('refresh', 22) })), h('div.hero-block-sub', t('overview.hero.preparing'))]));
   }
 
   /**
@@ -239,7 +248,7 @@ export class OverviewView extends ViewPane {
   }
 
   #biggest() {
-    const files = [...this.analysis.scopeFiles()].sort((a, b) => b.size - a.size).slice(0, TOP_FILES);
+    const files = topBySize(this.analysis.scopeFiles(), TOP_FILES);
     const max = files[0]?.size || 1;
     this.analysis.verify('overview', files.map((f) => f.path));
     return h('div.file-list', files.map((f) => {

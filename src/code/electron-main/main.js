@@ -155,7 +155,7 @@ if (gotTheLock) app.whenReady().then(() => {
   const operations = new OperationsMainService(scan, catalog);
   const update = new UpdateMainService(APP_ROOT);
   [dialogs, catalog, scan, hash, shell, operations, update].forEach((s) => s.registerChannels(ipcMain));
-  app.on('will-quit', () => catalog.db?.close());
+  app.on('will-quit', () => { catalog.close(); });
 
   // Reload asked by the UI (e.g. after changing the language). Done here because the window blocks every
   // navigation started by the page (will-navigate), and recent Electron versions treat location.reload() as one.

@@ -43,15 +43,13 @@ releases.listen(0, '127.0.0.1', () => {
   process.env.LIONORGANIZER_UPDATE_URL = `http://127.0.0.1:${releases.address().port}/manifest.txt`;
 });
 
-// The system refuses to read the folder "Locked" (as a protected folder would); while `slowScan` is on,
-// every folder takes a little longer to read, so a background refresh can be watched.
-const realOpendir = fs.promises.opendir;
-let slowScan = false;
-fs.promises.opendir = async (dir, ...rest) => {
-  if (path.basename(String(dir)) === 'Locked') throw Object.assign(new Error('permission denied'), { code: 'EACCES' });
-  if (slowScan) await wait(250);
-  return realOpendir.call(fs.promises, dir, ...rest);
-};
+// The folders are read by the app's background worker: tools/e2e-worker-hook.js makes "Locked" unreadable
+// (as a protected folder) and, while `slowScan` is on, every folder a little slower to read.
+process.env.LIONORGANIZER_ALLOW_INSECURE_FOR_TESTS = '1';
+process.env.LIONORGANIZER_WORKER_TEST_HOOK = path.join(__dirname, 'e2e-worker-hook.js');
+process.env.E2E_SLOW_FLAG = path.join(outDir, `slow-scan-${theme}.flag`);
+fs.rmSync(process.env.E2E_SLOW_FLAG, { force: true });
+const setSlowScan = (on) => { if (on) fs.writeFileSync(process.env.E2E_SLOW_FLAG, '1'); else fs.rmSync(process.env.E2E_SLOW_FLAG, { force: true }); };
 
 require('../src/code/electron-main/main.js');
 
@@ -364,10 +362,10 @@ app.on('browser-window-created', (_e, win) => {
 
       // ---- changing the language reloads the UI in the new language; the loading screen says what it is doing,
       // the saved analysis comes back at once, and nothing is analyzed until the person asks
-      slowScan = true;
+      setSlowScan(true);
       await js(`(() => { const s = document.querySelector('.status-select'); s.value = 'pt-BR'; s.dispatchEvent(new Event('change')); })()`);
-      check(await until(`document.documentElement.lang === 'pt-BR' && document.body.textContent.includes('Visão geral')`, 20000), 'switching the language in the status bar reloads the UI in Portuguese');
-      check(await until(`!!document.querySelector('.restore-banner:not([hidden])')?.textContent.includes('Análise salva em')`, 8000), 'after the reload, the saved analysis is shown at once, with its date');
+      check(await until(`document.documentElement.lang === 'pt-BR' && document.body.textContent.includes('Visão geral')`, 20000), 'switching the language in the status bar reloads the UI in Portuguese'); // lang-ok: checks the Portuguese UI
+      check(await until(`!!document.querySelector('.restore-banner:not([hidden])')?.textContent.includes('Análise salva em')`, 8000), 'after the reload, the saved analysis is shown at once, with its date'); // lang-ok: checks the Portuguese UI
       check(await until(`!document.getElementById('boot')`, 5000), 'the loading screen goes away once the UI is ready');
       await wait(1500);
       check(await js(`!document.querySelector('.statusbar.busy') && document.querySelector('.restore-banner').textContent.includes('Analisar agora')`), 'nothing is analyzed automatically: the banner offers "Analyze now"');
@@ -378,8 +376,8 @@ app.on('browser-window-created', (_e, win) => {
       await shot('70-reopened');
       await click('.restore-banner .btn-primary');
       check(await until(`document.querySelector('.restore-banner')?.textContent.includes('segundo plano')`), '"Analyze now" analyzes the folder again in the background, keeping the data on screen');
-      slowScan = false;
-      check(await until(`!!document.querySelector('.restore-banner[hidden]') && [...document.querySelectorAll('.toast')].some((x) => x.textContent.includes('Análise atualizada'))`, 30000), 'when it ends, the banner goes away and a notice says what changed');
+      setSlowScan(false);
+      check(await until(`!!document.querySelector('.restore-banner[hidden]') && [...document.querySelectorAll('.toast')].some((x) => x.textContent.includes('Análise atualizada'))`, 30000), 'when it ends, the banner goes away and a notice says what changed'); // lang-ok: checks the Portuguese UI
     } catch (err) {
       failures++;
       log('ERROR', err.stack || err);

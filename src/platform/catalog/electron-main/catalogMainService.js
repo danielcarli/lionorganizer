@@ -3,11 +3,13 @@
  *  Created and conceived by Daniel Michelon De Carli.
  *  Licensed under the GNU General Public License v3.0 or later. See LICENSE in the project root.
  *--------------------------------------------------------------------------------------------*/
-// Catalog service in the main process: opens the database in userData and serves the UI.
+// Catalog service in the main process: serves the UI. The database itself lives in the background worker
+// (platform/worker), so reading or writing it never blocks the window; every call here is a promise.
 const { app, shell, dialog, BrowserWindow } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { t, getLocale } = require('../../nls/common/nls');
+const { DataWorkerHost } = require('../../worker/electron-main/dataWorkerHost');
 
 const DB_FILE = 'catalog.sqlite';
 const LEGACY_DB_FILE = 'catalogo.sqlite'; // name used by earlier versions
@@ -43,31 +45,35 @@ function resolveDatabaseFile(dir) {
 
 class CatalogMainService {
   constructor() {
-    this.db = null;
-    this.error = null;
-    try {
-      const { CatalogDatabase } = require('../node/catalogDatabase');
-      this.db = new CatalogDatabase(resolveDatabaseFile(app.getPath('userData')));
-    } catch (err) {
-      this.error = String(err?.message || err);
-      console.error('Catalog unavailable:', err);
-    }
+    const testHook = process.env.LIONORGANIZER_ALLOW_INSECURE_FOR_TESTS === '1' ? process.env.LIONORGANIZER_WORKER_TEST_HOOK : undefined;
+    /** the background worker: catalog, folder reading and hashes */
+    this.worker = new DataWorkerHost({ dbFile: resolveDatabaseFile(app.getPath('userData')), testHook });
+    this.ready = this.worker.ready.then((info) => {
+      if (!info.available) console.error('Catalog unavailable:', info.error);
+      return info;
+    });
   }
 
-  get available() { return !!this.db; }
+  get available() { return this.worker.info.available; }
+  get error() { return this.worker.info.error; }
+  /** catalog methods as promises, or null while unavailable */
+  get db() { return this.available ? this.worker.db : null; }
+
+  close() { return this.worker.close(); }
 
   registerChannels(ipc) {
-    const guard = (fn) => (...args) => {
-      if (!this.db) throw new Error(t('main.catalog.errors.unavailable', { reason: this.error || t('main.catalog.errors.unknown') }));
+    const guard = (fn) => async (...args) => {
+      await this.ready;
+      if (!this.available) throw new Error(t('main.catalog.errors.unavailable', { reason: this.error || t('main.catalog.errors.unknown') }));
       return fn(...args);
     };
-    ipc.handle('catalog:status', () => ({ available: this.available, error: this.error }));
+    ipc.handle('catalog:status', async () => { await this.ready; return { available: this.available, error: this.error }; });
     ipc.handle('catalog:stats', guard(() => this.db.stats()));
     ipc.handle('catalog:search', guard((_e, opts) => this.db.search(sanitizeSearch(opts))));
     ipc.handle('catalog:history', guard((_e, root) => this.db.history(String(root))));
     ipc.handle('catalog:compare', guard((_e, scanId) => this.db.compare(Number(scanId))));
     ipc.handle('catalog:operations', guard(() => this.db.recentOperations(30)));
-    ipc.handle('catalog:revealDb', guard(() => { shell.showItemInFolder(this.db.file); return true; }));
+    ipc.handle('catalog:revealDb', guard(() => { shell.showItemInFolder(this.worker.info.file); return true; }));
     ipc.handle('catalog:exportCsv', guard((e) => this.exportCsv(BrowserWindow.fromWebContents(e.sender))));
   }
 
@@ -84,7 +90,7 @@ class CatalogMainService {
     const missing = t('main.catalog.csv.statusMissing');
     const header = ['root', 'path', 'name', 'ext', 'size', 'modified', 'status', 'hash'].map((k) => t('main.catalog.csv.' + k));
     const lines = [header.map(esc).join(';')];
-    for (const r of this.db.allFilesForExport()) {
+    for (const r of await this.db.allFilesForExport()) {
       lines.push([r.root, r.path, r.name, r.ext, r.size, new Date(r.mtime).toLocaleString(locale), r.missing ? missing : present, r.hash || ''].map(esc).join(';'));
     }
     // BOM so Excel detects the UTF-8 encoding.

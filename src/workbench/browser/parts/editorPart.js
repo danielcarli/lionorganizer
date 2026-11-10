@@ -117,8 +117,8 @@ export class EditorPart {
           ? h('div.welcome-progress',
               h('div.progress-track', h('div.progress-indeterminate')),
               h('div.welcome-progress-stats', emphasize(tn('welcome.progress', p.files, { size: formatBytes(p.bytes) }), [formatNumber(p.files), formatBytes(p.bytes)])),
-              h('div.progress-path', p.current),
-              h('button.btn.btn-secondary', { onclick: () => scan.cancel() }, t('common.cancel')))
+              h('div.progress-path', p.phase === 'catalog' ? t('sidebar.savingCatalog') : p.current),
+              p.phase === 'catalog' ? null : h('button.btn.btn-secondary', { onclick: () => scan.cancel() }, t('common.cancel')))
           : h('div.welcome-actions',
               h('button.btn.btn-primary.btn-lg', { onclick: () => this.actions.openFolderAndScan() }, h('span', { html: icon('folderOpen', 16) }), t('welcome.openFolder')),
               scan.folder ? h('button.btn.btn-secondary.btn-lg', { onclick: () => scan.scan(), title: scan.folder }, t('welcome.scanFolder', { name: baseName(scan.folder) })) : null),

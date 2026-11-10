@@ -102,7 +102,7 @@ export function t(key, params) {
 
 /** Plural-aware translation: uses `${key}.${rule}` (zero/one/two/few/many/other), falling back to `.other`. */
 export function tn(key, count, params) {
-  // CLDR puts 0 in the "one" category for Portuguese, but Brazilian usage prefers the plural ("0 arquivos").
+  // CLDR puts 0 in the "one" category for Portuguese, but Brazilian usage prefers the plural for zero.
   const rule = count === 0 && locale === 'pt-BR' ? 'other' : pluralRules.select(count);
   const pick = (cat) => cat[`${key}.${rule}`] ?? cat[`${key}.other`];
   return format(pick(messages) ?? pick(fallback) ?? key, { count, ...params });

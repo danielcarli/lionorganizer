@@ -25,12 +25,19 @@ export class CleanupView extends ViewPane {
     this.analysis.onDidChangeData(() => this.invalidate());
     this.layout.onDidChangeTheme(() => this.invalidate());
     this.analysis.onDidChangeFilter(() => { if (this.lastFolder !== this.analysis.filter.folder) this.invalidate(); });
+    this.analysis.onDidPrepare(() => this.invalidate());
   }
 
   render() {
     const { analysis } = this;
     if (!analysis.hasData) return;
     this.lastFolder = analysis.filter.folder;
+    if (!analysis.cleanupReady) {
+      // a large analysis: the suggestions are being prepared in the background (a moment)
+      setChildren(this.element, h('div.empty-state.cleanup-preparing', { role: 'status' },
+        h('span.spin', { html: icon('refresh', 26) }), h('h2', t('cleanup.preparing.title')), h('p.muted', t('cleanup.preparing.text'))));
+      return;
+    }
     const groups = analysis.cleanupGroups();
     const unique = new Map();
     for (const g of groups) for (const f of g.files) unique.set(f.path, f.size);

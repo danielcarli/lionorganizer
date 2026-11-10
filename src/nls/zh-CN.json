@@ -817,5 +817,11 @@
   "treemap.building.title": "正在准备空间地图…",
   "treemap.building.group": "{pct}% · 正在按文件夹归组文件（{done} / {total}）",
   "treemap.building.sort": "{pct}% · 正在按大小排序文件夹（{done} / {total}）",
-  "treemap.building.note": "正在后台加载：你可以切换到其他标签页，准备好后地图会自动显示。"
+  "treemap.building.note": "正在后台加载：你可以切换到其他标签页，准备好后地图会自动显示。",
+  "files.sorting": "正在排序…",
+  "sidebar.savingCatalog": "正在保存到索引库…",
+  "boot.readingCount": "{pct}% · {done} / {total} 个文件",
+  "overview.hero.preparing": "正在准备清理建议…",
+  "cleanup.preparing.title": "正在准备清理建议…",
+  "cleanup.preparing.text": "本次分析规模较大：建议正在后台计算，稍后会显示在这里。"
 }

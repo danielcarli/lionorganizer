@@ -8,3 +8,4 @@
 *.iss  text eol=crlf
 *.isl  text eol=crlf
 installer/info/*.txt text eol=crlf
+.githooks/* text eol=lf

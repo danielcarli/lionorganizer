@@ -817,5 +817,11 @@
   "treemap.building.title": "Preparazione della mappa dello spazio…",
   "treemap.building.group": "{pct}% · raggruppamento dei file per cartella ({done} di {total})",
   "treemap.building.sort": "{pct}% · ordinamento delle cartelle per dimensione ({done} di {total})",
-  "treemap.building.note": "Caricamento in background: puoi passare a un’altra scheda, la mappa compare quando è pronta."
+  "treemap.building.note": "Caricamento in background: puoi passare a un’altra scheda, la mappa compare quando è pronta.",
+  "files.sorting": "Ordinamento…",
+  "sidebar.savingCatalog": "Salvataggio nel catalogo…",
+  "boot.readingCount": "{pct}% · {done} di {total} file",
+  "overview.hero.preparing": "Preparazione dei suggerimenti di pulizia…",
+  "cleanup.preparing.title": "Preparazione dei suggerimenti di pulizia…",
+  "cleanup.preparing.text": "Questa analisi è grande: i suggerimenti vengono calcolati in background e compaiono qui tra un attimo."
 }

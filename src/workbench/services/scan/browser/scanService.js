@@ -143,7 +143,7 @@ export class ScanService {
     try {
       const result = await this.host.startScan(folder, this.effectiveDepth, this.settings.record, { ignore: this.ignorePatterns, background });
       if (!result.discarded) {
-        this.analysis.setResult(result, { keepView: background });
+        await this.analysis.setResultAsync(result, { keepView: background });
         this.#onDidFinish.fire({ background, result });
       }
     } catch (err) {
@@ -162,16 +162,17 @@ export class ScanService {
    */
   async reopen(folder = this.folder, { onStatus, isCancelled } = {}) {
     if (!folder || this.busy) return false;
-    onStatus?.('reading', folder);
+    onStatus?.('reading', { done: 0, total: 0 });
+    const off = this.host.onRestoreProgress?.((p) => onStatus?.('reading', p));
     let snap = null;
-    try { snap = await this.host.restoreScan(folder); } catch { snap = null; }
+    try { snap = await this.host.restoreScan(folder); } catch { snap = null; } finally { off?.(); }
     if (!snap || isCancelled?.()) return false;
-    onStatus?.('preparing', snap.files.length);
+    onStatus?.('preparing', snap.cols?.count ?? snap.files?.length ?? 0);
     await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0))); // let the status be painted
     if (isCancelled?.()) return false;
     this.folder = snap.root;
     this.#save();
-    this.analysis.setResult(snap);
+    await this.analysis.setResultAsync(snap, {}, (done, total) => onStatus?.('preparing', total, done));
     return true;
   }
 

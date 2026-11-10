@@ -817,5 +817,11 @@
   "treemap.building.title": "スペースマップを準備しています…",
   "treemap.building.group": "{pct}% · ファイルをフォルダーごとにまとめています（{done} / {total}）",
   "treemap.building.sort": "{pct}% · フォルダーをサイズ順に並べています（{done} / {total}）",
-  "treemap.building.note": "バックグラウンドで読み込んでいます。他のタブに移動しても、準備ができるとマップが表示されます。"
+  "treemap.building.note": "バックグラウンドで読み込んでいます。他のタブに移動しても、準備ができるとマップが表示されます。",
+  "files.sorting": "並べ替えています…",
+  "sidebar.savingCatalog": "カタログに保存しています…",
+  "boot.readingCount": "{pct}% · {done} / {total} 個のファイル",
+  "overview.hero.preparing": "クリーンアップの提案を準備しています…",
+  "cleanup.preparing.title": "クリーンアップの提案を準備しています…",
+  "cleanup.preparing.text": "大きな分析のため、提案はバックグラウンドで計算され、まもなくここに表示されます。"
 }

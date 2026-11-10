@@ -1194,3 +1194,9 @@ td.col-actions .missing-remove.icon-button { opacity: 1; }
 .tmv-progress { width: 100%; height: 8px; border-radius: 4px; background: var(--tile); overflow: hidden; margin-top: 6px; }
 .tmv-progress-fill { width: 0; height: 100%; border-radius: 4px; background: var(--accent); transition: width .15s linear; }
 .tmv-progress-text { font-family: var(--font-mono); font-size: 12px !important; }
+
+/* ---------- 1.2.0: large lists sorted in the background ---------- */
+.toolbar-sorting { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+.toolbar-sorting .spin { display: inline-flex; color: var(--accent); }
+.hero-pending { display: flex; align-items: center; min-height: 56px; opacity: .7; }
+.cleanup-preparing .spin { display: inline-flex; color: var(--accent); }

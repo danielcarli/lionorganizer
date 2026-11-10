@@ -817,5 +817,11 @@
   "treemap.building.title": "Platzkarte wird vorbereitet…",
   "treemap.building.group": "{pct} % · Dateien werden nach Ordnern gruppiert ({done} von {total})",
   "treemap.building.sort": "{pct} % · Ordner werden nach Größe sortiert ({done} von {total})",
-  "treemap.building.note": "Läuft im Hintergrund: Sie können zu einem anderen Tab wechseln, die Karte erscheint, sobald sie fertig ist."
+  "treemap.building.note": "Läuft im Hintergrund: Sie können zu einem anderen Tab wechseln, die Karte erscheint, sobald sie fertig ist.",
+  "files.sorting": "Wird sortiert…",
+  "sidebar.savingCatalog": "Wird im Katalog gespeichert…",
+  "boot.readingCount": "{pct} % · {done} von {total} Dateien",
+  "overview.hero.preparing": "Aufräumvorschläge werden vorbereitet…",
+  "cleanup.preparing.title": "Aufräumvorschläge werden vorbereitet…",
+  "cleanup.preparing.text": "Diese Analyse ist groß: Die Vorschläge werden im Hintergrund berechnet und erscheinen gleich hier."
 }

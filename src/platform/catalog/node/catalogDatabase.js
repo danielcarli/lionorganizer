@@ -236,8 +236,9 @@ class CatalogDatabase {
    * (files seen again by later scans of a subfolder count too), within its depth limit and ignore list.
    * @param {string} root
    * @param {(patterns: string[]) => ((rel: string, name: string) => boolean) | null} compileIgnore
+   * @param {(p: { phase: 'restore', done: number, total: number }) => void} [onProgress]
    */
-  lastSnapshot(root, compileIgnore) {
+  lastSnapshot(root, compileIgnore, onProgress) {
     const rootRow = this.q.rootByPath.get(root);
     if (!rootRow) return null;
     const scan = this.q.lastScan.get(rootRow.id);
@@ -248,7 +249,17 @@ class CatalogDatabase {
     const maxDepth = scan.max_depth;
     const files = [];
     let bytes = 0;
-    for (const row of this.q.snapshotFiles.all(likePrefix(root), scan.id)) {
+    const total = scan.file_count || 0;
+    let done = 0;
+    let lastReport = Date.now();
+    const rows = typeof this.q.snapshotFiles.iterate === 'function'
+      ? this.q.snapshotFiles.iterate(likePrefix(root), scan.id)
+      : this.q.snapshotFiles.all(likePrefix(root), scan.id);
+    for (const row of rows) {
+      if (onProgress && (++done & 4095) === 0 && Date.now() - lastReport > 100) {
+        lastReport = Date.now();
+        onProgress({ phase: 'restore', done, total });
+      }
       const folder = path.relative(root, path.dirname(row.path));
       if (folder.startsWith('..') || path.isAbsolute(folder)) continue;
       const segs = folder ? folder.split(path.sep) : [];
