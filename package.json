@@ -1,0 +1,76 @@
+{
+  "name": "lionorganizer",
+  "version": "1.0.0",
+  "description": "LionOrganizer — disk space analysis & cleanup. See what takes up space in your folders, find true duplicates by content and safely free up what you no longer need.",
+  "main": "src/code/electron-main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "npx --yes electron-builder@26 --win nsis portable",
+    "test:e2e": "electron tools/e2e.js",
+    "shots": "electron tools/screenshot.js",
+    "docs:screenshots": "electron tools/docs-screenshots.js"
+  },
+  "author": "LionOrganizer Team",
+  "license": "GPL-3.0-or-later",
+  "devDependencies": {
+    "electron": "^45.2.3"
+  },
+  "productName": "LionOrganizer",
+  "build": {
+    "appId": "br.dmdc.lionorganizer",
+    "productName": "LionOrganizer",
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "build/icon.ico",
+      "legalTrademarks": "LionOrganizer"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "LionOrganizer",
+      "include": "build/installer.nsh",
+      "uninstallDisplayName": "LionOrganizer — disk space analysis & cleanup",
+      "multiLanguageInstaller": true,
+      "installerLanguages": [
+        "en_US",
+        "pt_BR",
+        "pt_PT",
+        "es_ES",
+        "fr_FR",
+        "de_DE",
+        "it_IT",
+        "zh_CN",
+        "ja_JP",
+        "ko_KR"
+      ],
+      "license": "LICENSE"
+    },
+    "portable": {
+      "artifactName": "LionOrganizer-${version}-portatil.exe"
+    },
+    "copyright": "Copyright © 2026 LionOrganizer Team"
+  },
+  "keywords": [
+    "disk-space",
+    "disk-usage",
+    "duplicate-finder",
+    "file-organizer",
+    "cleanup",
+    "electron",
+    "windows"
+  ],
+  "contributors": [
+    "Daniel Michelon De Carli (creator)"
+  ]
+}
