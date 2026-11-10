@@ -17,6 +17,7 @@ Veja o que ocupa espaço nas suas pastas, encontre duplicados verdadeiros pelo c
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
 ![Idiomas: 10](https://img.shields.io/badge/UI%20languages-10-0a8bb5)
 
+
 <img src="screenshots/i18n/overview-pt-PT.png" alt="Vista geral do LionOrganizer: espaço por tipo de ficheiro, maiores pastas e ficheiros" width="900">
 
 </div>
@@ -26,6 +27,38 @@ Veja o que ocupa espaço nas suas pastas, encontre duplicados verdadeiros pelo c
 Os analisadores de disco mostram *o que* é grande. O LionOrganizer também ajuda a decidir *o que pode sair* — e garante que nada é eliminado por engano. Nasceu de um problema muito concreto: os projetos de arquitetura e design acumulam cópias de segurança de CAD (`.skb`, `.0001.rvt`, `.bak`), renders, vídeos e cópias de cópias até o disco ficar cheio.
 
 Tudo é executado **localmente**. Não há conta, nem telemetria, nem acesso à rede.
+
+## Transferir
+
+Transfira o instalador do seu sistema. Todos obtêm a **versão mais recente** do GitHub e verificam cada ficheiro (SHA-256 e proveniência assinada do build).
+
+<p align="center">
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe"><img src="https://img.shields.io/badge/Windows-Transferir%20.exe-d4145a?style=for-the-badge&labelColor=161214" alt="Windows .exe"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg"><img src="https://img.shields.io/badge/macOS-Transferir%20.dmg-d4145a?style=for-the-badge&labelColor=161214" alt="macOS .dmg"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb"><img src="https://img.shields.io/badge/Linux-Transferir%20.deb-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .deb"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm"><img src="https://img.shields.io/badge/Linux-Transferir%20.rpm-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .rpm"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage"><img src="https://img.shields.io/badge/Linux-Transferir%20AppImage-d4145a?style=for-the-badge&labelColor=161214" alt="Linux AppImage"></a>
+</p>
+
+- **Windows 10/11** (x64, ARM): assistente de instalação de cerca de 2 MB, que transfere e verifica o programa durante a instalação.
+- **macOS 11+** (Apple Silicon, Intel): abra o `.dmg` e arraste o LionOrganizer para Aplicações.
+- **Linux** (x64): `.deb` para Ubuntu, Debian, Mint…, `.rpm` para Fedora, RHEL, openSUSE…, ou o AppImage, que funciona em qualquer distribuição sem instalação.
+
+> Os instaladores ainda não estão assinados com um certificado pago. Na primeira execução, o Windows pode mostrar "O Windows protegeu o computador" (**Mais informações › Executar mesmo assim**) e o macOS pede para autorizar a aplicação em **Definições do Sistema › Privacidade e segurança › Abrir mesmo assim**.
+
+**Prefere o terminal?** Windows (PowerShell, não precisa de ser administrador):
+
+```powershell
+irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
+```
+
+macOS e Linux:
+
+```bash
+curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
+```
+
+[Todas as versões](https://github.com/danielcarli/lionorganizer/releases) · [Guia de instalação](INSTALL.md) (em inglês): detalhes, segurança, atualização e desinstalação.
 
 ## Funcionalidades
 
@@ -68,34 +101,6 @@ As restantes capturas de ecrã mostram a interface em inglês.
 <img src="screenshots/languages.png" alt="A interface em dez idiomas" width="900">
 <br><sub>O mesmo ecrã nos dez idiomas suportados.</sub>
 </div>
-
-## Instalação
-
-Transfira o instalador do seu sistema. Obtém sempre a **versão mais recente** do GitHub e verifica cada ficheiro (SHA-256 e proveniência assinada do build).
-
-| Sistema | Transferência |
-|---|---|
-| **Windows** 10/11 | [LionOrganizer-Setup.exe](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe) — assistente de instalação de cerca de 2 MB: transfere e verifica o programa durante a instalação |
-| **macOS** 11+ | [LionOrganizer-mac-universal.dmg](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg) — abra-o e arraste a aplicação para Aplicações |
-| **Linux** (Ubuntu, Debian, Mint…) | [lionorganizer_amd64.deb](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb) |
-| **Linux** (Fedora, RHEL, openSUSE…) | [lionorganizer.x86_64.rpm](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm) |
-| **Linux** (Qualquer Linux) | [LionOrganizer-x86_64.AppImage](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage) — não precisa de instalação |
-
-> Os instaladores ainda não estão assinados com um certificado pago. Na primeira execução, o Windows pode mostrar "O Windows protegeu o computador" (**Mais informações › Executar mesmo assim**) e o macOS pede para autorizar a aplicação em **Definições do Sistema › Privacidade e segurança › Abrir mesmo assim**.
-
-**Prefere o terminal?** Windows (PowerShell, não precisa de ser administrador):
-
-```powershell
-irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
-```
-
-macOS e Linux:
-
-```bash
-curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
-```
-
-Consulte **[INSTALL.md](INSTALL.md)** (em inglês) para detalhes, o modelo de segurança e como atualizar e desinstalar.
 
 ## Introdução
 

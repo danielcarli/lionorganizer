@@ -17,6 +17,7 @@
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
 ![界面语言：10 种](https://img.shields.io/badge/UI%20languages-10-0a8bb5)
 
+
 <img src="screenshots/i18n/overview-zh-CN.png" alt="LionOrganizer 概览：按文件类型划分的空间、最大的文件夹和文件" width="900">
 
 </div>
@@ -26,6 +27,38 @@
 磁盘分析工具会告诉你*什么*占用了大量空间。LionOrganizer 还能帮你判断*哪些可以删除*——并确保不会误删任何文件。它源于一个非常具体的问题：建筑和设计项目会不断堆积 CAD 备份（`.skb`、`.0001.rvt`、`.bak`）、渲染图、视频以及副本的副本，直到磁盘被占满。
 
 一切都在**本地**运行。无需账户，没有遥测，也不访问网络。
+
+## 下载
+
+下载适用于你系统的安装程序。每个安装程序都会从 GitHub 获取**最新版本**，并校验每个文件（SHA-256 和签名的构建来源证明）。
+
+<p align="center">
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe"><img src="https://img.shields.io/badge/Windows-%E4%B8%8B%E8%BD%BD%20.exe-d4145a?style=for-the-badge&labelColor=161214" alt="Windows .exe"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg"><img src="https://img.shields.io/badge/macOS-%E4%B8%8B%E8%BD%BD%20.dmg-d4145a?style=for-the-badge&labelColor=161214" alt="macOS .dmg"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb"><img src="https://img.shields.io/badge/Linux-%E4%B8%8B%E8%BD%BD%20.deb-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .deb"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm"><img src="https://img.shields.io/badge/Linux-%E4%B8%8B%E8%BD%BD%20.rpm-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .rpm"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage"><img src="https://img.shields.io/badge/Linux-%E4%B8%8B%E8%BD%BD%20AppImage-d4145a?style=for-the-badge&labelColor=161214" alt="Linux AppImage"></a>
+</p>
+
+- **Windows 10/11**（x64、ARM）：约 2 MB 的安装向导，安装时下载并校验应用。
+- **macOS 11+**（Apple Silicon、Intel）：打开 `.dmg`，将 LionOrganizer 拖到“应用程序”。
+- **Linux**（x64）：Ubuntu、Debian、Mint… 用 `.deb`，Fedora、RHEL、openSUSE… 用 `.rpm`，或使用 AppImage，任何发行版都无需安装即可运行。
+
+> 安装程序尚未使用付费证书签名。首次启动时，Windows 可能显示“Windows 已保护你的电脑”（**更多信息 › 仍要运行**），macOS 会要求在**系统设置 › 隐私与安全性 › 仍要打开**中允许该应用。
+
+**更喜欢命令行？** Windows（PowerShell，无需管理员权限）：
+
+```powershell
+irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
+```
+
+macOS 和 Linux：
+
+```bash
+curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
+```
+
+[所有版本](https://github.com/danielcarli/lionorganizer/releases) · [安装指南](INSTALL.md)（英文）：细节、安全、更新与卸载。
 
 ## 功能
 
@@ -68,34 +101,6 @@
 <img src="screenshots/languages.png" alt="十种语言的界面" width="900">
 <br><sub>同一界面在十种受支持语言中的显示效果。</sub>
 </div>
-
-## 安装
-
-下载适用于你系统的安装程序。它总是从 GitHub 获取**最新版本**，并校验每个文件（SHA-256 和签名的构建来源证明）。
-
-| 系统 | 下载 |
-|---|---|
-| **Windows** 10/11 | [LionOrganizer-Setup.exe](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe) — 安装向导，约 2 MB：安装时下载并校验应用 |
-| **macOS** 11+ | [LionOrganizer-mac-universal.dmg](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg) — 打开后将应用拖到“应用程序” |
-| **Linux** (Ubuntu、Debian、Mint…) | [lionorganizer_amd64.deb](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb) |
-| **Linux** (Fedora、RHEL、openSUSE…) | [lionorganizer.x86_64.rpm](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm) |
-| **Linux** (任意 Linux) | [LionOrganizer-x86_64.AppImage](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage) — 无需安装 |
-
-> 安装程序尚未使用付费证书签名。首次启动时，Windows 可能显示“Windows 已保护你的电脑”（**更多信息 › 仍要运行**），macOS 会要求在**系统设置 › 隐私与安全性 › 仍要打开**中允许该应用。
-
-**更喜欢命令行？** Windows（PowerShell，无需管理员权限）：
-
-```powershell
-irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
-```
-
-macOS 和 Linux：
-
-```bash
-curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
-```
-
-更多细节、安全模型以及更新和卸载方法，请参阅 **[INSTALL.md](INSTALL.md)**（英文）。
 
 ## 快速上手
 

@@ -159,7 +159,8 @@ jobs:
           function Invoke-Setup([string] $exe, [string[]] $extra) {
             $log = Join-Path $env:RUNNER_TEMP ("setup-" + [Guid]::NewGuid().ToString('N') + '.log')
             $p = Start-Process $exe -ArgumentList (@('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/LOG=$log") + $extra) -Wait -PassThru
-            Get-Content $log -Tail 15 -ErrorAction SilentlyContinue | ForEach-Object { "   | $_" }
+            # Write-Host, not output: anything written to the pipeline here would become part of the return value
+            Get-Content $log -Tail 15 -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "   | $_" }
             return $p.ExitCode
           }
           try {

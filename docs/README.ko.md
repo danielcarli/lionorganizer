@@ -17,6 +17,7 @@
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
 ![UI 언어: 10개](https://img.shields.io/badge/UI%20languages-10-0a8bb5)
 
+
 <img src="screenshots/i18n/overview-ko.png" alt="LionOrganizer 개요: 파일 유형별 공간, 가장 큰 폴더와 파일" width="900">
 
 </div>
@@ -26,6 +27,38 @@
 디스크 분석 도구는 *무엇이* 큰지 알려 줍니다. LionOrganizer는 여기서 더 나아가 *무엇을 지워도 되는지* 판단하도록 돕고, 실수로 삭제되는 일이 없도록 합니다. 이 앱은 아주 구체적인 문제에서 시작되었습니다. 건축과 디자인 프로젝트에서는 CAD 백업(`.skb`, `.0001.rvt`, `.bak`), 렌더링 이미지, 동영상, 사본의 사본이 계속 쌓여 결국 디스크가 가득 차게 됩니다.
 
 모든 작업은 **로컬**에서 실행됩니다. 계정, 원격 분석, 네트워크 연결이 없습니다.
+
+## 다운로드
+
+사용 중인 시스템용 설치 프로그램을 내려받으세요. 모든 설치 프로그램은 GitHub에서 **최신 버전**을 가져오며 모든 파일을 검증합니다(SHA-256 및 서명된 빌드 출처).
+
+<p align="center">
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe"><img src="https://img.shields.io/badge/Windows-%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C%20.exe-d4145a?style=for-the-badge&labelColor=161214" alt="Windows .exe"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg"><img src="https://img.shields.io/badge/macOS-%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C%20.dmg-d4145a?style=for-the-badge&labelColor=161214" alt="macOS .dmg"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb"><img src="https://img.shields.io/badge/Linux-%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C%20.deb-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .deb"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm"><img src="https://img.shields.io/badge/Linux-%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C%20.rpm-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .rpm"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage"><img src="https://img.shields.io/badge/Linux-%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C%20AppImage-d4145a?style=for-the-badge&labelColor=161214" alt="Linux AppImage"></a>
+</p>
+
+- **Windows 10/11** (x64, ARM): 약 2MB 설치 마법사로, 설치 중에 앱을 내려받아 검증합니다.
+- **macOS 11+** (Apple Silicon, Intel): `.dmg`를 열고 LionOrganizer를 응용 프로그램으로 드래그하세요.
+- **Linux** (x64): Ubuntu, Debian, Mint…는 `.deb`, Fedora, RHEL, openSUSE…는 `.rpm`, 또는 설치 없이 모든 배포판에서 실행되는 AppImage.
+
+> 설치 프로그램은 아직 유료 인증서로 서명되지 않았습니다. 처음 실행할 때 Windows에서 "Windows의 PC 보호" 창이 나타날 수 있으며(**추가 정보 › 실행**), macOS에서는 **시스템 설정 › 개인정보 보호 및 보안 › 그래도 열기**에서 앱을 허용해야 합니다.
+
+**터미널이 더 편하신가요?** Windows(PowerShell, 관리자 권한 불필요):
+
+```powershell
+irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
+```
+
+macOS 및 Linux:
+
+```bash
+curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
+```
+
+[모든 버전](https://github.com/danielcarli/lionorganizer/releases) · [설치 가이드](INSTALL.md)(영어): 자세한 내용, 보안, 업데이트 및 제거.
 
 ## 기능
 
@@ -68,34 +101,6 @@
 <img src="screenshots/languages.png" alt="10개 언어로 표시한 인터페이스" width="900">
 <br><sub>지원되는 10개 언어로 표시한 같은 화면입니다.</sub>
 </div>
-
-## 설치
-
-사용 중인 시스템용 설치 프로그램을 내려받으세요. 항상 GitHub에서 **최신 버전**을 가져오며 모든 파일을 검증합니다(SHA-256 및 서명된 빌드 출처).
-
-| 시스템 | 다운로드 |
-|---|---|
-| **Windows** 10/11 | [LionOrganizer-Setup.exe](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe) — 약 2MB 설치 마법사: 설치 중에 앱을 내려받아 검증 |
-| **macOS** 11+ | [LionOrganizer-mac-universal.dmg](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg) — 열어서 앱을 응용 프로그램으로 드래그 |
-| **Linux** (Ubuntu, Debian, Mint…) | [lionorganizer_amd64.deb](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb) |
-| **Linux** (Fedora, RHEL, openSUSE…) | [lionorganizer.x86_64.rpm](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm) |
-| **Linux** (모든 Linux) | [LionOrganizer-x86_64.AppImage](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage) — 설치 불필요 |
-
-> 설치 프로그램은 아직 유료 인증서로 서명되지 않았습니다. 처음 실행할 때 Windows에서 "Windows의 PC 보호" 창이 나타날 수 있으며(**추가 정보 › 실행**), macOS에서는 **시스템 설정 › 개인정보 보호 및 보안 › 그래도 열기**에서 앱을 허용해야 합니다.
-
-**터미널이 더 편하신가요?** Windows(PowerShell, 관리자 권한 불필요):
-
-```powershell
-irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
-```
-
-macOS 및 Linux:
-
-```bash
-curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
-```
-
-자세한 내용, 보안 모델, 업데이트 및 제거 방법은 **[INSTALL.md](INSTALL.md)**(영어)를 참고하세요.
 
 ## 시작하기
 
