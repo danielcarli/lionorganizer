@@ -405,6 +405,28 @@ begin
   end;
 end;
 
+{ Closes every process started from the app folder (LionOrganizer.exe and Electron's helpers), so that the
+  uninstaller can remove all files even if the app is open. Uses .NET only, so it does not depend on any
+  PowerShell module. }
+procedure StopRunningApp;
+var
+  Dir, Cmd: String;
+  ResultCode: Integer;
+begin
+  Dir := AddBackslash(ExpandConstant('{app}'));
+  StringChangeEx(Dir, '''', '''''', True);
+  Cmd := '-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "' +
+    '[Diagnostics.Process]::GetProcesses() | ForEach-Object { try { if ($_.MainModule.FileName.StartsWith(''' + Dir +
+    ''', [StringComparison]::OrdinalIgnoreCase)) { $_.Kill(); $_.WaitForExit(5000) | Out-Null } } catch { } }"';
+  Log('Closing processes started from ' + Dir);
+  Exec(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe'), Cmd, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+end;
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+begin
+  if CurUninstallStep = usUninstall then StopRunningApp;
+end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   Location: String;

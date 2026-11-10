@@ -201,7 +201,9 @@ function Get-InstalledVersion([string] $Dir) {
 }
 
 function Stop-RunningApp([string] $Dir) {
-  $running = @(Get-Process -Name $AppName -ErrorAction SilentlyContinue | Where-Object { $_.Path -and $_.Path.StartsWith($Dir, [StringComparison]::OrdinalIgnoreCase) })
+  # every process started from the app folder: LionOrganizer.exe and Electron's helpers (crash handler etc.)
+  $prefix = $Dir.TrimEnd('\') + '\'
+  $running = @(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -and $_.Path.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase) })
   if ($running.Count -eq 0) { return }
   if (-not $Yes) {
     $answer = Read-Host "$AppName is running. Close it to continue? [Y/n]"
