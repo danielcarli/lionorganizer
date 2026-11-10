@@ -50,6 +50,8 @@ class ShellMainService {
     const quote = (a) => `"${a.replace(/"/g, '').replace(/\\+$/, (m) => m + m)}"`;
     const args = [...(app.isPackaged ? [] : [app.getAppPath()]), `--scan=${folder}`].map(quote).join(' ');
     const ps = path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe');
+    // Only one LionOrganizer runs at a time: let go of that, or the new window would close at once.
+    app.releaseSingleInstanceLock();
     // The paths go through environment variables, never inside the command text.
     const code = await new Promise((resolve) => {
       const child = spawn(ps, ['-NoProfile', '-NonInteractive', '-Command', 'Start-Process -FilePath $env:LO_EXE -ArgumentList $env:LO_ARGS -Verb RunAs -ErrorAction Stop'], {
@@ -58,7 +60,10 @@ class ShellMainService {
       child.on('error', () => resolve(-1));
       child.on('exit', (c) => resolve(c));
     });
-    if (code !== 0) return { ok: false, declined: true };
+    if (code !== 0) {
+      app.requestSingleInstanceLock(); // still the only one
+      return { ok: false, declined: true };
+    }
     setTimeout(() => app.quit(), 300);
     return { ok: true };
   }

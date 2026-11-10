@@ -109,6 +109,7 @@ app.on('browser-window-created', (_e, win) => {
       check(await js(`document.querySelector('.status-version').textContent.includes('9.9.9') && !!document.querySelector('.status-right-wrap > .status-version:last-child')`), 'it shows the new version, in the bottom-right corner');
       await click('.status-version');
       check(await until(`!!document.querySelector('.update-dialog')`), 'clicking it opens the update dialog');
+      await until(`document.querySelector('.update-dialog')?.textContent.includes('Do you want to update now?')`); // it checks again on open
       const upd = await js(`document.querySelector('.update-dialog').textContent`);
       check(upd.includes('9.9.9') && upd.includes(APP_VERSION) && upd.includes('Do you want to update now?'), 'it shows both versions and asks whether to update');
       await shot('06-update');
@@ -126,6 +127,18 @@ app.on('browser-window-created', (_e, win) => {
       // ---- the main process rejects a wrong code (independent of the UI)
       await click('.welcome .btn-primary');
       check(await until(`!!document.querySelector('.view-overview:not([hidden])')`), 'analysis finished');
+
+      // ---- 1.1.5: space analyzed vs space used on the disk, and why they differ
+      await until(`!document.querySelector('.statusbar.busy')`);
+      const cov = await js(`document.querySelector('.view-overview .coverage')?.textContent || ''`);
+      check(await js(`document.querySelector('.view-overview .hero .eyebrow').textContent === 'Space analyzed'`), 'the headline number is called "Space analyzed"');
+      check(/The analyzed folder holds .+ of the .+ used on its disk/.test(cov) && !!(await js(`document.querySelector('.cov-bar .is-analyzed') && document.querySelector('.cov-bar .is-free')`)), 'the coverage card compares it with the space used on the disk, with a bar');
+      check(cov.includes('Why the difference') && cov.includes('1 item could not be read') && cov.includes('other folders of the disk'), 'it explains the difference: the inaccessible item and the other folders of the disk');
+      check(/\d+ folders read, down to 3 levels of subfolders/.test(cov), 'and says how far the analysis went');
+      await click('.coverage-access');
+      check(await until(`!!document.querySelector('.access-dialog')`), '"See which" opens the list of inaccessible items');
+      await click('.access-dialog .cm-actions .btn', 'Close');
+      await shot('07-coverage');
       const srv = await js(`(async () => {
         const files = await window.host.catalog.search({ query: 'song' });
         const v = await window.host.ops.prepare('trash', { paths: [files.rows[0].path] });
@@ -222,7 +235,7 @@ app.on('browser-window-created', (_e, win) => {
       await wait(400);
       await shot('40-cleanup');
 
-      // ---- 1.1.0: render caches, empty files and empty folders in Cleanup
+      // ---- 1.1.5: render caches, empty files and empty folders in Cleanup
       check(await js(`document.querySelector('.breadcrumbs .crumb.current').textContent === 'Loose'`), 'analyzing again kept the folder in focus');
       await click('.breadcrumbs .crumb');
       await wait(400);
@@ -244,7 +257,7 @@ app.on('browser-window-created', (_e, win) => {
       check(!exists('Empty') && !exists('Downloads') && exists('EmptyOne/new-note.txt'), 'the empty folders (with their empty subfolders) went to the Recycle Bin; the other was kept');
       check(await until(`!document.querySelector('.empty-dirs-card')`), 'the empty folders card is gone');
 
-      // ---- 1.1.0: import the AI's answer (the paths it cites, with the risk it gave)
+      // ---- 1.1.5: import the AI's answer (the paths it cites, with the risk it gave)
       await click('.view-cleanup .ai-import-button');
       check(await until(`!!document.querySelector('.ai-import-dialog textarea')`), 'the "Import AI answer" dialog opens');
       const answer = [
@@ -269,7 +282,7 @@ app.on('browser-window-created', (_e, win) => {
       await confirmWithCode();
       check(!exists('Renders/scene-light.vrmap') && exists('Renders/Lumion 2024/Cache/frame-0001.cache') && exists('Documents/contract.pdf'), 'only the checked file went to the Recycle Bin, after the code');
 
-      // ---- 1.1.0: inaccessible items: why, and what to do
+      // ---- 1.1.5: inaccessible items: why, and what to do
       check(await js(`document.querySelector('.status-access')?.textContent.includes('1 inaccessible')`), 'the status bar shows the folder that could not be read');
       await click('.status-access');
       check(await until(`!!document.querySelector('.access-dialog')`), 'clicking it opens the explanation');
@@ -279,7 +292,7 @@ app.on('browser-window-created', (_e, win) => {
       await shot('43-inaccessible');
       await click('.access-dialog .cm-actions .btn', 'Close');
 
-      // ---- 1.1.0: ignore folders (optional, off by default)
+      // ---- 1.1.5: ignore folders (optional, off by default)
       check(await js(`!document.querySelector('.ignore-toggle input').checked`), '"Ignore folders" starts unchecked');
       check(await js(`[...document.querySelectorAll('.tree-row .tree-label')].some((l) => l.textContent === 'Code')`), 'without it, node_modules is analyzed like any folder');
       await click('.ignore-edit');
@@ -298,7 +311,7 @@ app.on('browser-window-created', (_e, win) => {
       await js(`window.dispatchEvent(new KeyboardEvent('keydown', { key: 'F5' }))`);
       check(await until(`!document.querySelector('.tree-note')?.textContent.includes('ignore list') && !document.querySelector('.statusbar.busy')`), 'turned off again, every folder is read');
 
-      // ---- 1.1.0: space map (treemap) with zoom
+      // ---- 1.1.5: space map (treemap) with zoom
       await key('7');
       check(await until(`!!document.querySelector('.view-treemap:not([hidden]) canvas') && document.querySelector('.view-treemap canvas').width > 300`), 'Ctrl+7 opens the space map');
       check(await js(`document.querySelector('.tmv-up').disabled`), 'at the top level "Up" is disabled');
@@ -345,16 +358,21 @@ app.on('browser-window-created', (_e, win) => {
       await click('.toast-warning .btn', 'Remove from list');
       check(await until(`document.querySelectorAll('tr.is-missing').length === 0`), 'the notice\'s "Remove from list" removes all missing files');
 
-      // ---- changing the language in the status bar reloads the UI in the new language,
-      // and the saved analysis reopens at once while it is analyzed again in the background
+      // ---- changing the language reloads the UI in the new language; the loading screen says what it is doing,
+      // the saved analysis comes back at once, and nothing is analyzed until the person asks
       slowScan = true;
       await js(`(() => { const s = document.querySelector('.status-select'); s.value = 'pt-BR'; s.dispatchEvent(new Event('change')); })()`);
       check(await until(`document.documentElement.lang === 'pt-BR' && document.body.textContent.includes('Visão geral')`, 20000), 'switching the language in the status bar reloads the UI in Portuguese');
       check(await until(`!!document.querySelector('.restore-banner:not([hidden])')?.textContent.includes('Análise salva em')`, 8000), 'after the reload, the saved analysis is shown at once, with its date');
-      check(await js(`!!document.querySelector('.view-overview:not([hidden]) .hero')`), 'its data is on screen while the folder is analyzed again');
+      check(await until(`!document.getElementById('boot')`, 5000), 'the loading screen goes away once the UI is ready');
+      await wait(1500);
+      check(await js(`!document.querySelector('.statusbar.busy') && document.querySelector('.restore-banner').textContent.includes('Analisar agora')`), 'nothing is analyzed automatically: the banner offers "Analyze now"');
+      check(await js(`!!document.querySelector('.view-overview:not([hidden]) .hero')`), 'the saved data is on screen');
       await shot('70-reopened');
+      await click('.restore-banner .btn-primary');
+      check(await until(`document.querySelector('.restore-banner')?.textContent.includes('segundo plano')`), '"Analyze now" analyzes the folder again in the background, keeping the data on screen');
       slowScan = false;
-      check(await until(`!!document.querySelector('.restore-banner[hidden]') && [...document.querySelectorAll('.toast')].some((x) => x.textContent.includes('Análise atualizada'))`, 30000), 'when the background analysis ends, the banner goes away and a notice says so');
+      check(await until(`!!document.querySelector('.restore-banner[hidden]') && [...document.querySelectorAll('.toast')].some((x) => x.textContent.includes('Análise atualizada'))`, 30000), 'when it ends, the banner goes away and a notice says what changed');
     } catch (err) {
       failures++;
       log('ERROR', err.stack || err);

@@ -32,6 +32,8 @@ import { CatalogView } from '../contrib/catalog/catalogView.js';
 import { TreemapView } from '../contrib/treemap/treemapView.js';
 import { h } from '../../base/browser/dom.js';
 import { t, tn, consumeRescanFlag } from '../../base/common/nls.js';
+import { baseName } from '../../base/common/format.js';
+import { bootStatus, bootSkip, bootDone } from './boot.js';
 import { VIEWS } from '../services/layout/browser/layoutService.js';
 
 const host = window.host;
@@ -82,15 +84,30 @@ root.append(
 );
 
 // ---- startup ----
-// 1) reopened as administrator (Windows) to read protected folders: analyze that folder;
-// 2) otherwise reopen the last analysis saved in the catalog at once, and analyze it again in the background;
-// 3) without a saved one, after a language change (window reload) analyze the folder that was open again.
+// Nothing is analyzed automatically: analyzing is always the person's choice. At startup the app only
+//  1) analyzes the folder it was reopened for as administrator (Windows) — the person just asked for it;
+//  2) otherwise shows the last analysis saved in the catalog, with its date ("Analyze now" refreshes it).
+// The loading screen says what is happening meanwhile.
 (async () => {
-  const rescan = consumeRescanFlag();
-  const initial = await host.takeInitialScan?.().catch(() => null);
-  if (initial) { services.scan.scan(initial); return; }
-  if (services.scan.folder && (await services.scan.reopen())) return;
-  if (rescan && services.scan.folder) services.scan.scan();
+  consumeRescanFlag(); // flag of older versions: a language change no longer re-analyzes
+  try {
+    const initial = await host.takeInitialScan?.().catch(() => null);
+    if (initial) { services.scan.scan(initial); return; }
+    const folder = services.scan.folder;
+    if (!folder) return;
+    let skipped = false;
+    bootSkip(t('boot.skip'), () => { skipped = true; bootDone(); });
+    await services.scan.reopen(folder, {
+      isCancelled: () => skipped,
+      onStatus: (stage, value) => stage === 'reading'
+        ? bootStatus(t('boot.reading', { folder: baseName(folder) || folder }), folder)
+        : bootStatus(tn('boot.preparing', value), folder),
+    });
+  } catch (err) {
+    console.error(err);
+  } finally {
+    bootDone();
+  }
 })();
 
 // A background refresh replaced the saved analysis: say so, with what changed since then.

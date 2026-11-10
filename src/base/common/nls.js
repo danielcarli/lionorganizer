@@ -65,20 +65,19 @@ export function getLocalePreference() {
 
 /**
  * Saves the language choice and reloads the window (like VS Code, the UI is rebuilt in the new language).
+ * The analysis on screen comes back from the catalog (saved analysis); nothing is analyzed again.
  * @param {string} pref 'auto' or a locale id
- * @param {boolean} rescan re-run the current analysis after reloading
  */
-export function setLocalePreference(pref, rescan = false) {
+export function setLocalePreference(pref) {
   try {
     localStorage.setItem(PREF_KEY, pref);
-    if (rescan) sessionStorage.setItem(RESCAN_KEY, '1');
   } catch { /* storage unavailable */ }
   // The window blocks navigations started by the page, so the reload is asked to the main process.
   if (globalThis.host?.reloadWindow) globalThis.host.reloadWindow();
   else location.reload();
 }
 
-/** True once, right after a reload triggered by a language change with an analysis open. */
+/** Clears the flag older versions set before a language reload (they analyzed again after it). */
 export function consumeRescanFlag() {
   try {
     const v = sessionStorage.getItem(RESCAN_KEY) === '1';

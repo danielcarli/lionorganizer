@@ -11,7 +11,7 @@ See what takes up space in your folders, find true duplicates by content and saf
 
 **English** · [Português (Brasil)](docs/README.pt-BR.md) · [Português (Portugal)](docs/README.pt-PT.md) · [Español](docs/README.es.md) · [Français](docs/README.fr.md) · [Deutsch](docs/README.de.md) · [Italiano](docs/README.it.md) · [简体中文](docs/README.zh-CN.md) · [日本語](docs/README.ja.md) · [한국어](docs/README.ko.md)
 
-![Version 1.1.0](https://img.shields.io/badge/version-1.1.0-161214)
+![Version 1.1.5](https://img.shields.io/badge/version-1.1.5-161214)
 ![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Platforms: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -77,7 +77,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 | | |
 |---|---|
 | **Analyze** | Scans a folder and its subfolders — 3 levels deep by default, configurable up to 50 levels or unlimited. Folder tree with sizes, breadcrumbs and a sortable, filterable table of every file. |
-| **Big folders** | The last analysis reopens instantly from the catalog, marked with its date, while the folder is analyzed again in the background. Optional list of folders to ignore (`node_modules`, `.git`, system folders) — off by default. Items the system did not let the app read are listed with the reason; on Windows you can analyze again as administrator. |
+| **Big folders** | The last analysis reopens instantly from the catalog, marked with its date; the folder is analyzed again only when you ask, in the background. Shows the space analyzed next to the space used on the disk, and why they differ (inaccessible items, depth limit, system files). Optional list of folders to ignore (`node_modules`, `.git`, system folders) — off by default. Items the system did not let the app read are listed with the reason; on Windows you can analyze again as administrator. |
 | **Visualize** | Space by file type (rose chart), biggest subfolders (treemap), a 100-dot matrix where each dot is 1 % of the space, largest extensions and file age. |
 | **Space map** | Full-screen treemap: every file is a block, nested in its folders and colored by type. Click a block to zoom into its folder; Backspace or right-click goes up. |
 | **Clean up** | Suggestions grouped by reason: SketchUp/Revit/AutoCAD backups, temporary files, logs, unfinished downloads, installers, large old files. |
@@ -216,7 +216,7 @@ $env:E2E_FOLDER="C:\temp\lion-test"; $env:E2E_OUT="C:\temp\lion-out"; npm run te
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) — current version: **1.1.0**.
+See [CHANGELOG.md](CHANGELOG.md) — current version: **1.1.5**.
 
 ## Contributing
 

@@ -1070,7 +1070,7 @@ td.col-actions .missing-remove.icon-button { opacity: 1; }
 .cleanup-hero-text .ai-report-button { align-self: flex-start; }
 .ai-report-button .icon, .ai-report-button span:first-child { color: var(--brand-magenta); }
 
-/* ---------- 1.1.0: reopened analysis, ignore list, empty folders, inaccessible items, AI answer import, space map ---------- */
+/* ---------- 1.1.5: reopened analysis, ignore list, empty folders, inaccessible items, AI answer import, space map ---------- */
 .cm-spacer { flex: 1; }
 .cm-actions .ai-import-summary { align-self: center; margin: 0; font-size: 12.5px; color: var(--text-secondary); }
 
@@ -1146,3 +1146,37 @@ td.col-actions .missing-remove.icon-button { opacity: 1; }
 .tmv-tooltip { position: absolute; left: 0; top: 0; pointer-events: none; }
 .tmv-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--text-secondary); }
 .tmv-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ---------- 1.1.5: loading screen ---------- */
+.boot { position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center; background: var(--bg-editor); transition: opacity .25s ease; }
+.boot.is-done { opacity: 0; pointer-events: none; }
+.boot-card { display: flex; flex-direction: column; align-items: center; gap: 10px; width: min(420px, 90vw); text-align: center; }
+.boot-logo { width: 72px; height: 72px; }
+.boot-name { font: 700 20px var(--font-ui); color: var(--text-primary); letter-spacing: .2px; }
+.boot-track { width: 220px; height: 3px; border-radius: 3px; overflow: hidden; background: var(--border); margin-top: 6px; }
+.boot-bar { width: 40%; height: 100%; border-radius: 3px; background: var(--accent); animation: boot-slide 1.1s ease-in-out infinite; }
+@keyframes boot-slide { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+.boot-status { min-height: 18px; font: 500 13px var(--font-ui); color: var(--text-secondary); }
+.boot-detail { min-height: 16px; max-width: 100%; font: 11.5px var(--font-mono); color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (prefers-reduced-motion: reduce) { .boot-bar { animation: none; width: 100%; opacity: .6; } }
+
+/* ---------- 1.1.5: analysis coverage (space analyzed vs space used on the disk) ---------- */
+.coverage { margin: 0 0 16px; padding: 16px 20px; }
+.coverage-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.coverage-head h2 { margin: 0; font-size: 14.5px; }
+.coverage-lead { margin: 8px 0 12px; font-size: 13px; line-height: 1.5; color: var(--text-secondary); }
+.cov-bar { display: flex; gap: 2px; height: 12px; border-radius: 6px; overflow: hidden; }
+.cov-seg { min-width: 2px; flex-basis: 0; }
+.cov-seg.is-analyzed, .cov-swatch.is-analyzed { background: var(--accent); }
+.cov-seg.is-unread, .cov-swatch.is-unread { background: repeating-linear-gradient(135deg, var(--series-other) 0 3px, transparent 3px 6px); }
+.cov-seg.is-free, .cov-swatch.is-free { background: var(--tile); box-shadow: inset 0 0 0 1px var(--border); }
+.cov-keys { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 8px; font-size: 12px; color: var(--text-secondary); }
+.cov-key { display: inline-flex; align-items: center; gap: 6px; }
+.cov-key strong { color: var(--text-primary); font-family: var(--font-mono); font-weight: 600; }
+.cov-swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.coverage-over { margin: 8px 0 0; }
+.coverage-why h3 { margin: 14px 0 6px; font-size: 12.5px; color: var(--text-secondary); text-transform: none; }
+.coverage-reasons { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.coverage-reason { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; font-size: 12.5px; line-height: 1.45; }
+.coverage-reason .cr-icon { display: inline-flex; color: var(--text-muted); flex: none; }
+.coverage-reason .cr-text { flex: 1 1 320px; min-width: 0; }

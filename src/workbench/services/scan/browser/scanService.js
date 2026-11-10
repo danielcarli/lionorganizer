@@ -5,7 +5,7 @@
  *--------------------------------------------------------------------------------------------*/
 // Orchestrates the scan on the UI side: picks the folder, stores the depth and ignore settings,
 // relays progress and hands the result to the AnalysisService. It can also reopen the last analysis
-// saved in the catalog (instant) and analyze again in the background without hiding it.
+// saved in the catalog (instant). Analyzing is always started by the person, never automatically.
 import { Emitter } from '../../../../base/common/event.js';
 
 const STORAGE_KEY = 'lionorganizer.settings';
@@ -155,18 +155,23 @@ export class ScanService {
   }
 
   /**
-   * Shows the last analysis of the folder saved in the catalog right away (with its date) and analyzes it
-   * again in the background. Returns false when the catalog has none.
+   * Shows the last analysis of the folder saved in the catalog right away, with its date. It does NOT
+   * analyze the folder again: that is always the person's choice ("Analyze now", F5).
+   * Returns false when the catalog has none.
+   * @param {{ onStatus?: (stage: 'reading'|'preparing', value: any) => void, isCancelled?: () => boolean }} [opts]
    */
-  async reopen(folder = this.folder) {
+  async reopen(folder = this.folder, { onStatus, isCancelled } = {}) {
     if (!folder || this.busy) return false;
+    onStatus?.('reading', folder);
     let snap = null;
     try { snap = await this.host.restoreScan(folder); } catch { snap = null; }
-    if (!snap) return false;
+    if (!snap || isCancelled?.()) return false;
+    onStatus?.('preparing', snap.files.length);
+    await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0))); // let the status be painted
+    if (isCancelled?.()) return false;
     this.folder = snap.root;
     this.#save();
     this.analysis.setResult(snap);
-    this.scan(snap.root);
     return true;
   }
 

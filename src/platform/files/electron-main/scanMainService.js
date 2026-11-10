@@ -8,6 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 const { scanFolder, compileIgnore } = require('../node/scanner');
+const { diskInfo } = require('../node/diskInfo');
 const { t } = require('../../nls/common/nls');
 
 const MAX_DEPTH_LIMIT = 50;
@@ -51,13 +52,14 @@ class ScanMainService {
    * Reopens the last analysis of a folder saved in the catalog (instant, without reading the disk).
    * Returns null when the catalog has none. The UI shows its date and analyzes again in the background.
    */
-  restore(root) {
+  async restore(root) {
     if (typeof root !== 'string' || !this.catalog.available) return null;
     root = path.resolve(root);
     let snap;
     try { snap = this.catalog.db.lastSnapshot(root, compileIgnore); } catch (err) { console.error(err); return null; }
     if (!snap) return null;
     this.#adopt(root, snap.files, snap.emptyDirs);
+    snap.disk = await diskInfo(root); // the disk as it is now
     return snap;
   }
 
@@ -137,7 +139,7 @@ class ScanMainService {
       catalog = { recorded: false, error: this.catalog.error };
     }
     const { readDirs, ...forUi } = result;
-    return { ...forUi, catalog };
+    return { ...forUi, catalog, disk: await diskInfo(root) };
   }
 }
 

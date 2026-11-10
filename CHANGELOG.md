@@ -2,7 +2,7 @@
 
 All notable changes to LionOrganizer are documented here. The project follows [Semantic Versioning](https://semver.org).
 
-## [1.1.0] — 2026-11-10
+## [1.1.5] — 2026-11-10
 
 ### Back to the AI's answer
 - New "Import AI answer" button (Cleanup and Files views): paste what the AI answered to the LionOrganizer report and the files of the analysis it cites are listed with the risk it gave them (low, medium, high), ready to review. Only the low-risk ones start checked; paths that are not in the analysis, and names that match more than one file, are reported instead of guessed. Moving them to the Recycle Bin always asks for the typed code.
@@ -18,9 +18,14 @@ All notable changes to LionOrganizer are documented here. The project follows [S
 - Windows: "Analyze again as administrator" reopens LionOrganizer with administrator rights (Windows asks for permission) and analyzes the same folder. macOS: a shortcut to Privacy & Security → Full Disk Access.
 
 ### Large folders
-- **The last analysis reopens instantly** from the catalog, with its date, when the app starts or the folder is opened again; meanwhile the folder is analyzed again in the background and the result replaces it, with a notice of what changed. Analyzing again the folder on screen also runs in the background: the analysis stays visible and in use, keeps the folder in focus, the filters and the selection, and cancelling keeps it.
+- **The last analysis reopens instantly** from the catalog, with its date, when the app starts or the folder is opened again. Nothing is analyzed automatically: the folder is read again only when you choose "Analyze now" (or F5). Analyzing again the folder on screen runs in the background: the analysis stays visible and in use, keeps the folder in focus, the filters and the selection, cancelling keeps it, and a notice says what changed.
+- **Space analyzed vs space used on the disk:** the Overview shows how much the analysis read next to the disk's used and free space, with a bar, and explains the difference — items that could not be read ("See which"), folders below the depth limit, ignored folders, the system's own files (virtual memory, hibernation, restore points, snapshots) or other folders of the disk — and how far the analysis went (folders read, levels, time).
 - **Ignore folders** (optional, off by default): a list of folders that are not read — `node_modules`, `.git`, `__pycache__`, `$RECYCLE.BIN`, `System Volume Information`… — editable, with `*`/`?` wildcards and paths relative to the analyzed folder. The Overview and the side bar say how many folders were left out, with "Analyze without ignoring".
 - **Space map** (`Ctrl+7`): a full-screen treemap where every file is a block, nested in its folders and colored by type. Click a block to zoom into its folder; "Up", Backspace or a right-click goes back; double-click a file to show it in Explorer. Drawn on a canvas, so it stays fast with many files.
+
+### Startup
+- **One instance only:** opening LionOrganizer again brings the window that is already open to the front, instead of starting a second copy.
+- **Loading screen:** the window appears at once and says what the app is doing — starting, opening the last saved analysis of a folder, preparing its files — with "Start without the saved analysis" if that takes a while.
 
 ### Also
 - The catalog keeps what a scan found besides the files (errors, empty and ignored folders, folders below the depth limit), so a reopened analysis looks the same.

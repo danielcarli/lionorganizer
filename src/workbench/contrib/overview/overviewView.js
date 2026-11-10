@@ -18,6 +18,8 @@ import { treemap } from '../../../base/browser/ui/charts/treemap.js';
 import { dotMatrix } from '../../../base/browser/ui/charts/dotMatrix.js';
 import { barList } from '../../../base/browser/ui/charts/barList.js';
 import { hatchColumns } from '../../../base/browser/ui/charts/hatchColumns.js';
+import { showAccessDialog } from '../access/accessDialog.js';
+import { formatDuration, baseName } from '../../../base/common/format.js';
 
 const TOP_FOLDERS = 14;
 const TOP_EXTS = 10;
@@ -39,7 +41,7 @@ export class OverviewView extends ViewPane {
     const s = analysis.summary();
     setChildren(this.element, 
       this.#hero(s),
-      this.#notices(),
+      analysis.filter.folder ? this.#notices() : this.#coverage(),
       h('div.overview-grid',
         card(t('overview.card.types.title'), t('overview.card.types.subtitle'), this.#types(s), 'span-2'),
         card(t('overview.card.folders.title'), t('overview.card.folders.subtitle'), this.#folders(s), 'span-2'),
@@ -55,7 +57,7 @@ export class OverviewView extends ViewPane {
     const top = s.byCategory[0];
     return h('section.hero',
       h('div.hero-main',
-        h('div.eyebrow', t('overview.hero.used')),
+        h('div.eyebrow', t('overview.hero.analyzed')),
         bigNumber(s.bytes, 'hero-number'),
         h('div.hero-facts',
           fact(t('overview.hero.files'), formatNumber(s.count)),
@@ -72,6 +74,77 @@ export class OverviewView extends ViewPane {
     const m = new Map();
     for (const g of this.analysis.cleanupGroups()) for (const f of g.files) m.set(f.path, f.size);
     return { count: m.size, bytes: [...m.values()].reduce((a, b) => a + b, 0) };
+  }
+
+  /**
+   * How much of the disk the analysis covers, and why the numbers differ: space used on the disk vs space
+   * analyzed, with the reasons (inaccessible items, depth limit, ignored folders, system files, other folders)
+   * and how far the analysis went.
+   */
+  #coverage() {
+    const { analysis } = this;
+    const r = analysis.result;
+    const analyzed = analysis.tree.size;
+    const d = r.disk;
+    const busy = this.scan.busy;
+    const errors = r.errorCount ?? r.errors.length;
+    const skipped = r.skippedCount ?? r.skippedDirs.length;
+    const reasons = [];
+    const reason = (iconId, text, ...actions) => reasons.push(h('li.coverage-reason', h('span.cr-icon', { html: icon(iconId, 15) }), h('span.cr-text', text), ...actions));
+
+    if (errors) {
+      reason('warning', tn('overview.coverage.inaccessible', errors),
+        h('button.btn.btn-secondary.btn-sm.coverage-access', { onclick: () => showAccessDialog(this) }, t('overview.coverage.seeWhich')));
+    }
+    if (skipped && r.maxDepth !== null) {
+      reason('layers', tn('overview.notice.depthLimit', skipped, { levels: tn('overview.notice.levels', r.maxDepth) }),
+        h('button.btn.btn-secondary.btn-sm', { disabled: busy, onclick: () => { this.scan.setUnlimited(false); this.scan.setDepth((r.maxDepth ?? 0) + 2); this.scan.scan(); } }, t('overview.notice.readMore')),
+        h('button.btn.btn-ghost.btn-sm', { disabled: busy, onclick: () => { this.scan.setUnlimited(true); this.scan.scan(); } }, t('overview.notice.readAll')));
+    }
+    if (r.ignoredCount) {
+      reason('stop', tn('overview.notice.ignored', r.ignoredCount),
+        h('button.btn.btn-ghost.btn-sm', { disabled: busy, onclick: () => { this.scan.setIgnoreEnabled(false); this.scan.scan(); } }, t('overview.notice.analyzeAll')));
+    }
+    if (r.cancelled) reason('warning', t('overview.notice.cancelled'));
+    if (d && d.isVolumeRoot) reason('shield', t('overview.coverage.system.' + (this.host.platform === 'win32' ? 'win32' : this.host.platform === 'darwin' ? 'darwin' : 'linux')));
+    if (d && !d.isVolumeRoot) reason('folder', t('overview.coverage.otherFolders', { folder: baseName(r.root) || r.root }));
+
+    const reach = r.maxDepth === null
+      ? tn('overview.coverage.reachAll', r.dirsRead, { duration: formatDuration(r.durationMs) })
+      : tn('overview.coverage.reachDepth', r.dirsRead, { levels: tn('overview.notice.levels', r.maxDepth), duration: formatDuration(r.durationMs) });
+
+    if (!d) {
+      return h('section.coverage.card',
+        h('div.coverage-head', h('h2', t('overview.coverage.title')), h('span.muted.small', reach)),
+        reasons.length ? h('ul.coverage-reasons', reasons) : null);
+    }
+    const pctOfUsed = d.used ? analyzed / d.used : 0;
+    const over = analyzed > d.used;
+    const notRead = Math.max(0, d.used - analyzed);
+    const seg = (cls, value, label) => h(`div.cov-seg.${cls}`, { style: { flexGrow: String(Math.max(value, 0)) }, title: `${label}: ${formatBytes(value)}` });
+    const key = (cls, label, value) => h('span.cov-key', h(`span.cov-swatch.${cls}`), h('span', label), h('strong', formatBytes(value)));
+    return h('section.coverage.card',
+      h('div.coverage-head',
+        h('h2', t('overview.coverage.title')),
+        h('span.muted.small', reach)),
+      h('p.coverage-lead',
+        t(d.isVolumeRoot ? 'overview.coverage.leadDisk' : 'overview.coverage.leadFolder', {
+          analyzed: formatBytes(analyzed), used: formatBytes(d.used), total: formatBytes(d.total), free: formatBytes(d.free),
+          percent: formatPercent(Math.min(analyzed, d.used), d.used || 1), volume: d.volume || '',
+        })),
+      h('div.cov-bar', { role: 'img', 'aria-label': t('overview.coverage.barLabel', { analyzed: formatBytes(analyzed), used: formatBytes(d.used), total: formatBytes(d.total) }) },
+        seg('is-analyzed', Math.min(analyzed, d.used), t('overview.coverage.key.analyzed')),
+        notRead ? seg('is-unread', notRead, t('overview.coverage.key.unread')) : null,
+        seg('is-free', d.free, t('overview.coverage.key.free'))),
+      h('div.cov-keys',
+        key('is-analyzed', t('overview.coverage.key.analyzed'), analyzed),
+        notRead ? key('is-unread', t(d.isVolumeRoot ? 'overview.coverage.key.unread' : 'overview.coverage.key.elsewhere'), notRead) : null,
+        key('is-free', t('overview.coverage.key.free'), d.free)),
+      over ? h('p.muted.small.coverage-over', t('overview.coverage.over')) : null,
+      reasons.length && (notRead || errors || skipped || r.ignoredCount || r.cancelled)
+        ? h('div.coverage-why', h('h3', t('overview.coverage.why')), h('ul.coverage-reasons', reasons))
+        : null,
+      d.isVolumeRoot && pctOfUsed >= 0.98 && !errors && !skipped && !r.ignoredCount ? h('p.muted.small', t('overview.coverage.complete')) : null);
   }
 
   #notices() {

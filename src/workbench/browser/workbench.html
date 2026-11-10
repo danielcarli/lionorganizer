@@ -11,5 +11,16 @@
 </head>
 <body>
   <div id="workbench" class="workbench"></div>
+  <!-- loading screen: painted before any script runs, removed once the UI (and the saved analysis) is ready -->
+  <div id="boot" class="boot" role="status" aria-live="polite">
+    <div class="boot-card">
+      <img class="boot-logo" src="media/logo.svg" alt="">
+      <div class="boot-name">LionOrganizer</div>
+      <div class="boot-track"><div class="boot-bar"></div></div>
+      <div class="boot-status"></div>
+      <div class="boot-detail"></div>
+      <button type="button" class="boot-skip btn btn-ghost btn-sm" hidden></button>
+    </div>
+  </div>
 </body>
 </html>

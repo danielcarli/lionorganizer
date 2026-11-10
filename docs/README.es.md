@@ -11,7 +11,7 @@ Descubre qué ocupa espacio en tus carpetas, encuentra duplicados reales por su 
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · **Español** · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.1.0](https://img.shields.io/badge/version-1.1.0-161214)
+![Version 1.1.5](https://img.shields.io/badge/version-1.1.5-161214)
 ![Licencia: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Plataforma: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -77,7 +77,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 | | |
 |---|---|
 | **Analizar** | Recorre una carpeta y sus subcarpetas: 3 niveles de profundidad de forma predeterminada, configurable hasta 50 niveles o sin límite. Árbol de carpetas con tamaños, ruta de navegación y una tabla de todos los archivos que se puede ordenar y filtrar. |
-| **Carpetas grandes** | El último análisis se reabre al instante desde el catálogo, marcado con su fecha, mientras la carpeta se vuelve a analizar en segundo plano. Lista opcional de carpetas que ignorar (`node_modules`, `.git`, carpetas del sistema), desactivada por defecto. Los elementos que el sistema no dejó leer aparecen con el motivo; en Windows se puede volver a analizar como administrador. |
+| **Carpetas grandes** | El último análisis se reabre al instante desde el catálogo, marcado con su fecha; la carpeta solo se vuelve a analizar cuando lo pides, en segundo plano. Muestra el espacio analizado junto al espacio usado en el disco, y por qué difieren (elementos inaccesibles, límite de niveles, archivos del sistema). Lista opcional de carpetas que ignorar (`node_modules`, `.git`, carpetas del sistema), desactivada por defecto. Los elementos que el sistema no dejó leer aparecen con el motivo; en Windows se puede volver a analizar como administrador. |
 | **Visualizar** | Espacio por tipo de archivo (gráfico de rosa), subcarpetas más grandes (treemap), una matriz de 100 puntos en la que cada punto es el 1 % del espacio, las extensiones que más ocupan y la antigüedad de los archivos. |
 | **Mapa de espacio** | Treemap a pantalla completa: cada archivo es un bloque, anidado en sus carpetas y coloreado por tipo. Haz clic en un bloque para entrar en su carpeta; Retroceso o el clic derecho sube. |
 | **Limpiar** | Sugerencias agrupadas por motivo: copias de seguridad de SketchUp/Revit/AutoCAD, archivos temporales, registros, descargas incompletas, instaladores, archivos grandes y antiguos. |

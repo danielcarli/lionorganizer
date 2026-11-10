@@ -103,7 +103,7 @@ export class StatusbarPart {
     const options = [['auto', t('nls.auto')], ...getLocales().map((l) => [l.id, l.label])];
     const select = h('select.status-select', {
       'aria-label': t('nls.language'),
-      onchange: (e) => setLocalePreference(e.target.value, this.analysis.hasData),
+      onchange: (e) => setLocalePreference(e.target.value),
     }, options.map(([value, label]) => h('option', { value, lang: value === 'auto' ? undefined : value, selected: value === current }, label)));
     return h('label.status-language', { title: `${t('nls.language')} — ${t('nls.changeHint')}` },
       h('span.status-icon', { html: icon('globe', 12) }),

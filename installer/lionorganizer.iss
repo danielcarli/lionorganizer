@@ -7,7 +7,7 @@
 ; file (SHA-256 for the release files, Electron's own checksums for the runtime) and assembles LionOrganizer in a
 ; temporary folder. The assembled files are then installed like with any installer.
 ;
-; Build:  iscc /DAppVersion=1.1.0 installer\lionorganizer.iss    (creates dist-installer\LionOrganizer-Setup.exe)
+; Build:  iscc /DAppVersion=1.1.5 installer\lionorganizer.iss    (creates dist-installer\LionOrganizer-Setup.exe)
 ; The release workflow builds it on every v* tag. Signing (recommended once there is a certificate): define a
 ; SignTool with the code-signing certificate and uncomment SignTool= below.
 

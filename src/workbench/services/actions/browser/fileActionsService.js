@@ -45,7 +45,8 @@ export class FileActionsService {
   async openFolderAndScan() {
     const folder = await this.scan.pickFolder();
     if (!folder) return;
-    // a folder already in the catalog opens at once (saved analysis) and is analyzed again in the background
+    // a folder already in the catalog opens at once with its saved analysis ("Analyze now" refreshes it);
+    // one never analyzed is analyzed, since that is what the person asked for
     const same = this.analysis.hasData && this.analysis.root === folder;
     if (same || !(await this.scan.reopen(folder))) this.scan.scan(folder);
   }

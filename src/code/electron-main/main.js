@@ -102,12 +102,31 @@ function createWindow() {
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   win.webContents.on('will-navigate', (e) => e.preventDefault());
 
-  win.once('ready-to-show', () => win.show());
+  // Shown right away (with the theme's background and then the loading screen of the page), so the person
+  // sees the app opening instead of clicking its icon again.
+  win.show();
   win.loadURL(`${SCHEME}://bundle/src/workbench/browser/workbench.html`);
+  mainWindow = win;
+  win.on('closed', () => { if (mainWindow === win) mainWindow = null; });
   return win;
 }
 
-app.whenReady().then(() => {
+// ---- one instance only: opening the app again brings the window that is already open to the front
+let mainWindow = null;
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    const win = mainWindow || BrowserWindow.getAllWindows()[0];
+    if (!win) return;
+    if (win.isMinimized()) win.restore();
+    win.show();
+    win.focus();
+  });
+}
+
+if (gotTheLock) app.whenReady().then(() => {
   // OS locale until the UI reports the language it is using.
   setLocale(app.getLocale());
   ipcMain.on('nls:setLocale', (_e, locale) => setLocale(String(locale)));
@@ -123,6 +142,10 @@ app.whenReady().then(() => {
     try { if (fs.statSync(folder).isDirectory()) initialScan = folder; } catch { /* not a folder: ignored */ }
   }
   ipcMain.handle('app:takeInitialScan', () => { const f = initialScan; initialScan = null; return f; });
+
+  // The window first, so it appears at once; the services below are ready long before the page asks them
+  // anything (its requests are handled after this function returns).
+  createWindow();
 
   const dialogs = new DialogMainService();
   const catalog = new CatalogMainService();
@@ -146,7 +169,6 @@ app.whenReady().then(() => {
     }
   });
 
-  createWindow();
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });

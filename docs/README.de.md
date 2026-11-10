@@ -11,7 +11,7 @@ Sehen, was in den Ordnern Platz belegt, echte Duplikate anhand ihres Inhalts fin
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · **Deutsch** · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.1.0](https://img.shields.io/badge/version-1.1.0-161214)
+![Version 1.1.5](https://img.shields.io/badge/version-1.1.5-161214)
 ![Lizenz: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Plattform: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -77,7 +77,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 | | |
 |---|---|
 | **Analysieren** | Durchsucht einen Ordner und seine Unterordner – standardmäßig 3 Ebenen tief, einstellbar bis 50 Ebenen oder ohne Limit. Ordnerbaum mit Größen, Breadcrumbs und eine sortier- und filterbare Tabelle aller Dateien. |
-| **Große Ordner** | Die letzte Analyse öffnet sich sofort aus dem Katalog, mit ihrem Datum, während der Ordner im Hintergrund erneut analysiert wird. Optionale Liste zu ignorierender Ordner (`node_modules`, `.git`, Systemordner) – standardmäßig aus. Elemente, die das System nicht lesen ließ, werden mit Grund aufgelistet; unter Windows kann man als Administrator erneut analysieren. |
+| **Große Ordner** | Die letzte Analyse öffnet sich sofort aus dem Katalog, mit ihrem Datum; der Ordner wird nur auf Wunsch erneut analysiert, im Hintergrund. Zeigt den analysierten Speicher neben dem belegten Speicher des Datenträgers und warum sie abweichen (unlesbare Elemente, Ebenenlimit, Systemdateien). Optionale Liste zu ignorierender Ordner (`node_modules`, `.git`, Systemordner) – standardmäßig aus. Elemente, die das System nicht lesen ließ, werden mit Grund aufgelistet; unter Windows kann man als Administrator erneut analysieren. |
 | **Visualisieren** | Speicher nach Dateityp (Rosendiagramm), größte Unterordner (Treemap), eine Matrix aus 100 Punkten, in der jeder Punkt 1 % des Speichers darstellt, größte Erweiterungen und Dateialter. |
 | **Platzkarte** | Treemap im Vollbild: jede Datei ist ein Block, verschachtelt in ihren Ordnern und nach Typ eingefärbt. Ein Klick auf einen Block wechselt in seinen Ordner; Rücktaste oder Rechtsklick geht nach oben. |
 | **Bereinigen** | Vorschläge nach Grund gruppiert: SketchUp-/Revit-/AutoCAD-Sicherungen, temporäre Dateien, Protokolle, unvollständige Downloads, Installationsprogramme, große alte Dateien. |
