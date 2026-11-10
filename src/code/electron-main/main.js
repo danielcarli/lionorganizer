@@ -115,6 +115,15 @@ app.whenReady().then(() => {
   ipcMain.handle('app:info', () => ({ version: require(path.join(APP_ROOT, 'package.json')).version, electron: process.versions.electron }));
   registerAppProtocol();
 
+  // "--scan=<folder>": analyze this folder at startup (used when reopening as administrator on Windows).
+  let initialScan = null;
+  const scanArg = process.argv.find((a) => a.startsWith('--scan='));
+  if (scanArg) {
+    const folder = path.resolve(scanArg.slice('--scan='.length));
+    try { if (fs.statSync(folder).isDirectory()) initialScan = folder; } catch { /* not a folder: ignored */ }
+  }
+  ipcMain.handle('app:takeInitialScan', () => { const f = initialScan; initialScan = null; return f; });
+
   const dialogs = new DialogMainService();
   const catalog = new CatalogMainService();
   const scan = new ScanMainService(catalog);

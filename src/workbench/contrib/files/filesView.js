@@ -8,6 +8,7 @@ import { ViewPane } from '../../browser/viewPane.js';
 import { h, clear, setChildren } from '../../../base/browser/dom.js';
 import { icon } from '../../../base/browser/icons.js';
 import { showAiReportDialog } from '../report/aiReportDialog.js';
+import { showAiImportDialog } from '../report/aiImportDialog.js';
 import { missingBadge, removeFromListButton } from '../../browser/missingFile.js';
 import { debounce } from '../../../base/common/event.js';
 import { formatBytes, formatDate } from '../../../base/common/format.js';
@@ -90,7 +91,9 @@ export class FilesView extends ViewPane {
       h('button.btn.btn-secondary.btn-sm', { onclick: () => this.actions.exportCsv(list), title: t('files.toolbar.exportTitle') },
         h('span', { html: icon('download', 14) }), t('files.toolbar.export')),
       h('button.btn.btn-secondary.btn-sm.ai-report-button', { onclick: () => showAiReportDialog(this), title: t('report.buttonTitle') },
-        h('span', { html: icon('sparkle', 14) }), t('report.button')));
+        h('span', { html: icon('sparkle', 14) }), t('report.button')),
+      h('button.btn.btn-secondary.btn-sm.ai-import-button', { onclick: () => showAiImportDialog(this), title: t('aiImport.buttonTitle') },
+        h('span', { html: icon('import', 14) }), t('aiImport.button')));
   }
 
   #renderSelectionBar() {

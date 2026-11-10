@@ -43,9 +43,19 @@ releases.listen(0, '127.0.0.1', () => {
   process.env.LIONORGANIZER_UPDATE_URL = `http://127.0.0.1:${releases.address().port}/manifest.txt`;
 });
 
+// The system refuses to read the folder "Locked" (as a protected folder would); while `slowScan` is on,
+// every folder takes a little longer to read, so a background refresh can be watched.
+const realOpendir = fs.promises.opendir;
+let slowScan = false;
+fs.promises.opendir = async (dir, ...rest) => {
+  if (path.basename(String(dir)) === 'Locked') throw Object.assign(new Error('permission denied'), { code: 'EACCES' });
+  if (slowScan) await wait(250);
+  return realOpendir.call(fs.promises, dir, ...rest);
+};
+
 require('../src/code/electron-main/main.js');
 
-const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+function wait(ms) { return new Promise((r) => setTimeout(r, ms)); }
 const log = (...a) => console.log('[e2e]', ...a);
 let failures = 0;
 const check = (ok, msg) => { if (ok) log('OK  ', msg); else { failures++; log('FAIL', msg); } };
@@ -197,7 +207,8 @@ app.on('browser-window-created', (_e, win) => {
       // ---- second analysis: history records the changes
       fs.writeFileSync(path.join(folder, 'Documents', 'new-report.pdf'), Buffer.alloc(300000, 1));
       await js(`window.dispatchEvent(new KeyboardEvent('keydown', { key: 'F5' }))`);
-      await wait(1500);
+      check(await until(`[...document.querySelectorAll('.toast')].some((x) => /Analysis updated: 1 new file, 4 removed/.test(x.textContent))`), 'analyzing again keeps the analysis on screen and then says what changed');
+      await wait(300);
       await key('6');
       await until(`!!document.querySelector('.cmp-chips')`);
       await wait(500);
@@ -211,6 +222,94 @@ app.on('browser-window-created', (_e, win) => {
       await wait(400);
       await shot('40-cleanup');
 
+      // ---- 1.1.0: render caches, empty files and empty folders in Cleanup
+      check(await js(`document.querySelector('.breadcrumbs .crumb.current').textContent === 'Loose'`), 'analyzing again kept the folder in focus');
+      await click('.breadcrumbs .crumb');
+      await wait(400);
+      const cards = await js(`[...document.querySelectorAll('.cleanup-card')].map((c) => c.querySelector('h2').textContent)`);
+      check(cards.some((c) => c.startsWith('Render and CAD caches')), 'Cleanup groups the render/CAD caches (Lumion cache folder, V-Ray map)');
+      check(await js(`[...document.querySelectorAll('.cleanup-card')].find((c) => c.querySelector('h2').textContent.startsWith('Render and CAD caches')).querySelectorAll('.cleanup-preview li').length === 2`), 'both cache files are listed');
+      check(cards.some((c) => c.startsWith('Empty files (0 bytes)')), 'Cleanup lists the empty (0-byte) files');
+      // besides the 2 created empty, the folders emptied by the deletions and moves above (Downloads, Backup…)
+      const emptyNames = await js(`[...document.querySelectorAll('.empty-dirs-card .cp-name')].map((n) => n.textContent)`);
+      const emptyTotal = await js(`parseInt(document.querySelector('.empty-dirs-card .cleanup-card-size strong').textContent, 10)`);
+      check(['Empty', 'EmptyOne', 'Downloads', 'Backup'].every((n) => emptyNames.includes(n) || emptyTotal > emptyNames.length), `Cleanup lists the empty folders, including those emptied meanwhile (${emptyTotal}: ${emptyNames.join(', ')})`);
+      check(await js(`document.querySelector('.empty-dirs-card').textContent.includes('+ 2 empty subfolders')`), 'a folder with only empty subfolders counts as empty');
+      await shot('41-empty-folders');
+      fs.writeFileSync(path.join(folder, 'EmptyOne', 'new-note.txt'), 'saved meanwhile');
+      await click('.empty-dirs-trash');
+      check(await until(`document.querySelector('.cm-dialog')?.textContent.includes('Move ${emptyTotal - 1} empty folders')`), 'deleting empty folders asks for the code, and leaves out the one that is no longer empty');
+      check(await js(`document.querySelector('.cm-dialog').textContent.includes('no longer empty')`), 'it says why that folder was left out');
+      await confirmWithCode();
+      check(!exists('Empty') && !exists('Downloads') && exists('EmptyOne/new-note.txt'), 'the empty folders (with their empty subfolders) went to the Recycle Bin; the other was kept');
+      check(await until(`!document.querySelector('.empty-dirs-card')`), 'the empty folders card is gone');
+
+      // ---- 1.1.0: import the AI's answer (the paths it cites, with the risk it gave)
+      await click('.view-cleanup .ai-import-button');
+      check(await until(`!!document.querySelector('.ai-import-dialog textarea')`), 'the "Import AI answer" dialog opens');
+      const answer = [
+        '## Low risk',
+        '- `Renders/scene-light.vrmap` — V-Ray irradiance map, rebuilt when rendering again.',
+        '',
+        '| Path | Size | Reason | Risk |',
+        '|---|---|---|---|',
+        '| `Renders/Lumion 2024/Cache/frame-0001.cache` | 310 KB | Lumion cache | Medium |',
+        '| `Documents/contract.pdf` | 200 KB | may be the only copy | **High** |',
+        '| `Old/not-here.dwg` | 1 MB | backup | Low |',
+      ].join('\n');
+      await js(`(() => { const a = document.querySelector('.ai-import-dialog textarea'); a.value = ${JSON.stringify(answer)}; })()`);
+      await click('.ai-import-find');
+      check(await until(`document.querySelectorAll('.ai-import-row').length === 3`), 'it finds the 3 files of this analysis cited in the answer');
+      const rows = await js(`[...document.querySelectorAll('.ai-import-row')].map((r) => ({ name: r.querySelector('.ai-import-name').textContent, risk: r.querySelector('.risk-chip').textContent, on: r.querySelector('input').checked }))`);
+      check(rows[0].name === 'scene-light.vrmap' && rows[0].risk === 'Low risk' && rows[0].on, 'low risk first, and checked');
+      check(rows.some((r) => r.name === 'frame-0001.cache' && r.risk === 'Medium risk' && !r.on) && rows.some((r) => r.name === 'contract.pdf' && r.risk === 'High risk' && !r.on), 'medium and high risk are listed unchecked');
+      check(await js(`document.querySelector('.ai-import-unmatched summary').textContent.includes('1 cited path')`), 'a path that is not in the analysis is reported');
+      await shot('42-ai-import');
+      await click('.ai-import-trash');
+      await confirmWithCode();
+      check(!exists('Renders/scene-light.vrmap') && exists('Renders/Lumion 2024/Cache/frame-0001.cache') && exists('Documents/contract.pdf'), 'only the checked file went to the Recycle Bin, after the code');
+
+      // ---- 1.1.0: inaccessible items: why, and what to do
+      check(await js(`document.querySelector('.status-access')?.textContent.includes('1 inaccessible')`), 'the status bar shows the folder that could not be read');
+      await click('.status-access');
+      check(await until(`!!document.querySelector('.access-dialog')`), 'clicking it opens the explanation');
+      const acc = await js(`document.querySelector('.access-dialog').textContent`);
+      check(acc.includes('No permission (1)') && acc.includes('Locked') && acc.includes('EACCES'), 'it lists the folder under "No permission", with the code');
+      check(await js(`!document.querySelector('.access-admin')`) === (process.platform !== 'win32'), process.platform === 'win32' ? 'Windows: offers to analyze again as administrator' : 'no administrator button outside Windows');
+      await shot('43-inaccessible');
+      await click('.access-dialog .cm-actions .btn', 'Close');
+
+      // ---- 1.1.0: ignore folders (optional, off by default)
+      check(await js(`!document.querySelector('.ignore-toggle input').checked`), '"Ignore folders" starts unchecked');
+      check(await js(`[...document.querySelectorAll('.tree-row .tree-label')].some((l) => l.textContent === 'Code')`), 'without it, node_modules is analyzed like any folder');
+      await click('.ignore-edit');
+      check(await until(`document.querySelector('.ignore-dialog textarea')?.value.split('\\n').includes('node_modules')`), 'the list editor shows the suggested patterns');
+      await click('.ignore-dialog .cm-actions .btn', 'Cancel');
+      const totalFiles = async () => { await until(`!document.querySelector('.statusbar.busy')`); return js(`Number((/ in ([\\d,.]+) files/.exec(document.querySelector('.status-left').textContent) || [])[1]?.replace(/[,.]/g, ''))`); };
+      await js(`window.dispatchEvent(new KeyboardEvent('keydown', { key: 'F5' }))`); // counts the file saved in EmptyOne meanwhile
+      await wait(300);
+      const before = await totalFiles();
+      await js(`(() => { const c = document.querySelector('.ignore-toggle input'); c.checked = true; c.dispatchEvent(new Event('change')); })()`);
+      await js(`window.dispatchEvent(new KeyboardEvent('keydown', { key: 'F5' }))`);
+      check(await until(`document.querySelector('.tree-note')?.textContent.includes('1 folder left out by the ignore list')`), 'with it on, node_modules is left out and the side bar says so');
+      const after = await totalFiles();
+      check(before - after === 1, `its file is no longer counted (${before} → ${after} files)`);
+      await js(`(() => { const c = document.querySelector('.ignore-toggle input'); c.checked = false; c.dispatchEvent(new Event('change')); })()`);
+      await js(`window.dispatchEvent(new KeyboardEvent('keydown', { key: 'F5' }))`);
+      check(await until(`!document.querySelector('.tree-note')?.textContent.includes('ignore list') && !document.querySelector('.statusbar.busy')`), 'turned off again, every folder is read');
+
+      // ---- 1.1.0: space map (treemap) with zoom
+      await key('7');
+      check(await until(`!!document.querySelector('.view-treemap:not([hidden]) canvas') && document.querySelector('.view-treemap canvas').width > 300`), 'Ctrl+7 opens the space map');
+      check(await js(`document.querySelector('.tmv-up').disabled`), 'at the top level "Up" is disabled');
+      await shot('60-treemap');
+      await js(`(() => { const c = document.querySelector('.view-treemap canvas'); const r = c.getBoundingClientRect(); c.dispatchEvent(new MouseEvent('click', { clientX: r.left + 30, clientY: r.top + 30, bubbles: true })); })()`);
+      check(await until(`document.querySelectorAll('.breadcrumbs .crumb').length === 2 && !document.querySelector('.tmv-up').disabled`), 'clicking a block zooms into its folder (breadcrumbs follow)');
+      await click('.tmv-up');
+      check(await until(`document.querySelectorAll('.breadcrumbs .crumb').length === 1`), '"Up" goes back to the analyzed folder');
+      await key('1');
+      await wait(400);
+
       // ---- files deleted outside the app (a file, and a whole folder): gray, notice, remove from list
       await key('1');
       await wait(600);
@@ -223,6 +322,7 @@ app.on('browser-window-created', (_e, win) => {
       check(await js(`document.querySelectorAll('.file-item.is-missing .icon-button.danger').length === 0`), 'no Recycle Bin button for files that no longer exist');
       await shot('50-missing');
       await key('2');
+      await js(`(() => { const i = document.querySelector('.search-input'); i.value = ''; i.dispatchEvent(new Event('input')); })()`); // the search survives a refresh
       await wait(500);
       check(await js(`[...document.querySelectorAll('tr.is-missing')].some((r) => r.textContent.includes('walkthrough.mp4')) && document.querySelector('tr.is-missing input[type=checkbox]').disabled`), 'Files view: gray row, cannot be selected');
       await key('1');
@@ -245,9 +345,16 @@ app.on('browser-window-created', (_e, win) => {
       await click('.toast-warning .btn', 'Remove from list');
       check(await until(`document.querySelectorAll('tr.is-missing').length === 0`), 'the notice\'s "Remove from list" removes all missing files');
 
-      // ---- changing the language in the status bar reloads the UI in the new language
+      // ---- changing the language in the status bar reloads the UI in the new language,
+      // and the saved analysis reopens at once while it is analyzed again in the background
+      slowScan = true;
       await js(`(() => { const s = document.querySelector('.status-select'); s.value = 'pt-BR'; s.dispatchEvent(new Event('change')); })()`);
       check(await until(`document.documentElement.lang === 'pt-BR' && document.body.textContent.includes('Visão geral')`, 20000), 'switching the language in the status bar reloads the UI in Portuguese');
+      check(await until(`!!document.querySelector('.restore-banner:not([hidden])')?.textContent.includes('Análise salva em')`, 8000), 'after the reload, the saved analysis is shown at once, with its date');
+      check(await js(`!!document.querySelector('.view-overview:not([hidden]) .hero')`), 'its data is on screen while the folder is analyzed again');
+      await shot('70-reopened');
+      slowScan = false;
+      check(await until(`!!document.querySelector('.restore-banner[hidden]') && [...document.querySelectorAll('.toast')].some((x) => x.textContent.includes('Análise atualizada'))`, 30000), 'when the background analysis ends, the banner goes away and a notice says so');
     } catch (err) {
       failures++;
       log('ERROR', err.stack || err);

@@ -10,6 +10,7 @@ import { icon } from '../../../base/browser/icons.js';
 import { formatBytes, formatDuration } from '../../../base/common/format.js';
 import { t, tn, getLocales, getLocalePreference, setLocalePreference } from '../../../base/common/nls.js';
 import { showUpdateDialog } from '../../contrib/update/updateDialog.js';
+import { showAccessDialog } from '../../contrib/access/accessDialog.js';
 
 export class StatusbarPart {
   constructor(services) {
@@ -36,7 +37,7 @@ export class StatusbarPart {
   render() {
     const { scan, analysis } = this;
     const busy = scan.state === 'scanning';
-    this.element.classList.toggle('busy', busy);
+    this.element.classList.toggle('busy', scan.busy);
     clear(this.left);
     clear(this.right);
 
@@ -45,11 +46,17 @@ export class StatusbarPart {
       this.left.append(item('refresh', tn('statusbar.scanning', p.files, { size: formatBytes(p.bytes) }), { spin: true }));
     } else if (analysis.hasData) {
       const r = analysis.result;
+      if (scan.state === 'refreshing') {
+        const p = scan.progress || { files: 0, bytes: 0 };
+        this.left.append(item('refresh', tn('statusbar.refreshing', p.files, { size: formatBytes(p.bytes) }), { spin: true }));
+      }
       this.left.append(item('disk', tn('statusbar.total', analysis.files.length, { size: formatBytes(analysis.tree.size) })));
       this.left.append(item(null, tn(r.cancelled ? 'statusbar.dirsReadCancelled' : 'statusbar.dirsRead', r.dirsRead, { duration: formatDuration(r.durationMs) })));
-      if (r.errors.length) {
-        const sample = r.errors.slice(0, 8).map((e) => `${e.code}: ${e.path}`).join('\n');
-        this.left.append(item('warning', tn('statusbar.noAccess', r.errors.length), { title: `${t('statusbar.noAccessTitle')}\n${sample}${r.errors.length > 8 ? '\n…' : ''}`, cls: 'warn' }));
+      const errors = r.errorCount ?? r.errors.length;
+      if (errors) {
+        this.left.append(h('button.status-item.warn.status-access', {
+          title: t('statusbar.noAccessTitle'), onclick: () => showAccessDialog(this),
+        }, h('span.status-icon', { html: icon('warning', 13) }), tn('statusbar.noAccess', errors)));
       }
     } else {
       this.left.append(item(null, t('statusbar.ready')));

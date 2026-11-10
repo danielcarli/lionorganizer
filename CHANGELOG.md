@@ -2,6 +2,30 @@
 
 All notable changes to LionOrganizer are documented here. The project follows [Semantic Versioning](https://semver.org).
 
+## [1.1.0] — 2026-11-10
+
+### Back to the AI's answer
+- New "Import AI answer" button (Cleanup and Files views): paste what the AI answered to the LionOrganizer report and the files of the analysis it cites are listed with the risk it gave them (low, medium, high), ready to review. Only the low-risk ones start checked; paths that are not in the analysis, and names that match more than one file, are reported instead of guessed. Moving them to the Recycle Bin always asks for the typed code.
+- The report now asks the AI to write the paths between backticks and the risk with fixed words in the user's language, so its answer can be read back reliably.
+
+### More to clean
+- **Render and CAD caches:** Twinmotion/Unreal derived data, Lumion and Enscape cache folders, V-Ray light/irradiance maps, Corona caches, Revit journals and collaboration cache, Adobe Media Cache and peak files. The programs rebuild them when needed.
+- **Empty files (0 bytes)**, leaving out the marker files some tools need (`.gitkeep`, `__init__.py`…).
+- **Empty folders:** folders with no files, not even in their subfolders (the topmost of each empty branch is listed). Moving them to the Recycle Bin asks for the typed code, and each folder is checked again right before: a folder that is no longer empty is kept.
+
+### Inaccessible items explained
+- The "N inaccessible" item in the status bar opens a list of what could not be read, grouped by reason (no permission, in use, removed during the analysis, path too long) with what to do, and a "Copy list" button.
+- Windows: "Analyze again as administrator" reopens LionOrganizer with administrator rights (Windows asks for permission) and analyzes the same folder. macOS: a shortcut to Privacy & Security → Full Disk Access.
+
+### Large folders
+- **The last analysis reopens instantly** from the catalog, with its date, when the app starts or the folder is opened again; meanwhile the folder is analyzed again in the background and the result replaces it, with a notice of what changed. Analyzing again the folder on screen also runs in the background: the analysis stays visible and in use, keeps the folder in focus, the filters and the selection, and cancelling keeps it.
+- **Ignore folders** (optional, off by default): a list of folders that are not read — `node_modules`, `.git`, `__pycache__`, `$RECYCLE.BIN`, `System Volume Information`… — editable, with `*`/`?` wildcards and paths relative to the analyzed folder. The Overview and the side bar say how many folders were left out, with "Analyze without ignoring".
+- **Space map** (`Ctrl+7`): a full-screen treemap where every file is a block, nested in its folders and colored by type. Click a block to zoom into its folder; "Up", Backspace or a right-click goes back; double-click a file to show it in Explorer. Drawn on a canvas, so it stays fast with many files.
+
+### Also
+- The catalog keeps what a scan found besides the files (errors, empty and ignored folders, folders below the depth limit), so a reopened analysis looks the same.
+- Every new text is translated into the 10 languages; the end-to-end test covers each feature in the light and dark themes.
+
 ## [1.0.3] — 2026-11-10
 
 ### New version indicator

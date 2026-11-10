@@ -8,6 +8,7 @@ import { h, clear, setChildren } from '../../../base/browser/dom.js';
 import { icon } from '../../../base/browser/icons.js';
 import { formatBytes, baseName } from '../../../base/common/format.js';
 import { MAX_DEPTH } from '../../services/scan/browser/scanService.js';
+import { showIgnoreDialog } from '../../contrib/scan/ignoreDialog.js';
 import { t, tn } from '../../../base/common/nls.js';
 
 const MAX_CHILDREN = 150;
@@ -69,8 +70,8 @@ export class SidebarPart {
   // ---------------- controls ----------------
   renderControls() {
     const { scan } = this;
-    const busy = scan.state === 'scanning';
-    const { depth, unlimited } = scan.settings;
+    const busy = scan.busy;
+    const { depth, unlimited, ignoreEnabled, ignoreList } = scan.settings;
 
     const depthInput = h('input.depth-input', {
       type: 'number', min: '0', max: String(MAX_DEPTH), value: String(depth), disabled: busy || unlimited,
@@ -115,6 +116,16 @@ export class SidebarPart {
       h('label.checkbox.record-toggle', { title: t('sidebar.recordHint') },
         h('input', { type: 'checkbox', checked: scan.settings.record, disabled: busy, onchange: (e) => scan.setRecord(e.target.checked) }),
         t('sidebar.record')),
+      h('div.ignore-field',
+        h('label.checkbox.ignore-toggle', { title: t('sidebar.ignore.hint') },
+          h('input', { type: 'checkbox', checked: ignoreEnabled, disabled: busy, onchange: (e) => scan.setIgnoreEnabled(e.target.checked) }),
+          t('sidebar.ignore.label')),
+        h('p.field-hint',
+          ignoreEnabled
+            ? (ignoreList.length ? tn('sidebar.ignore.summary', ignoreList.length, { names: ignoreList.slice(0, 3).join(', ') + (ignoreList.length > 3 ? '…' : '') }) : t('sidebar.ignore.emptyList'))
+            : t('sidebar.ignore.off'),
+          ' ',
+          h('button.link.ignore-edit', { disabled: busy, onclick: () => showIgnoreDialog(this) }, t('sidebar.ignore.edit')))),
       buttons,
       this.progressEl,
       scan.error ? h('p.field-error', h('span', { html: icon('warning', 14) }), scan.error) : null);
@@ -123,9 +134,10 @@ export class SidebarPart {
 
   #renderProgress() {
     const p = this.scan.progress;
-    if (!this.progressEl || this.scan.state !== 'scanning' || !p) return;
+    if (!this.progressEl || !this.scan.busy || !p) return;
     this.progressEl.hidden = false;
     setChildren(this.progressEl, 
+      this.scan.state === 'refreshing' ? h('div.progress-label', t('sidebar.refreshing')) : null,
       h('div.progress-track', h('div.progress-indeterminate')),
       h('div.progress-stats', `${tn('common.files', p.files)} · ${formatBytes(p.bytes)}`),
       h('div.progress-path', { title: p.current }, p.current));
@@ -143,12 +155,21 @@ export class SidebarPart {
     const tree = analysis.tree;
     this.#renderNode(tree, 0, tree.size || 1, true);
 
-    const skipped = analysis.result.skippedDirs.length;
+    const r = analysis.result;
+    const skipped = r.skippedCount ?? r.skippedDirs.length;
     if (skipped) {
-      this.treeNote.append(
+      this.treeNote.append(h('div.tree-note-row',
         h('span', { html: icon('layers', 14) }),
         h('span', tn('sidebar.skipped', skipped)),
-        h('button.link', { onclick: () => { this.scan.setDepth(this.scan.settings.depth + 2); this.scan.scan(); } }, t('sidebar.readMore')));
+        r.maxDepth !== null && !this.scan.settings.unlimited
+          ? h('button.link', { disabled: this.scan.busy, onclick: () => { this.scan.setDepth(this.scan.settings.depth + 2); this.scan.scan(); } }, t('sidebar.readMore'))
+          : null));
+    }
+    if (r.ignoredCount) {
+      const sample = (r.ignoredDirs || []).slice(0, 12).map((d) => d.slice(r.root.length).replace(/^[\\/]/, '')).join('\n');
+      this.treeNote.append(h('div.tree-note-row', { title: sample + (r.ignoredCount > 12 ? '\n…' : '') },
+        h('span', { html: icon('stop', 14) }),
+        h('span', tn('sidebar.ignored', r.ignoredCount))));
     }
   }
 

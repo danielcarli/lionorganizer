@@ -14,6 +14,7 @@ export const VIEWS = [
   { id: 'duplicates', icon: 'copy', shortcut: 'Ctrl+4' },
   { id: 'organize', icon: 'organize', shortcut: 'Ctrl+5' },
   { id: 'catalog', icon: 'database', shortcut: 'Ctrl+6' },
+  { id: 'treemap', icon: 'map', shortcut: 'Ctrl+7' },
 ].map((v) => ({ ...v, label: t('views.' + v.id) }));
 
 const THEME_KEY = 'lionorganizer.theme';

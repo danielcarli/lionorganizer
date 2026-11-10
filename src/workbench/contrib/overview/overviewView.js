@@ -77,12 +77,20 @@ export class OverviewView extends ViewPane {
   #notices() {
     const r = this.analysis.result;
     const out = h('div.notice-slot');
-    if (r.skippedDirs.length) {
+    const skipped = r.skippedCount ?? r.skippedDirs.length;
+    const busy = this.scan.busy;
+    if (skipped && r.maxDepth !== null) {
       out.append(h('div.notice',
         h('span.notice-icon', { html: icon('layers', 16) }),
-        h('span.notice-text', tn('overview.notice.depthLimit', r.skippedDirs.length, { levels: tn('overview.notice.levels', r.maxDepth) })),
-        h('button.btn.btn-secondary.btn-sm', { onclick: () => { this.scan.setDepth((r.maxDepth ?? 0) + 2); this.scan.scan(); } }, t('overview.notice.readMore')),
-        h('button.btn.btn-ghost.btn-sm', { onclick: () => { this.scan.setUnlimited(true); this.scan.scan(); } }, t('overview.notice.readAll'))));
+        h('span.notice-text', tn('overview.notice.depthLimit', skipped, { levels: tn('overview.notice.levels', r.maxDepth) })),
+        h('button.btn.btn-secondary.btn-sm', { disabled: busy, onclick: () => { this.scan.setUnlimited(false); this.scan.setDepth((r.maxDepth ?? 0) + 2); this.scan.scan(); } }, t('overview.notice.readMore')),
+        h('button.btn.btn-ghost.btn-sm', { disabled: busy, onclick: () => { this.scan.setUnlimited(true); this.scan.scan(); } }, t('overview.notice.readAll'))));
+    }
+    if (r.ignoredCount) {
+      out.append(h('div.notice.notice-ignored',
+        h('span.notice-icon', { html: icon('stop', 16) }),
+        h('span.notice-text', tn('overview.notice.ignored', r.ignoredCount)),
+        h('button.btn.btn-ghost.btn-sm', { disabled: busy, onclick: () => { this.scan.setIgnoreEnabled(false); this.scan.scan(); } }, t('overview.notice.analyzeAll'))));
     }
     if (r.cancelled) {
       out.append(h('div.notice', h('span.notice-icon', { html: icon('warning', 16) }), h('span.notice-text', t('overview.notice.cancelled'))));

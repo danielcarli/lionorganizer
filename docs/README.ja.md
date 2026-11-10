@@ -11,12 +11,21 @@
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · **日本語** · [한국어](README.ko.md)
 
-![Version 1.0.3](https://img.shields.io/badge/version-1.0.3-161214)
+![Version 1.1.0](https://img.shields.io/badge/version-1.1.0-161214)
 ![ライセンス：GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![プラットフォーム：Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
 ![UI 言語：10](https://img.shields.io/badge/UI%20languages-10-0a8bb5)
 
+<p>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe"><img src="https://img.shields.io/badge/Windows-%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%20.exe-d4145a?style=for-the-badge&labelColor=161214" alt="Windows .exe"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg"><img src="https://img.shields.io/badge/macOS-%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%20.dmg-d4145a?style=for-the-badge&labelColor=161214" alt="macOS .dmg"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb"><img src="https://img.shields.io/badge/Linux-%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%20.deb-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .deb"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm"><img src="https://img.shields.io/badge/Linux-%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%20.rpm-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .rpm"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage"><img src="https://img.shields.io/badge/Linux-%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%20AppImage-d4145a?style=for-the-badge&labelColor=161214" alt="Linux AppImage"></a>
+</p>
+
+<sub><a href="https://github.com/danielcarli/lionorganizer/releases">すべてのバージョン</a> · <a href="#ダウンロード">インストール方法</a></sub>
 
 <img src="screenshots/i18n/overview-ja.png" alt="LionOrganizer の概要画面：ファイルの種類別の容量、最も大きいフォルダーとファイル" width="900">
 
@@ -35,7 +44,7 @@
 - **内容による本当の重複** — SHA-256 で確認し、残すコピーはあなたが選びます。
 - **分析をまたいだ記録** — ローカルのカタログで、分析したすべてのフォルダー（取り外したドライブも）を検索し、新しいもの・削除されたもの・増えたものを確認できます。
 - **整理と名前の変更、元に戻すことも可能** — ばらばらのファイルを種類別のフォルダーに整理し、パターンで一括名前変更。いつもプレビュー付きです。
-- **AI によるセカンドオピニオン** — あなたの言語でレポートをエクスポートし、AI に安全に削除できそうなものを示してもらえます。アプリは何も送信しません。
+- **AI によるセカンドオピニオン** — あなたの言語でレポートをエクスポートし、AI に安全に削除できそうなものを示してもらえます。アプリは何も送信しません。その回答を貼り付けると、挙げられたファイルが AI の付けたリスクとともに一覧になり、すぐに確認できます。
 - **ファイルが消えたことに気づきます** — アプリの外で削除・移動されたファイルは灰色で表示され、一覧から外せます。
 - **すべての人に** — 10 言語、ライト／ダーク テーマ、Windows・macOS・Linux 向けの検証済みインストーラー。
 
@@ -43,17 +52,9 @@
 
 お使いのシステム用のインストーラーをダウンロードしてください。どれも GitHub から**最新バージョン**を取得し、すべてのファイルを検証します（SHA-256 と署名付きビルド来歴）。
 
-<p align="center">
-  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe"><img src="https://img.shields.io/badge/Windows-%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%20.exe-d4145a?style=for-the-badge&labelColor=161214" alt="Windows .exe"></a>
-  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg"><img src="https://img.shields.io/badge/macOS-%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%20.dmg-d4145a?style=for-the-badge&labelColor=161214" alt="macOS .dmg"></a>
-  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb"><img src="https://img.shields.io/badge/Linux-%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%20.deb-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .deb"></a>
-  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm"><img src="https://img.shields.io/badge/Linux-%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%20.rpm-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .rpm"></a>
-  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage"><img src="https://img.shields.io/badge/Linux-%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%20AppImage-d4145a?style=for-the-badge&labelColor=161214" alt="Linux AppImage"></a>
-</p>
-
-- **Windows 10/11**（x64、ARM）：約 2 MB のセットアップ ウィザード。インストール中にアプリをダウンロードして検証します。
-- **macOS 11+**（Apple Silicon、Intel）：`.dmg` を開き、LionOrganizer を「アプリケーション」へドラッグします。
-- **Linux**（x64）：Ubuntu、Debian、Mint… は `.deb`、Fedora、RHEL、openSUSE… は `.rpm`、またはインストール不要でどのディストリビューションでも動く AppImage。
+- **Windows 10/11**（x64、ARM）：約 2 MB のセットアップ ウィザード。インストール中にアプリをダウンロードして検証します。 → [`LionOrganizer-Setup.exe`](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe)
+- **macOS 11+**（Apple Silicon、Intel）：`.dmg` を開き、LionOrganizer を「アプリケーション」へドラッグします。 → [`LionOrganizer-mac-universal.dmg`](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg)
+- **Linux**（x64）：Ubuntu、Debian、Mint… は `.deb`、Fedora、RHEL、openSUSE… は `.rpm`、またはインストール不要でどのディストリビューションでも動く AppImage。 → [`.deb`](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb) · [`.rpm`](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm) · [AppImage](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage)
 
 > インストーラーはまだ有料証明書で署名されていません。初回起動時、Windows では「Windows によって PC が保護されました」と表示されることがあります（**詳細情報 › 実行**）。macOS では **システム設定 › プライバシーとセキュリティ › このまま開く** で許可してください。
 
@@ -76,8 +77,11 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 | | |
 |---|---|
 | **分析** | フォルダーとそのサブフォルダーをスキャンします。既定では 3 階層までで、最大 50 階層または無制限に設定できます。サイズ付きのフォルダーツリー、パンくずリスト、全ファイルを並べ替え・絞り込みできる表を備えています。 |
+| **大きなフォルダー** | 前回の分析はカタログからすぐに再表示され（日付付き）、その間にフォルダーをバックグラウンドで再分析します。除外するフォルダーのリスト（`node_modules`、`.git`、システムフォルダー）は任意で、既定ではオフです。システムが読み取りを許可しなかった項目は理由とともに一覧表示され、Windows では管理者として再分析できます。 |
 | **可視化** | ファイルの種類別の容量（ローズチャート）、最も大きいサブフォルダー（ツリーマップ）、1 つの点が容量の 1% を表す 100 点のマトリックス、容量を最も使っている拡張子、ファイルの古さを表示します。 |
+| **スペースマップ** | 全画面のツリーマップ：各ファイルはフォルダーの中に入れ子になったブロックで、種類ごとに色分けされます。ブロックをクリックするとそのフォルダーに入り、Backspace か右クリックで上に戻ります。 |
 | **クリーンアップ** | 理由ごとにまとめた提案：SketchUp/Revit/AutoCAD のバックアップ、一時ファイル、ログ、未完了のダウンロード、インストーラー、大きくて古いファイル。 |
+| **さらにクリーンアップ** | レンダリング・CAD のキャッシュ（Twinmotion、Lumion、Enscape、V-Ray、Corona、Revit のジャーナル、Adobe のメディアキャッシュ）、空のファイル、空のフォルダー — フォルダーも確認コードを入力して初めてごみ箱に移動します。 |
 | **本当の重複** | SHA-256 で内容を比較し、必要な場合にだけ読み取ります（サイズ → 先頭と末尾の 64 KB → ファイル全体）。残すコピーを選べるほか、同じファイルがカタログ内の別のフォルダー（バックアップ用ドライブなど）にも存在するかどうかも確認できます。 |
 | **整理** | 直下にあるファイルを種類別のサブフォルダーに移動したり、`{date}-{n}-{name}` のようなパターンで一括名前変更したりできます。必ずプレビューが表示され、元に戻すこともできます。 |
 | **カタログと履歴** | 名前、サイズ、日付、ハッシュを保存するローカルの SQLite カタログです。これまでに分析したすべてのフォルダーを（接続されていないドライブも含めて）検索でき、スキャンを比較して新規、削除、増加した項目を確認できます。 |
@@ -140,7 +144,7 @@ npm start
 |---|---|
 | `Ctrl+O` | フォルダーを開く |
 | `F5` | 再分析 |
-| `Ctrl+1` … `Ctrl+6` | 概要 · ファイル · クリーンアップ · 重複 · 整理 · カタログ |
+| `Ctrl+1` … `Ctrl+7` | 概要 · ファイル · クリーンアップ · 重複 · 整理 · カタログ · スペースマップ |
 | `Ctrl+B` | サイドバーの表示/非表示 |
 | `Esc` | 実行中の分析または重複の確認をキャンセル |
 

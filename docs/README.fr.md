@@ -11,12 +11,21 @@ Voyez ce qui occupe de l’espace dans vos dossiers, trouvez les vrais doublons 
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · **Français** · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.0.3](https://img.shields.io/badge/version-1.0.3-161214)
+![Version 1.1.0](https://img.shields.io/badge/version-1.1.0-161214)
 ![Licence : GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Plateforme : Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
 ![Langues : 10](https://img.shields.io/badge/UI%20languages-10-0a8bb5)
 
+<p>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe"><img src="https://img.shields.io/badge/Windows-T%C3%A9l%C3%A9charger%20.exe-d4145a?style=for-the-badge&labelColor=161214" alt="Windows .exe"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg"><img src="https://img.shields.io/badge/macOS-T%C3%A9l%C3%A9charger%20.dmg-d4145a?style=for-the-badge&labelColor=161214" alt="macOS .dmg"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb"><img src="https://img.shields.io/badge/Linux-T%C3%A9l%C3%A9charger%20.deb-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .deb"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm"><img src="https://img.shields.io/badge/Linux-T%C3%A9l%C3%A9charger%20.rpm-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .rpm"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage"><img src="https://img.shields.io/badge/Linux-T%C3%A9l%C3%A9charger%20AppImage-d4145a?style=for-the-badge&labelColor=161214" alt="Linux AppImage"></a>
+</p>
+
+<sub><a href="https://github.com/danielcarli/lionorganizer/releases">Toutes les versions</a> · <a href="#télécharger">Comment installer</a></sub>
 
 <img src="screenshots/i18n/overview-fr.png" alt="Vue d’ensemble de LionOrganizer : espace par type de fichier, plus gros dossiers et fichiers" width="900">
 
@@ -35,7 +44,7 @@ Tout fonctionne **en local**. Pas de compte ni de télémétrie ; la seule conne
 - **De vrais doublons, par le contenu** — confirmés par SHA-256, et vous choisissez la copie à garder.
 - **Une mémoire entre les analyses** — un catalogue local pour chercher dans tous les dossiers analysés (même des disques débranchés) et voir ce qui est nouveau, supprimé ou en hausse.
 - **Ranger et renommer, avec annulation** — les fichiers en vrac classés dans des dossiers par type et le renommage par lots avec des modèles, toujours avec un aperçu.
-- **Un deuxième avis par l’IA** — exportez un rapport dans votre langue pour qu’une IA indique ce qui est probablement le plus sûr à supprimer ; l’application n’envoie rien.
+- **Un deuxième avis par l’IA** — exportez un rapport dans votre langue pour qu’une IA indique ce qui est probablement le plus sûr à supprimer ; l’application n’envoie rien. Collez ensuite sa réponse : les fichiers cités s’affichent avec le risque indiqué, prêts à être vérifiés.
 - **Il voit quand des fichiers disparaissent** — les fichiers supprimés ou déplacés en dehors de l’application apparaissent en gris, et vous pouvez les retirer des listes.
 - **Pour tout le monde** — 10 langues, thèmes clair et sombre, et des installateurs vérifiés pour Windows, macOS et Linux.
 
@@ -43,17 +52,9 @@ Tout fonctionne **en local**. Pas de compte ni de télémétrie ; la seule conne
 
 Téléchargez l'installateur de votre système. Chacun récupère la **dernière version** sur GitHub et vérifie chaque fichier (SHA-256 et provenance signée du build).
 
-<p align="center">
-  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe"><img src="https://img.shields.io/badge/Windows-T%C3%A9l%C3%A9charger%20.exe-d4145a?style=for-the-badge&labelColor=161214" alt="Windows .exe"></a>
-  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg"><img src="https://img.shields.io/badge/macOS-T%C3%A9l%C3%A9charger%20.dmg-d4145a?style=for-the-badge&labelColor=161214" alt="macOS .dmg"></a>
-  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb"><img src="https://img.shields.io/badge/Linux-T%C3%A9l%C3%A9charger%20.deb-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .deb"></a>
-  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm"><img src="https://img.shields.io/badge/Linux-T%C3%A9l%C3%A9charger%20.rpm-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .rpm"></a>
-  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage"><img src="https://img.shields.io/badge/Linux-T%C3%A9l%C3%A9charger%20AppImage-d4145a?style=for-the-badge&labelColor=161214" alt="Linux AppImage"></a>
-</p>
-
-- **Windows 10/11** (x64, ARM) : assistant d'installation d'environ 2 Mo, qui télécharge et vérifie le programme pendant l'installation.
-- **macOS 11+** (Apple Silicon, Intel) : ouvrez le `.dmg` et glissez LionOrganizer dans Applications.
-- **Linux** (x64) : `.deb` pour Ubuntu, Debian, Mint…, `.rpm` pour Fedora, RHEL, openSUSE…, ou l'AppImage, qui fonctionne sur toute distribution sans installation.
+- **Windows 10/11** (x64, ARM) : assistant d'installation d'environ 2 Mo, qui télécharge et vérifie le programme pendant l'installation. → [`LionOrganizer-Setup.exe`](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe)
+- **macOS 11+** (Apple Silicon, Intel) : ouvrez le `.dmg` et glissez LionOrganizer dans Applications. → [`LionOrganizer-mac-universal.dmg`](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg)
+- **Linux** (x64) : `.deb` pour Ubuntu, Debian, Mint…, `.rpm` pour Fedora, RHEL, openSUSE…, ou l'AppImage, qui fonctionne sur toute distribution sans installation. → [`.deb`](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb) · [`.rpm`](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm) · [AppImage](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage)
 
 > Les installateurs ne sont pas encore signés avec un certificat payant. Au premier lancement, Windows peut afficher « Windows a protégé votre ordinateur » (**Informations complémentaires › Exécuter quand même**) et macOS demande d'autoriser l'app dans **Réglages Système › Confidentialité et sécurité › Ouvrir quand même**.
 
@@ -76,8 +77,11 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 | | |
 |---|---|
 | **Analyser** | Parcourt un dossier et ses sous-dossiers — 3 niveaux par défaut, jusqu’à 50 niveaux ou sans limite. Arborescence des dossiers avec leurs tailles, fil d’Ariane et tableau triable et filtrable de tous les fichiers. |
+| **Grands dossiers** | La dernière analyse se rouvre instantanément depuis le catalogue, avec sa date, pendant que le dossier est analysé à nouveau en arrière-plan. Liste facultative de dossiers à ignorer (`node_modules`, `.git`, dossiers système) — désactivée par défaut. Les éléments que le système n’a pas laissé lire sont listés avec la raison ; sous Windows, on peut analyser à nouveau en tant qu’administrateur. |
 | **Visualiser** | Espace par type de fichier (diagramme en rose), plus gros sous-dossiers (treemap), matrice de 100 points où chaque point représente 1 % de l’espace, extensions les plus volumineuses et ancienneté des fichiers. |
+| **Carte de l’espace** | Treemap en plein écran : chaque fichier est un bloc, imbriqué dans ses dossiers et coloré selon son type. Cliquez sur un bloc pour entrer dans son dossier ; Retour arrière ou le clic droit remonte. |
 | **Nettoyer** | Suggestions regroupées par motif : sauvegardes SketchUp/Revit/AutoCAD, fichiers temporaires, journaux, téléchargements inachevés, programmes d’installation, gros fichiers anciens. |
+| **Encore plus à nettoyer** | Caches de rendu et de CAO (Twinmotion, Lumion, Enscape, V-Ray, Corona, journaux Revit, Media Cache d’Adobe), fichiers vides et dossiers vides — les dossiers ne vont eux aussi dans la Corbeille qu’après le code saisi. |
 | **Vrais doublons** | Comparaison du contenu avec SHA-256, lu seulement quand c’est nécessaire (taille → 64 Ko de début et de fin → fichier entier). Choisissez la copie à conserver ; voyez si le même fichier existe aussi dans un autre dossier catalogué (par exemple un disque de sauvegarde). |
 | **Organiser** | Rangez les fichiers en vrac dans des sous-dossiers par type et renommez par lot avec des modèles comme `{date}-{n}-{name}`. Toujours avec un aperçu, et annulable. |
 | **Catalogue et historique** | Un catalogue SQLite local des noms, tailles, dates et hachages. Recherchez dans tous les dossiers que vous avez analysés — même sur des disques débranchés — et comparez les analyses pour voir ce qui est nouveau, supprimé ou en hausse. |
@@ -140,7 +144,7 @@ Double-cliquez sur **`build-installer.bat`** (ou exécutez `npm run dist`). Un p
 |---|---|
 | `Ctrl+O` | Ouvrir un dossier |
 | `F5` | Analyser à nouveau |
-| `Ctrl+1` … `Ctrl+6` | Vue d’ensemble · Fichiers · Nettoyage · Doublons · Organiser · Catalogue |
+| `Ctrl+1` … `Ctrl+7` | Vue d’ensemble · Fichiers · Nettoyage · Doublons · Organiser · Catalogue · Carte de l’espace |
 | `Ctrl+B` | Afficher/masquer la barre latérale |
 | `Esc` | Annuler l’analyse ou la recherche de doublons en cours |
 

@@ -18,6 +18,9 @@ const PER_GROUP = 40;
 const MAX_DUP_GROUPS = 50;
 const SUBFOLDERS = 15;
 
+/** The word the AI should use for a risk level, in the user's language ("low", "baixo"…). */
+const firstWord = (level) => t('aiImport.riskWords.' + level).split(',')[0].trim();
+
 /** Text safe inside a Markdown table cell or inline code. */
 const cell = (v) => String(v).replace(/\|/g, '\\|').replace(/[\r\n]+/g, ' ');
 const code = (v) => '`' + String(v).replace(/`/g, "'").replace(/[\r\n]+/g, ' ') + '`';
@@ -43,6 +46,8 @@ export class AiReportService {
     line(`# ${t('report.ai.title')}`, '');
     line(`## ${t('report.ai.instructions.heading')}`, '', t('report.ai.instructions.intro', { folder: folderName }), '');
     for (let i = 1; i <= RULES; i++) line(`${i}. ${t('report.ai.instructions.rule' + i)}`);
+    // so the answer can be pasted back into LionOrganizer ("Import AI answer")
+    line(`${RULES + 1}. ${t('report.ai.instructions.format', { low: firstWord('low'), medium: firstWord('medium'), high: firstWord('high') })}`);
     line('', t('report.ai.instructions.answerIn', { language }), '', t('report.ai.instructions.deleteNote'), '');
 
     // ---- summary

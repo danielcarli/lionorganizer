@@ -20,17 +20,22 @@ contextBridge.exposeInMainWorld('host', {
   setLocale: (locale) => ipcRenderer.send('nls:setLocale', locale),
   reloadWindow: () => ipcRenderer.send('window:reload'),
   appInfo: () => ipcRenderer.invoke('app:info'),
+  takeInitialScan: () => ipcRenderer.invoke('app:takeInitialScan'),
 
   // folder and scan
   pickFolder: () => ipcRenderer.invoke('dialog:pickFolder'),
   saveCsv: (name, content) => ipcRenderer.invoke('dialog:saveCsv', name, content),
   saveReport: (name, content) => ipcRenderer.invoke('dialog:saveReport', name, content),
-  startScan: (root, depth, record) => ipcRenderer.invoke('scan:start', root, depth, !!record),
+  startScan: (root, depth, record, options) => ipcRenderer.invoke('scan:start', root, depth, !!record, options || {}),
+  restoreScan: (root) => ipcRenderer.invoke('scan:restore', root),
   cancelScan: () => ipcRenderer.invoke('scan:cancel'),
   onScanProgress: on('scan:progress'),
   reveal: (p) => ipcRenderer.invoke('shell:reveal', p),
   missingFiles: (paths) => ipcRenderer.invoke('shell:missing', paths),
   copyText: (text) => ipcRenderer.invoke('shell:copyText', text),
+  readText: () => ipcRenderer.invoke('shell:readText'),
+  relaunchAsAdmin: (folder) => ipcRenderer.invoke('shell:relaunchAsAdmin', folder),
+  openPrivacySettings: () => ipcRenderer.invoke('shell:openPrivacySettings'),
 
   // duplicates by hash
   findDuplicates: (opts) => ipcRenderer.invoke('hash:find', opts),

@@ -27,10 +27,10 @@ export class TitlebarPart {
   render() {
     const folder = this.scan.folder;
     setChildren(this.center, 
-      h('span.cc-icon', { html: icon(this.scan.state === 'scanning' ? 'refresh' : 'search', 14) }),
+      h('span.cc-icon', { html: icon(this.scan.busy ? 'refresh' : 'search', 14) }),
       h('span.cc-text', folder ? baseName(folder) : t('titlebar.placeholder')),
       h('kbd', 'Ctrl+O'));
-    this.center.classList.toggle('busy', this.scan.state === 'scanning');
+    this.center.classList.toggle('busy', this.scan.busy);
     document.title = folder ? `${baseName(folder)} — ${t('app.name')}` : `${t('app.name')} — ${t('app.tagline')}`;
   }
 }

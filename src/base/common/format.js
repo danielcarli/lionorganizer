@@ -56,6 +56,8 @@ export function bytesParts(bytes) {
 
 export const formatNumber = (n) => fmt().nf.format(n);
 export const formatDate = (ms) => (ms ? fmt().df.format(new Date(ms)) : '—');
+/** Date and time, e.g. "5 Nov 2026, 14:32" in the user's language. */
+export const formatDateTime = (ms) => (ms ? new Intl.DateTimeFormat(getLocale(), { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(ms)) : '—');
 export const formatPercent = (part, total) =>
   new Intl.NumberFormat(getLocale(), { style: 'percent', maximumFractionDigits: 1, minimumFractionDigits: 1 }).format(total ? part / total : 0);
 

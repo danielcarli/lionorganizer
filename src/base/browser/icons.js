@@ -8,6 +8,9 @@ const svg = (body, size = 16) =>
   `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
 
 const paths = {
+  import: '<path d="M12 3v11M7.5 9.5L12 14l4.5-4.5"/><path d="M4 14.5v3A2.5 2.5 0 0 0 6.5 20h11a2.5 2.5 0 0 0 2.5-2.5v-3"/>',
+  map: '<rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M11 4v16M11 12h10M16 12v8"/>',
+  arrowUp: '<path d="M12 19V5M6 11l6-6 6 6"/>',
   folder: '<path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4.2l2 2.2h8.8A1.5 1.5 0 0 1 21 8.7v9.8a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"/>',
   folderOpen: '<path d="M3 18.5V6.5A1.5 1.5 0 0 1 4.5 5h4.2l2 2.2h7.8A1.5 1.5 0 0 1 20 8.7V10"/><path d="M3 18.5l2.6-7.1A1.5 1.5 0 0 1 7 10.4h13.6a1 1 0 0 1 .95 1.3L19.4 18.9a1.5 1.5 0 0 1-1.4 1.1H4.5A1.5 1.5 0 0 1 3 18.5z"/>',
   reveal: '<path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4.2l2 2.2h8.8A1.5 1.5 0 0 1 21 8.7v9.8a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"/><path d="M10 15.5l4-4M11 11.5h3v3"/>',

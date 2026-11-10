@@ -44,7 +44,10 @@ export class FileActionsService {
 
   async openFolderAndScan() {
     const folder = await this.scan.pickFolder();
-    if (folder) this.scan.scan(folder);
+    if (!folder) return;
+    // a folder already in the catalog opens at once (saved analysis) and is analyzed again in the background
+    const same = this.analysis.hasData && this.analysis.root === folder;
+    if (same || !(await this.scan.reopen(folder))) this.scan.scan(folder);
   }
 
   async reveal(path) {
@@ -66,6 +69,10 @@ export class FileActionsService {
   /** Deletion: always goes through the code confirmation (OperationsService). */
   trash(files) {
     return this.operations.trash(files);
+  }
+
+  trashEmptyDirs(dirs) {
+    return this.operations.trashEmptyDirs(dirs);
   }
 
   async exportCsv(files) {

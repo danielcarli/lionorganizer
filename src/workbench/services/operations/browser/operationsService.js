@@ -42,6 +42,20 @@ export class OperationsService {
     return res;
   }
 
+  /** Empty folders → Recycle Bin. Also always asks for the code. @param {{path:string}[]} dirs */
+  async trashEmptyDirs(dirs) {
+    const paths = (dirs || []).map((d) => d.path);
+    if (!paths.length) return null;
+    const res = await this.#run('trashDirs', { paths });
+    if (!res) return null;
+    // gone meanwhile, or no longer empty: either way they leave the list of empty folders
+    this.analysis.removeEmptyDirs([...res.removed, ...res.missing, ...res.notEmpty]);
+    if (res.removed.length) this.notifications.info(tn('ops.trashedDirs', res.removed.length));
+    if (res.notEmpty?.length) this.notifications.warn(tn('ops.notEmptyDirs', res.notEmpty.length));
+    this.#warnFailed(res.failed, 'ops.failed.trashDirs');
+    return res;
+  }
+
   /** @param {{src:string,dst:string}[]} moves */
   async organize(moves) {
     const res = await this.#run('organize', { moves });

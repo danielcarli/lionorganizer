@@ -78,7 +78,7 @@ export class ConfirmationService {
             h('h2#cm-title', view.title))),
         h('p#cm-msg.cm-message', view.message),
         items.length ? h('ul.cm-items', items, view.more ? h('li.cm-more', tn('confirm.more', view.more)) : null) : null,
-        view.skipped ? h('p.cm-note', tn('confirm.skipped', view.skipped)) : null,
+        view.skipped ? h('p.cm-note', view.skippedText || tn('confirm.skipped', view.skipped)) : null,
         h('div.cm-code-box',
           h('p.cm-code-label', t('confirm.codeLabel')),
           h('div.cm-code', { 'aria-hidden': 'true' }, [...code].map((c, i) => h(`span${i === 3 ? '.gap' : ''}`, c))),

@@ -29,8 +29,10 @@ import { CleanupView } from '../contrib/cleanup/cleanupView.js';
 import { DuplicatesView } from '../contrib/duplicates/duplicatesView.js';
 import { OrganizeView } from '../contrib/organize/organizeView.js';
 import { CatalogView } from '../contrib/catalog/catalogView.js';
+import { TreemapView } from '../contrib/treemap/treemapView.js';
 import { h } from '../../base/browser/dom.js';
-import { t, consumeRescanFlag } from '../../base/common/nls.js';
+import { t, tn, consumeRescanFlag } from '../../base/common/nls.js';
+import { VIEWS } from '../services/layout/browser/layoutService.js';
 
 const host = window.host;
 if (!host) throw new Error(t('workbench.preloadMissing'));
@@ -61,6 +63,7 @@ const views = {
   duplicates: new DuplicatesView(services),
   organize: new OrganizeView(services),
   catalog: new CatalogView(services),
+  treemap: new TreemapView(services),
 };
 
 // ---- layout ----
@@ -78,8 +81,27 @@ root.append(
   services.notifications.element,
 );
 
-// after a language change (window reload), re-run the analysis that was open
-if (consumeRescanFlag() && services.scan.folder) services.scan.scan();
+// ---- startup ----
+// 1) reopened as administrator (Windows) to read protected folders: analyze that folder;
+// 2) otherwise reopen the last analysis saved in the catalog at once, and analyze it again in the background;
+// 3) without a saved one, after a language change (window reload) analyze the folder that was open again.
+(async () => {
+  const rescan = consumeRescanFlag();
+  const initial = await host.takeInitialScan?.().catch(() => null);
+  if (initial) { services.scan.scan(initial); return; }
+  if (services.scan.folder && (await services.scan.reopen())) return;
+  if (rescan && services.scan.folder) services.scan.scan();
+})();
+
+// A background refresh replaced the saved analysis: say so, with what changed since then.
+services.scan.onDidFinish(({ background, result }) => {
+  if (!background) return;
+  const c = result.catalog?.changes;
+  const changed = c ? c.new + c.removed + c.grew + c.shrank : 0;
+  services.notifications.info(changed
+    ? t('restore.updatedChanges', { new: tn('restore.count.new', c.new), removed: tn('restore.count.removed', c.removed), changed: tn('restore.count.changed', c.grew + c.shrank) })
+    : t('restore.updated'), 7000);
+});
 
 // ---- keyboard shortcuts ----
 // Back to the window: files may have been deleted, moved or restored meanwhile (e.g. in Explorer).
@@ -89,8 +111,8 @@ window.addEventListener('keydown', (e) => {
   const mod = e.ctrlKey || e.metaKey;
   if (mod && e.key.toLowerCase() === 'o') { e.preventDefault(); services.actions.openFolderAndScan(); }
   else if (mod && e.key.toLowerCase() === 'b') { e.preventDefault(); services.layout.toggleSidebar(); }
-  else if (mod && /^[1-6]$/.test(e.key)) { e.preventDefault(); services.layout.openView(['overview', 'files', 'cleanup', 'duplicates', 'organize', 'catalog'][+e.key - 1]); }
+  else if (mod && /^[1-7]$/.test(e.key)) { e.preventDefault(); services.layout.openView(VIEWS[+e.key - 1].id); }
   else if (e.key === 'F5') { e.preventDefault(); services.scan.scan(); }
-  else if (e.key === 'Escape' && services.scan.state === 'scanning') services.scan.cancel();
+  else if (e.key === 'Escape' && services.scan.busy && !document.fullscreenElement) services.scan.cancel();
   else if (e.key === 'Escape' && services.duplicates.status === 'running') services.duplicates.cancel();
 });

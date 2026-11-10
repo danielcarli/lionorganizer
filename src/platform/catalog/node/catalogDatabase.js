@@ -71,6 +71,12 @@ CREATE TABLE IF NOT EXISTS scan_folders (
 );
 CREATE INDEX IF NOT EXISTS folders_scan ON scan_folders(scan_id);
 
+-- what a scan found besides the files (errors, empty and ignored folders…), to reopen it as it was
+CREATE TABLE IF NOT EXISTS scan_extras (
+  scan_id INTEGER PRIMARY KEY REFERENCES scans(id) ON DELETE CASCADE,
+  data TEXT NOT NULL            -- JSON
+);
+
 CREATE TABLE IF NOT EXISTS operations (
   id INTEGER PRIMARY KEY,
   kind TEXT NOT NULL,           -- trash | organize | rename | undo
@@ -135,6 +141,9 @@ class CatalogDatabase {
       opById: p('SELECT * FROM operations WHERE id = ?'),
       opItems: p('SELECT src, dst, created_dir FROM operation_items WHERE op_id = ?'),
       markUndone: p('UPDATE operations SET undone_at = ? WHERE id = ?'),
+      saveExtras: p('INSERT OR REPLACE INTO scan_extras(scan_id, data) VALUES (?, ?)'),
+      extrasOf: p('SELECT data FROM scan_extras WHERE scan_id = ?'),
+      snapshotFiles: p("SELECT path, name, ext, size, mtime FROM files WHERE path LIKE ? ESCAPE '\\' AND missing = 0 AND last_seen_scan >= ?"),
     };
   }
 
@@ -216,6 +225,58 @@ class CatalogDatabase {
 
       return { scanId, previousScanId: prev ? prev.id : null, changes: counts };
     });
+  }
+
+  saveExtras(scanId, extras) {
+    this.q.saveExtras.run(scanId, JSON.stringify(extras));
+  }
+
+  /**
+   * The last analysis of a folder, rebuilt from the catalog: the files it saw that are still present
+   * (files seen again by later scans of a subfolder count too), within its depth limit and ignore list.
+   * @param {string} root
+   * @param {(patterns: string[]) => ((rel: string, name: string) => boolean) | null} compileIgnore
+   */
+  lastSnapshot(root, compileIgnore) {
+    const rootRow = this.q.rootByPath.get(root);
+    if (!rootRow) return null;
+    const scan = this.q.lastScan.get(rootRow.id);
+    if (!scan) return null;
+    let extras = {};
+    try { extras = JSON.parse(this.q.extrasOf.get(scan.id)?.data || '{}'); } catch { extras = {}; }
+    const isIgnored = compileIgnore ? compileIgnore(extras.ignore || []) : null;
+    const maxDepth = scan.max_depth;
+    const files = [];
+    let bytes = 0;
+    for (const row of this.q.snapshotFiles.all(likePrefix(root), scan.id)) {
+      const folder = path.relative(root, path.dirname(row.path));
+      if (folder.startsWith('..') || path.isAbsolute(folder)) continue;
+      const segs = folder ? folder.split(path.sep) : [];
+      if (maxDepth !== null && segs.length > maxDepth) continue;
+      if (isIgnored && segs.some((name, i) => isIgnored(segs.slice(0, i + 1).join(path.sep), name))) continue;
+      files.push({ path: row.path, name: row.name, ext: row.ext, size: row.size, mtime: row.mtime, folder, depth: segs.length });
+      bytes += row.size;
+    }
+    return {
+      root,
+      maxDepth,
+      files,
+      bytes,
+      dirsRead: extras.dirsRead ?? 0,
+      durationMs: extras.durationMs ?? scan.finished_at - scan.started_at,
+      errors: extras.errors || [],
+      errorCount: extras.errorCount ?? (extras.errors || []).length,
+      skippedDirs: extras.skippedDirs || [],
+      skippedCount: extras.skippedCount ?? (extras.skippedDirs || []).length,
+      emptyDirs: extras.emptyDirs || [],
+      emptyDirCount: extras.emptyDirCount ?? (extras.emptyDirs || []).length,
+      ignoredDirs: extras.ignoredDirs || [],
+      ignoredCount: extras.ignoredCount ?? 0,
+      ignore: extras.ignore || [],
+      cancelled: !!scan.cancelled,
+      restored: { scanId: scan.id, at: scan.finished_at },
+      catalog: { recorded: true, scanId: scan.id },
+    };
   }
 
   history(root, limit = 30) {
@@ -363,7 +424,7 @@ class CatalogDatabase {
 
   clear() {
     this.#tx(() => {
-      for (const t of ['operation_items', 'operations', 'scan_changes', 'scan_folders', 'files', 'scans', 'roots']) this.db.exec(`DELETE FROM ${t}`);
+      for (const t of ['operation_items', 'operations', 'scan_extras', 'scan_changes', 'scan_folders', 'files', 'scans', 'roots']) this.db.exec(`DELETE FROM ${t}`);
     });
     this.db.exec('VACUUM');
   }

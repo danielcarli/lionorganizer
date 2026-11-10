@@ -1,20 +1,57 @@
 # LionOrganizer — continuous integration.
-# Runs on every push and pull request, and is reused by release.yml before anything is published.
+# Runs on pushes to main and on pull requests, and is reused by release.yml before anything is published.
+# Kept light on purpose:
+#  - changes that only touch documentation do not run it;
+#  - a newer push to the same branch cancels the run still going for the older one;
+#  - a push to main whose commit is already tagged vX.Y.Z (git push origin main vX.Y.Z) skips the tests here,
+#    because the Release workflow runs exactly the same jobs for that commit;
+#  - every job has a time limit, so nothing can hang for hours.
 name: CI
 
 on:
   push:
     branches: [main]
+    paths-ignore: ['**.md', 'docs/**', 'LICENSE', '.gitattributes']
   pull_request:
+    paths-ignore: ['**.md', 'docs/**', 'LICENSE', '.gitattributes']
   workflow_call:
 
 permissions:
   contents: read
 
+concurrency:
+  # inside release.yml the ref is the tag, so this never waits on the release itself
+  group: ci-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
 jobs:
+  gate:
+    name: Already being released?
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    outputs:
+      tagged: ${{ steps.check.outputs.tagged }}
+    steps:
+      - id: check
+        env:
+          SHA: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          sleep 20 # the tag usually arrives in the same push; give it a moment
+          if git ls-remote --tags "https://github.com/$REPO.git" 'refs/tags/v*' | grep -q "^$SHA"; then
+            echo "Commit $SHA has a version tag: the Release workflow tests it, nothing to do here."
+            echo "tagged=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "tagged=false" >> "$GITHUB_OUTPUT"
+          fi
+
   lint:
     name: Lint installers
+    needs: gate
+    if: ${{ !cancelled() && needs.gate.outputs.tagged != 'true' }}
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -35,7 +72,10 @@ jobs:
 
   test:
     name: Tests
+    needs: gate
+    if: ${{ !cancelled() && needs.gate.outputs.tagged != 'true' }}
     runs-on: ubuntu-24.04
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -47,12 +87,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Allow Chromium's sandbox on Ubuntu 24.04 runners
+        timeout-minutes: 5
         run: |
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          sudo apt-get update -qq && sudo apt-get install -y -qq xvfb >/dev/null
+          # xvfb comes with the runner image; install it only if missing, never waiting on apt for long
+          if ! command -v xvfb-run >/dev/null; then
+            export DEBIAN_FRONTEND=noninteractive
+            sudo -E timeout 120 apt-get update -qq -o Acquire::Retries=2 -o Acquire::http::Timeout=20 </dev/null
+            sudo -E timeout 180 apt-get install -y -qq --no-install-recommends xvfb </dev/null >/dev/null
+          fi
+          xvfb-run --help >/dev/null
       - name: Translations
         run: npm run test:i18n
       - name: End-to-end (light and dark)
+        timeout-minutes: 10
         run: |
           for theme in light dark; do
             E2E_FOLDER="$RUNNER_TEMP/e2e-$theme" E2E_OUT="$RUNNER_TEMP/e2e-out" E2E_THEME="$theme" \
@@ -64,6 +112,7 @@ jobs:
           node tools/make-release.js --out "$RUNNER_TEMP/r2"
           diff "$RUNNER_TEMP/r1/SHA256SUMS" "$RUNNER_TEMP/r2/SHA256SUMS"
       - name: Installer end to end (local release, per-user install)
+        timeout-minutes: 8
         run: |
           set -euo pipefail
           v="$(node -p "require('./package.json').version")"
@@ -92,7 +141,10 @@ jobs:
 
   windows:
     name: Windows installers
+    needs: gate
+    if: ${{ !cancelled() && needs.gate.outputs.tagged != 'true' }}
     runs-on: windows-2025
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

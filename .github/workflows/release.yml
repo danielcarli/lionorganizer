@@ -30,6 +30,7 @@ jobs:
   macos:
     name: macOS package (.dmg)
     runs-on: macos-15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -59,6 +60,7 @@ jobs:
   linux:
     name: Linux packages (.deb, .rpm, AppImage)
     runs-on: ubuntu-24.04
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -69,12 +71,21 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Build the packages
+        timeout-minutes: 15
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq rpm >/dev/null
+          # rpmbuild is needed for the .rpm; apt never gets to wait for long
+          if ! command -v rpmbuild >/dev/null; then
+            export DEBIAN_FRONTEND=noninteractive
+            sudo -E timeout 120 apt-get update -qq -o Acquire::Retries=2 -o Acquire::http::Timeout=20 </dev/null
+            sudo -E timeout 180 apt-get install -y -qq --no-install-recommends rpm </dev/null >/dev/null
+          fi
           npx --yes electron-builder@26.18.0 --linux deb rpm AppImage --x64 --publish never
       - name: The .deb installs and the app starts
+        timeout-minutes: 6
         run: |
-          sudo apt-get install -y -qq ./dist/lionorganizer_amd64.deb xvfb >/dev/null
+          pkgs=(./dist/lionorganizer_amd64.deb)
+          command -v xvfb-run >/dev/null || pkgs+=(xvfb) # comes with the runner image
+          sudo DEBIAN_FRONTEND=noninteractive timeout 180 apt-get install -y -qq "${pkgs[@]}" </dev/null >/dev/null
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           xvfb-run -a lionorganizer --disable-gpu >/dev/null 2>&1 &
           sleep 12
@@ -94,6 +105,7 @@ jobs:
     name: Publish release
     needs: [ci, macos, linux]
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     permissions:
       contents: write       # create the release and upload its assets
       id-token: write       # sign the provenance attestation (Sigstore, keyless)

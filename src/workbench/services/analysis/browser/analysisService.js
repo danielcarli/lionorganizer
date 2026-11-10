@@ -38,6 +38,7 @@ export class AnalysisService {
 
   result = null;
   files = [];
+  emptyDirList = [];
   tree = null;
   filter = { ...EMPTY_FILTER };
   sort = { key: 'size', dir: -1 };
@@ -55,13 +56,31 @@ export class AnalysisService {
   get hasData() { return !!this.result; }
   get root() { return this.result?.root ?? ''; }
 
-  setResult(result) {
+  /**
+   * @param {object} result
+   * @param {{ keepView?: boolean }} [opts] keepView: a refresh of the same folder keeps the folder in focus,
+   *   the filters and the selection (of the files that still exist).
+   */
+  setResult(result, { keepView = false } = {}) {
     const { files, ...meta } = result;
     for (const f of files) f.cat = categorize(f.ext);
+    const keep = keepView && this.result && this.result.root === meta.root;
+    const prevFilter = this.filter;
+    const prevSelection = this.selection;
     this.result = meta;
     this.files = files;
+    this.emptyDirList = (meta.emptyDirs || []).slice();
+    this.#emptyRemoved = 0;
     this.filter = { ...EMPTY_FILTER };
-    this.selection.clear();
+    this.selection = new Set();
+    if (keep) {
+      const paths = new Set(files.map((f) => f.path));
+      for (const p of prevSelection) if (paths.has(p)) this.selection.add(p);
+      const sep = sepOf(meta.root);
+      const folder = prevFilter.folder;
+      const stillThere = !folder || files.some((f) => f.folder === folder || f.folder.startsWith(folder + sep));
+      this.filter = { ...prevFilter, folder: stillThere ? folder : '' };
+    }
     this.missing.clear();
     this.#checked.clear();
     this.#visible.clear();
@@ -79,6 +98,29 @@ export class AnalysisService {
     this.#rebuild();
     this.#onDidChangeData.fire();
     this.#onDidChangeSelection.fire();
+  }
+
+  // ---------- empty folders ----------
+  /** Empty folders inside the folder in focus (topmost of each empty branch). */
+  emptyDirs() {
+    const folder = this.filter.folder;
+    if (!folder) return this.emptyDirList;
+    const prefix = folder + sepOf(this.root);
+    return this.emptyDirList.filter((d) => d.folder.startsWith(prefix));
+  }
+
+  /** Total of empty folders found (the list may be capped for very large analyses). */
+  get emptyDirCount() {
+    return Math.max(this.emptyDirList.length, (this.result?.emptyDirCount ?? 0) - this.#emptyRemoved);
+  }
+
+  #emptyRemoved = 0;
+  removeEmptyDirs(paths) {
+    const gone = new Set(paths);
+    const before = this.emptyDirList.length;
+    this.emptyDirList = this.emptyDirList.filter((d) => !gone.has(d.path));
+    this.#emptyRemoved += before - this.emptyDirList.length;
+    if (before !== this.emptyDirList.length) this.#onDidChangeData.fire();
   }
 
   // ---------- files that no longer exist ----------

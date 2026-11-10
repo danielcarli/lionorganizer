@@ -70,6 +70,15 @@ function createTestFolder(root) {
   put('Loose/model.skb', rnd(2 * MB), 4);
   put('Loose/song.mp3', rnd(1 * MB), 90);
   put('Loose/readme.txt', Buffer.from('hello'), 1);
+  // 1.1.0: render caches, an empty file, empty folders, a folder the system "refuses" (see e2e.js), node_modules
+  put('Renders/Lumion 2024/Cache/frame-0001.cache', rnd(310 * KB), 12);
+  put('Renders/scene-light.vrmap', rnd(420 * KB), 12);
+  put('Documents/empty-notes.txt', Buffer.alloc(0), 6);
+  fs.mkdirSync(path.join(root, 'Empty', 'Deep', 'Deeper'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'EmptyOne'), { recursive: true });
+  put('Locked/secret.txt', rnd(10 * KB), 3);
+  put('Code/node_modules/left-pad/index.js', rnd(12 * KB), 8);
+  put('Code/app.js', rnd(9 * KB), 8);
 }
 
 /** Realistic folder for the README screenshots: an architecture student's drive. */

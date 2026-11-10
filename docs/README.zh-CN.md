@@ -11,12 +11,21 @@
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · **简体中文** · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.0.3](https://img.shields.io/badge/version-1.0.3-161214)
+![Version 1.1.0](https://img.shields.io/badge/version-1.1.0-161214)
 ![许可证：GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![平台：Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
 ![界面语言：10 种](https://img.shields.io/badge/UI%20languages-10-0a8bb5)
 
+<p>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe"><img src="https://img.shields.io/badge/Windows-%E4%B8%8B%E8%BD%BD%20.exe-d4145a?style=for-the-badge&labelColor=161214" alt="Windows .exe"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg"><img src="https://img.shields.io/badge/macOS-%E4%B8%8B%E8%BD%BD%20.dmg-d4145a?style=for-the-badge&labelColor=161214" alt="macOS .dmg"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb"><img src="https://img.shields.io/badge/Linux-%E4%B8%8B%E8%BD%BD%20.deb-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .deb"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm"><img src="https://img.shields.io/badge/Linux-%E4%B8%8B%E8%BD%BD%20.rpm-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .rpm"></a>
+  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage"><img src="https://img.shields.io/badge/Linux-%E4%B8%8B%E8%BD%BD%20AppImage-d4145a?style=for-the-badge&labelColor=161214" alt="Linux AppImage"></a>
+</p>
+
+<sub><a href="https://github.com/danielcarli/lionorganizer/releases">所有版本</a> · <a href="#下载">安装说明</a></sub>
 
 <img src="screenshots/i18n/overview-zh-CN.png" alt="LionOrganizer 概览：按文件类型划分的空间、最大的文件夹和文件" width="900">
 
@@ -35,7 +44,7 @@
 - **按内容识别真正的重复文件** — 经 SHA-256 确认，由你选择保留哪一份。
 - **跨分析的记忆** — 本地索引库可搜索所有分析过的文件夹（包括已断开的磁盘），并查看新增、删除或增长的内容。
 - **整理与重命名，可撤销** — 按类型把零散文件归入文件夹，并按模板批量重命名，始终带预览。
-- **来自 AI 的第二意见** — 用你的语言导出报告，让 AI 指出哪些文件很可能最适合删除；应用不会发送任何内容。
+- **来自 AI 的第二意见** — 用你的语言导出报告，让 AI 指出哪些文件很可能最适合删除；应用不会发送任何内容。然后把它的回答粘贴回来：回答中提到的文件会连同风险一起列出，方便查看。
 - **察觉文件消失** — 在应用之外被删除或移动的文件会以灰色显示，并可从列表中移除。
 - **人人可用** — 10 种语言、浅色和深色主题，以及经过校验的 Windows、macOS 和 Linux 安装程序。
 
@@ -43,17 +52,9 @@
 
 下载适用于你系统的安装程序。每个安装程序都会从 GitHub 获取**最新版本**，并校验每个文件（SHA-256 和签名的构建来源证明）。
 
-<p align="center">
-  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe"><img src="https://img.shields.io/badge/Windows-%E4%B8%8B%E8%BD%BD%20.exe-d4145a?style=for-the-badge&labelColor=161214" alt="Windows .exe"></a>
-  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg"><img src="https://img.shields.io/badge/macOS-%E4%B8%8B%E8%BD%BD%20.dmg-d4145a?style=for-the-badge&labelColor=161214" alt="macOS .dmg"></a>
-  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb"><img src="https://img.shields.io/badge/Linux-%E4%B8%8B%E8%BD%BD%20.deb-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .deb"></a>
-  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm"><img src="https://img.shields.io/badge/Linux-%E4%B8%8B%E8%BD%BD%20.rpm-d4145a?style=for-the-badge&labelColor=161214" alt="Linux .rpm"></a>
-  <a href="https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage"><img src="https://img.shields.io/badge/Linux-%E4%B8%8B%E8%BD%BD%20AppImage-d4145a?style=for-the-badge&labelColor=161214" alt="Linux AppImage"></a>
-</p>
-
-- **Windows 10/11**（x64、ARM）：约 2 MB 的安装向导，安装时下载并校验应用。
-- **macOS 11+**（Apple Silicon、Intel）：打开 `.dmg`，将 LionOrganizer 拖到“应用程序”。
-- **Linux**（x64）：Ubuntu、Debian、Mint… 用 `.deb`，Fedora、RHEL、openSUSE… 用 `.rpm`，或使用 AppImage，任何发行版都无需安装即可运行。
+- **Windows 10/11**（x64、ARM）：约 2 MB 的安装向导，安装时下载并校验应用。 → [`LionOrganizer-Setup.exe`](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe)
+- **macOS 11+**（Apple Silicon、Intel）：打开 `.dmg`，将 LionOrganizer 拖到“应用程序”。 → [`LionOrganizer-mac-universal.dmg`](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg)
+- **Linux**（x64）：Ubuntu、Debian、Mint… 用 `.deb`，Fedora、RHEL、openSUSE… 用 `.rpm`，或使用 AppImage，任何发行版都无需安装即可运行。 → [`.deb`](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb) · [`.rpm`](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm) · [AppImage](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage)
 
 > 安装程序尚未使用付费证书签名。首次启动时，Windows 可能显示“Windows 已保护你的电脑”（**更多信息 › 仍要运行**），macOS 会要求在**系统设置 › 隐私与安全性 › 仍要打开**中允许该应用。
 
@@ -76,8 +77,11 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 | | |
 |---|---|
 | **分析** | 扫描文件夹及其子文件夹——默认深入 3 层，可设置为最多 50 层或无限制。提供带大小信息的文件夹树、路径导航栏，以及一个可排序、可筛选、列出所有文件的表格。 |
+| **大文件夹** | 上次的分析会从索引库立即重新打开并标明日期，同时在后台重新分析该文件夹。可选的忽略文件夹列表（`node_modules`、`.git`、系统文件夹），默认关闭。系统不允许读取的项目会列出原因；在 Windows 上可以以管理员身份重新分析。 |
 | **可视化** | 按文件类型划分的空间（玫瑰图）、最大的子文件夹（矩形树图）、100 点矩阵（每个点代表 1% 的空间）、占用最多的扩展名以及文件新旧。 |
+| **空间地图** | 全屏树状图：每个文件是一个方块，嵌套在其文件夹中并按类型着色。点击方块进入其文件夹；Backspace 或右键返回上一级。 |
 | **清理** | 按原因分组的建议：SketchUp/Revit/AutoCAD 备份、临时文件、日志、未完成的下载、安装程序、大且旧的文件。 |
+| **更多可清理项** | 渲染和 CAD 缓存（Twinmotion、Lumion、Enscape、V-Ray、Corona、Revit 日志、Adobe 媒体缓存）、空文件和空文件夹——文件夹同样要输入确认码后才会移到回收站。 |
 | **真正的重复文件** | 使用 SHA-256 比较内容，仅在需要时读取（大小 → 开头/结尾 64 KB → 整个文件）。可选择保留哪个副本；还能看到同一文件是否也存在于索引库中的另一个文件夹（例如备份驱动器）。 |
 | **整理** | 将零散文件按类型移入子文件夹，并使用 `{date}-{n}-{name}` 之类的模式批量重命名。始终先预览，并且可以撤消。 |
 | **索引库与历史记录** | 本地 SQLite 索引库，保存名称、大小、日期和哈希。可在所有分析过的文件夹中搜索——即使驱动器已断开连接——并比较扫描结果，查看新增、移除或增长的内容。 |
@@ -140,7 +144,7 @@ npm start
 |---|---|
 | `Ctrl+O` | 打开文件夹 |
 | `F5` | 重新分析 |
-| `Ctrl+1` … `Ctrl+6` | 概览 · 文件 · 清理 · 重复文件 · 整理 · 索引库 |
+| `Ctrl+1` … `Ctrl+7` | 概览 · 文件 · 清理 · 重复文件 · 整理 · 索引库 · 空间地图 |
 | `Ctrl+B` | 显示/隐藏侧边栏 |
 | `Esc` | 取消正在进行的分析或重复文件检查 |
 

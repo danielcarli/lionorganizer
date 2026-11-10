@@ -39,6 +39,22 @@ async function isGone(p) {
   try { await fs.promises.lstat(p); return false; } catch (err) { return err.code === 'ENOENT' || err.code === 'ENOTDIR'; }
 }
 
+/**
+ * True if the folder still contains only empty folders (no files, links or anything else), checked right
+ * before it goes to the Recycle Bin. Gives up (false) on very deep or very large trees.
+ */
+async function isEmptyTree(dir, budget = { left: 20000 }, depth = 0) {
+  if (depth > 64) return false;
+  let entries;
+  try { entries = await fs.promises.readdir(dir, { withFileTypes: true }); } catch { return false; }
+  for (const ent of entries) {
+    if (--budget.left < 0) return false;
+    if (!ent.isDirectory() || ent.isSymbolicLink()) return false;
+    if (!(await isEmptyTree(path.join(dir, ent.name), budget, depth + 1))) return false;
+  }
+  return true;
+}
+
 async function uniquePath(p) {
   if (!(await exists(p))) return p;
   const dir = path.dirname(p);
@@ -79,6 +95,7 @@ class OperationsMainService {
   async prepare(kind, payload) {
     const planners = {
       trash: () => this.#planTrash(payload),
+      trashDirs: () => this.#planTrashDirs(payload),
       organize: () => this.#planOrganize(payload),
       rename: () => this.#planRename(payload),
       undo: () => this.#planUndo(payload),
@@ -112,6 +129,7 @@ class OperationsMainService {
     this.pending.delete(id);
     const run = {
       trash: () => this.#runTrash(p.plan),
+      trashDirs: () => this.#runTrashDirs(p.plan),
       organize: () => this.#runMoves(p.plan, 'organize'),
       rename: () => this.#runMoves(p.plan, 'rename'),
       undo: () => this.#runUndo(p.plan),
@@ -171,6 +189,64 @@ class OperationsMainService {
       } catch (err) { console.error(err); }
     }
     return { removed, failed, missing, opId, bytes };
+  }
+
+  // ------------------------------------------------------------------ empty folders → Recycle Bin
+  async #planTrashDirs({ paths }) {
+    if (!Array.isArray(paths) || !paths.length) throw new Error(t('main.ops.trashDirs.errors.noneSelected'));
+    if (paths.length > MAX_ITEMS) throw new Error(t('main.ops.errors.tooManyFiles'));
+    // only folders the last scan found empty, inside the analyzed folder, and still empty now
+    const known = [...new Set(paths)].filter((p) => this.scan.isKnownEmptyDir(p) && p !== this.scan.currentRoot);
+    if (!known.length) throw new Error(t('main.ops.trashDirs.errors.notInScan'));
+    const valid = [];
+    const notEmpty = [];
+    const gone = [];
+    for (const p of known) {
+      if (await isGone(p)) gone.push(p);
+      else if (await isEmptyTree(p)) valid.push(p);
+      else notEmpty.push(p);
+    }
+    if (!valid.length) throw new Error(tn('main.ops.trashDirs.errors.noneEmpty', known.length));
+    const root = this.scan.currentRoot;
+    return {
+      paths: valid, notEmpty, gone,
+      view: {
+        title: tn('main.ops.trashDirs.title', valid.length),
+        message: tn('main.ops.trashDirs.message', valid.length),
+        items: valid.slice(0, PREVIEW).map((p) => ({ label: path.basename(p), detail: path.relative(root, path.dirname(p)) || t('common.rootFolder') })),
+        more: Math.max(0, valid.length - PREVIEW),
+        count: valid.length, bytes: 0,
+        confirmLabel: t('common.moveToTrash'), danger: true,
+        skipped: paths.length - valid.length,
+        skippedText: paths.length > valid.length ? tn('main.ops.trashDirs.skipped', paths.length - valid.length) : null,
+      },
+    };
+  }
+
+  async #runTrashDirs(plan) {
+    const removed = [];
+    const failed = [];
+    const notEmpty = [...plan.notEmpty];
+    const missing = [...plan.gone];
+    for (const p of plan.paths) {
+      // checked again: something may have been saved into the folder while the code was typed
+      if (await isGone(p)) { missing.push(p); this.scan.forgetDir(p); continue; }
+      if (!(await isEmptyTree(p))) { notEmpty.push(p); continue; }
+      try {
+        await shell.trashItem(p);
+        this.scan.forgetDir(p);
+        removed.push(p);
+      } catch {
+        if (await isGone(p)) missing.push(p); else failed.push(p);
+      }
+    }
+    let opId = null;
+    if (this.db && removed.length) {
+      try {
+        opId = this.db.logOperation({ kind: 'trash', root: this.scan.currentRoot, summary: tn('main.ops.trashDirs.summary', removed.length), bytes: 0, items: removed.map((src) => ({ src })) });
+      } catch (err) { console.error(err); }
+    }
+    return { removed, failed, missing, notEmpty, opId, bytes: 0 };
   }
 
   // ------------------------------------------------------------------ Organize by type
