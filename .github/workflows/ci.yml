@@ -188,6 +188,7 @@ jobs:
             # 3. update with the copy used by the "Update LionOrganizer" shortcut
             $code = Invoke-Setup "$env:LOCALAPPDATA\LionOrganizer-Installer\LionOrganizer-Setup.exe" @('/UPDATE')
             Assert-True ($code -eq 0) "update from the Start menu copy (exit code $code)"
+            Assert-True ((Test-Path "$app\unins000.dat") -and -not (Test-Path "$app\unins001.exe")) 'the update kept the same uninstaller'
 
             # 4. a tampered release is refused and the installed version is kept
             Add-Content -Path "$rel\download\v$v\lionorganizer-$v.zip" -Value 'x'
@@ -200,7 +201,10 @@ jobs:
             Start-Sleep -Seconds 8
             Write-Host ("app processes before uninstalling: " + (Get-AppProcess).Count)
             $ulog = Join-Path $env:RUNNER_TEMP 'uninstall.log'
-            Start-Process "$app\unins000.exe" -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/LOG=$ulog" -Wait
+            # the uninstaller registered in Settings > Apps, as Windows runs it
+            $uninstaller = (Get-ItemProperty $innoKey).UninstallString.Trim('"')
+            Write-Host "uninstaller: $uninstaller"
+            Start-Process $uninstaller -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/LOG=$ulog" -Wait
             $gone = Wait-Gone "$app\LionOrganizer.exe"
             if (-not $gone) {
               Write-Host '--- uninstall log'; Get-Content $ulog -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "   | $_" }

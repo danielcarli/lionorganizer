@@ -245,14 +245,15 @@ Source: "{code:AssembledDir}\*"; DestDir: "{app}"; Flags: external recursesubdir
 Source: "{srcexe}"; DestDir: "{localappdata}\LionOrganizer-Installer"; DestName: "LionOrganizer-Setup.exe"; Flags: external ignoreversion; Check: NotRunningFromCopy
 
 [InstallDelete]
-; files of the previous version (only Electron/LionOrganizer files, never the whole folder or the unins* uninstaller)
+; files of the previous version (only Electron/LionOrganizer files, never the whole folder or the unins* uninstaller:
+; no wildcard may match unins000.exe / unins000.dat, or every update would leave a new uninstaller behind)
 Type: filesandordirs; Name: "{app}\resources"
 Type: filesandordirs; Name: "{app}\locales"
 Type: files; Name: "{app}\*.dll"
 Type: files; Name: "{app}\*.pak"
 Type: files; Name: "{app}\*.bin"
-Type: files; Name: "{app}\*.dat"
-Type: files; Name: "{app}\*.json"
+Type: files; Name: "{app}\icudtl.dat"
+Type: files; Name: "{app}\vk_swiftshader_icd.json"
 Type: files; Name: "{app}\version"
 Type: files; Name: "{app}\LICENSE*"
 Type: files; Name: "{app}\LionOrganizer.exe"
