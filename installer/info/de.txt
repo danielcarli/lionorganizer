@@ -1,0 +1,20 @@
+﻿WAS DIESES INSTALLATIONSPROGRAMM TUT
+
+Dieses Installationsprogramm enthält die App nicht. Es lädt die neueste auf github.com/danielcarli/lionorganizer veröffentlichte Version herunter und prüft jede Datei:
+
+ 1. Es sucht die neueste Version und prüft deren Dateiliste (SHA-256).
+ 2. Es lädt LionOrganizer (unter 1 MB) herunter und prüft den SHA-256-Wert.
+ 3. Es lädt die offizielle Electron-Laufzeit (etwa 110 MB) aus den GitHub-Releases von Electron und prüft sie mit den von Electron veröffentlichten Prüfsummen.
+ 4. Es stellt die App zusammen und installiert sie in Ihrem Benutzerordner.
+
+Alles wird über HTTPS geladen. Administratorrechte sind nicht nötig. Schlägt eine Prüfung fehl, wird nichts installiert und eine vorhandene Installation bleibt unverändert.
+
+VORAUSSETZUNGEN
+
+ - Windows 10 (Version 1809 oder neuer) oder Windows 11, 64 Bit (x64 oder ARM);
+ - eine Internetverbindung während der Installation (etwa 110 MB Download);
+ - etwa eine Minute, je nach Verbindung.
+
+AKTUALISIEREN
+
+Verwenden Sie die Verknüpfung „LionOrganizer aktualisieren“ im Startmenü oder starten Sie dieses Installationsprogramm erneut. Es holt die neueste Version wieder von GitHub; Ihre Einstellungen und der Katalog bleiben erhalten.

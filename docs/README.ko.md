@@ -11,7 +11,7 @@
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · **한국어**
 
-![Version 1.0.1](https://img.shields.io/badge/version-1.0.1-161214)
+![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-161214)
 ![라이선스: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![플랫폼: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -71,21 +71,31 @@
 
 ## 설치
 
-설치 프로그램은 작은 스크립트입니다. GitHub에서 최신 릴리스를 내려받아 모든 파일을 검증(SHA-256 및 서명된 빌드 출처)하고, 각 운영체제에서 VS Code가 설치되는 방식대로 LionOrganizer를 설치합니다. 언제든 다시 실행하면 업데이트됩니다.
+사용 중인 시스템용 설치 프로그램을 내려받으세요. 항상 GitHub에서 **최신 버전**을 가져오며 모든 파일을 검증합니다(SHA-256 및 서명된 빌드 출처).
 
-**Windows** — PowerShell에서 실행(관리자 권한 불필요):
+| 시스템 | 다운로드 |
+|---|---|
+| **Windows** 10/11 | [LionOrganizer-Setup.exe](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe) — 약 2MB 설치 마법사: 설치 중에 앱을 내려받아 검증 |
+| **macOS** 11+ | [LionOrganizer-mac-universal.dmg](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg) — 열어서 앱을 응용 프로그램으로 드래그 |
+| **Linux** (Ubuntu, Debian, Mint…) | [lionorganizer_amd64.deb](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb) |
+| **Linux** (Fedora, RHEL, openSUSE…) | [lionorganizer.x86_64.rpm](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm) |
+| **Linux** (모든 Linux) | [LionOrganizer-x86_64.AppImage](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage) — 설치 불필요 |
+
+> 설치 프로그램은 아직 유료 인증서로 서명되지 않았습니다. 처음 실행할 때 Windows에서 "Windows의 PC 보호" 창이 나타날 수 있으며(**추가 정보 › 실행**), macOS에서는 **시스템 설정 › 개인정보 보호 및 보안 › 그래도 열기**에서 앱을 허용해야 합니다.
+
+**터미널이 더 편하신가요?** Windows(PowerShell, 관리자 권한 불필요):
 
 ```powershell
 irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
 ```
 
-**macOS 및 Linux** (Debian/Ubuntu, Fedora/RHEL, openSUSE, Arch 및 파생 배포판):
+macOS 및 Linux:
 
 ```bash
 curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
 ```
 
-옵션, 실행 전 스크립트 확인 방법, 보안 모델, 제거 방법은 **[INSTALL.md](INSTALL.md)**(영어)를 참고하세요.
+자세한 내용, 보안 모델, 업데이트 및 제거 방법은 **[INSTALL.md](INSTALL.md)**(영어)를 참고하세요.
 
 ## 시작하기
 

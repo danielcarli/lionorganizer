@@ -11,7 +11,7 @@ See what takes up space in your folders, find true duplicates by content and saf
 
 **English** · [Português (Brasil)](docs/README.pt-BR.md) · [Português (Portugal)](docs/README.pt-PT.md) · [Español](docs/README.es.md) · [Français](docs/README.fr.md) · [Deutsch](docs/README.de.md) · [Italiano](docs/README.it.md) · [简体中文](docs/README.zh-CN.md) · [日本語](docs/README.ja.md) · [한국어](docs/README.ko.md)
 
-![Version 1.0.1](https://img.shields.io/badge/version-1.0.1-161214)
+![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-161214)
 ![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Platforms: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -69,24 +69,31 @@ Deleting the wrong file is worse than a full disk, so LionOrganizer is deliberat
 
 ## Install
 
-The installer is a small script that downloads the latest release from GitHub, checks every file
-(SHA-256 and signed build provenance) and installs LionOrganizer the way VS Code is installed on each system.
-Run it again at any time to update.
+Download the installer for your system. It always gets the **latest version** from GitHub and checks every file (SHA-256 and signed build provenance).
 
-**Windows** — in PowerShell (no administrator needed):
+| System | Download |
+|---|---|
+| **Windows** 10/11 | [LionOrganizer-Setup.exe](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe) — setup wizard, about 2 MB: downloads and checks the app during setup |
+| **macOS** 11+ | [LionOrganizer-mac-universal.dmg](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg) — open it and drag the app to Applications |
+| **Linux** (Ubuntu, Debian, Mint…) | [lionorganizer_amd64.deb](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb) |
+| **Linux** (Fedora, RHEL, openSUSE…) | [lionorganizer.x86_64.rpm](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm) |
+| **Linux** (other distributions) | [LionOrganizer-x86_64.AppImage](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage) — no installation needed |
+
+> The installers are not signed with a paid certificate yet. On first launch, Windows may show "Windows protected your PC" (**More info › Run anyway**) and macOS asks you to allow the app in **System Settings › Privacy & Security › Open Anyway**.
+
+**Prefer the terminal?** Windows (PowerShell, no administrator needed):
 
 ```powershell
 irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
 ```
 
-**macOS and Linux** (Debian/Ubuntu, Fedora/RHEL, openSUSE, Arch and derivatives):
+macOS and Linux:
 
 ```bash
 curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
 ```
 
-See **[docs/INSTALL.md](docs/INSTALL.md)** for options (all users, a specific version), how to check the
-script before running it, how it stays safe, and how to uninstall.
+See **[docs/INSTALL.md](docs/INSTALL.md)** for details, how it stays safe, and how to update and uninstall.
 
 ## Getting started
 
@@ -187,7 +194,7 @@ $env:E2E_FOLDER="C:\temp\lion-test"; $env:E2E_OUT="C:\temp\lion-out"; npm run te
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) — current version: **1.0.1**.
+See [CHANGELOG.md](CHANGELOG.md) — current version: **1.0.2**.
 
 ## Contributing
 

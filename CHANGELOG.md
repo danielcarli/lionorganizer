@@ -2,10 +2,15 @@
 
 All notable changes to LionOrganizer are documented here. The project follows [Semantic Versioning](https://semver.org).
 
-## [1.0.1] — 2026-11-09
+## [1.0.2] — 2026-11-10
 
 ### Install
-- New lightweight installers that download the latest release from GitHub and install it the way VS Code is installed on each system:
+- Graphical installers in every release:
+  - **Windows:** `LionOrganizer-Setup.exe`, a setup wizard of about 2 MB (Inno Setup, 10 languages) built like the LEBR installer: it downloads the latest version from GitHub during setup, checks every file and shows each step. Per-user install with Start menu and desktop shortcuts, an entry in Settings › Apps and an "Update LionOrganizer" shortcut.
+  - **macOS:** `LionOrganizer-mac-universal.dmg` (Apple Silicon and Intel), signed ad hoc.
+  - **Linux:** `lionorganizer_amd64.deb`, `lionorganizer.x86_64.rpm` and `LionOrganizer-x86_64.AppImage`.
+  - File names without the version number, so `releases/latest/download/<file>` always points to the newest version.
+- Command-line installers that download the latest release from GitHub and install it the way VS Code is installed on each system:
   - **Windows:** `install.ps1` (or double-click `install.cmd`) — per-user install in `%LOCALAPPDATA%\Programs` by default, or for all users in `%ProgramFiles%`; Start menu and desktop shortcuts; entry in Settings › Apps.
   - **macOS:** `install.sh` — `/Applications/LionOrganizer.app` (or `~/Applications`), ad-hoc signed for Apple Silicon.
   - **Linux:** `install.sh` — `~/.local/share` per user or `/opt` for all users, `lionorganizer` command, menu entry and icons; installs missing libraries with apt, dnf/yum, zypper or pacman.
@@ -13,7 +18,7 @@ All notable changes to LionOrganizer are documented here. The project follows [S
 - Updates replace the app atomically and keep your settings and catalog. Run the installer again to update; `--uninstall` / `-Uninstall` removes it.
 
 ### Project
-- GitHub Actions: CI (installer linting, translations, end-to-end tests in light and dark themes, an installer end-to-end test) and automatic releases with build-provenance attestations when a `v*` tag is pushed.
+- GitHub Actions: CI (installer linting, translations, end-to-end tests in light and dark themes, installer end-to-end tests on Linux and on a Windows runner — script and setup wizard: install, launch, update, tampered download refused, uninstall) and automatic releases when a `v*` tag is pushed: the Windows wizard, the `.dmg`, the Linux packages and the app bundle, all listed in `SHA256SUMS` with build-provenance attestations.
 - `npm run release:assets` builds reproducible release assets (the app bundle is under 1 MB).
 - Linux: `desktopName` set so the window is matched with its menu entry.
 

@@ -11,7 +11,7 @@
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · **简体中文** · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.0.1](https://img.shields.io/badge/version-1.0.1-161214)
+![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-161214)
 ![许可证：GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![平台：Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -71,21 +71,31 @@
 
 ## 安装
 
-安装程序是一个小脚本：它从 GitHub 下载最新版本，校验每个文件（SHA-256 和签名的构建来源证明），并按照 VS Code 在各系统上的安装方式安装 LionOrganizer。随时再次运行即可更新。
+下载适用于你系统的安装程序。它总是从 GitHub 获取**最新版本**，并校验每个文件（SHA-256 和签名的构建来源证明）。
 
-**Windows** — 在 PowerShell 中运行（无需管理员权限）：
+| 系统 | 下载 |
+|---|---|
+| **Windows** 10/11 | [LionOrganizer-Setup.exe](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe) — 安装向导，约 2 MB：安装时下载并校验应用 |
+| **macOS** 11+ | [LionOrganizer-mac-universal.dmg](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg) — 打开后将应用拖到“应用程序” |
+| **Linux** (Ubuntu、Debian、Mint…) | [lionorganizer_amd64.deb](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb) |
+| **Linux** (Fedora、RHEL、openSUSE…) | [lionorganizer.x86_64.rpm](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm) |
+| **Linux** (任意 Linux) | [LionOrganizer-x86_64.AppImage](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage) — 无需安装 |
+
+> 安装程序尚未使用付费证书签名。首次启动时，Windows 可能显示“Windows 已保护你的电脑”（**更多信息 › 仍要运行**），macOS 会要求在**系统设置 › 隐私与安全性 › 仍要打开**中允许该应用。
+
+**更喜欢命令行？** Windows（PowerShell，无需管理员权限）：
 
 ```powershell
 irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
 ```
 
-**macOS 和 Linux**（Debian/Ubuntu、Fedora/RHEL、openSUSE、Arch 及其衍生版）：
+macOS 和 Linux：
 
 ```bash
 curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
 ```
 
-选项、运行前如何检查脚本、安全模型以及卸载方法，请参阅 **[INSTALL.md](INSTALL.md)**（英文）。
+更多细节、安全模型以及更新和卸载方法，请参阅 **[INSTALL.md](INSTALL.md)**（英文）。
 
 ## 快速上手
 

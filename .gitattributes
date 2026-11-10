@@ -5,3 +5,6 @@
 *.bat  text eol=crlf
 *.png  binary
 *.ico  binary
+*.iss  text eol=crlf
+*.isl  text eol=crlf
+installer/info/*.txt text eol=crlf

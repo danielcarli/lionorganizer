@@ -1,9 +1,14 @@
 # LionOrganizer — publishes a GitHub release when a version tag (vX.Y.Z) is pushed.
 #
-# The release holds only small files (a few hundred KB): the app source bundle, a manifest, the
-# installers and SHA256SUMS. The installers download the Electron runtime from Electron's own
-# GitHub releases and verify it against Electron's published checksums.
-# Every asset also gets a signed build-provenance attestation (Sigstore), which users can check with
+# The release holds:
+#   - graphical installers: LionOrganizer-Setup.exe (Windows, Inno Setup wizard of about 2 MB that downloads
+#     and verifies the app during setup, like the LEBR installer), LionOrganizer-mac-universal.dmg (macOS),
+#     lionorganizer_amd64.deb / lionorganizer.x86_64.rpm / LionOrganizer-x86_64.AppImage (Linux);
+#   - the command-line installers (install.ps1, install.cmd, install.sh);
+#   - the small files they download: the app source bundle, manifest.txt and SHA256SUMS.
+# The Windows wizard and the scripts download the Electron runtime from Electron's own GitHub releases and
+# verify it against Electron's published checksums. Every asset is listed in SHA256SUMS and gets a signed
+# build-provenance attestation (Sigstore), which users can check with
 #   gh attestation verify <file> --repo danielcarli/lionorganizer
 name: Release
 
@@ -22,9 +27,72 @@ jobs:
   ci:
     uses: ./.github/workflows/ci.yml
 
+  macos:
+    name: macOS package (.dmg)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Build the .dmg (universal, ad-hoc signed until there is an Apple Developer ID)
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npx --yes electron-builder@26.18.0 --mac dmg --universal --publish never
+      - name: The app is signed (ad hoc) and universal
+        run: |
+          app="dist/mac-universal/LionOrganizer.app"
+          codesign --verify --deep --strict --verbose=2 "$app"
+          lipo -archs "$app/Contents/MacOS/LionOrganizer"
+          plutil -extract CFBundleIdentifier raw "$app/Contents/Info.plist"
+          ls -la dist/*.dmg
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: installer-macos
+          path: dist/*.dmg
+          if-no-files-found: error
+
+  linux:
+    name: Linux packages (.deb, .rpm, AppImage)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Build the packages
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq rpm >/dev/null
+          npx --yes electron-builder@26.18.0 --linux deb rpm AppImage --x64 --publish never
+      - name: The .deb installs and the app starts
+        run: |
+          sudo apt-get install -y -qq ./dist/lionorganizer_amd64.deb xvfb >/dev/null
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          xvfb-run -a lionorganizer --disable-gpu >/dev/null 2>&1 &
+          sleep 12
+          pgrep -f /opt/LionOrganizer/lionorganizer >/dev/null || { echo "the app did not start"; exit 1; }
+          pkill -f /opt/LionOrganizer/lionorganizer || true
+          sudo apt-get remove -y -qq lionorganizer >/dev/null
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: installer-linux
+          path: |
+            dist/*.deb
+            dist/*.rpm
+            dist/*.AppImage
+          if-no-files-found: error
+
   release:
     name: Publish release
-    needs: ci
+    needs: [ci, macos, linux]
     runs-on: ubuntu-24.04
     permissions:
       contents: write       # create the release and upload its assets
@@ -54,6 +122,21 @@ jobs:
           node tools/make-release.js --tag "$TAG"
           (cd dist-release && sha256sum -c SHA256SUMS)
 
+      - name: Graphical installers from the other jobs
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: installer-*
+          path: dist-release
+          merge-multiple: true
+
+      - name: SHA256SUMS for every asset
+        run: |
+          cd dist-release
+          find . -maxdepth 1 -type f ! -name SHA256SUMS -printf '%f\n' | LC_ALL=C sort | xargs sha256sum > "$RUNNER_TEMP/SHA256SUMS"
+          mv "$RUNNER_TEMP/SHA256SUMS" SHA256SUMS
+          cat SHA256SUMS
+          ls -la
+
       - name: Release notes from CHANGELOG.md
         env:
           TAG: ${{ github.ref_name }}
@@ -67,12 +150,18 @@ jobs:
 
           ## Install or update
 
-          **Windows** (PowerShell): \`irm https://github.com/${GITHUB_REPOSITORY}/releases/latest/download/install.ps1 | iex\`
-          or download and double-click \`install.cmd\`.
+          | System | Download |
+          |---|---|
+          | **Windows** 10/11 (x64, ARM) | [LionOrganizer-Setup.exe](https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/LionOrganizer-Setup.exe) — setup wizard (about 2 MB) that downloads and checks the app |
+          | **macOS** 11+ (Apple Silicon, Intel) | [LionOrganizer-mac-universal.dmg](https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/LionOrganizer-mac-universal.dmg) |
+          | **Ubuntu, Debian, Mint…** | [lionorganizer_amd64.deb](https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/lionorganizer_amd64.deb) |
+          | **Fedora, RHEL, openSUSE…** | [lionorganizer.x86_64.rpm](https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/lionorganizer.x86_64.rpm) |
+          | **Any Linux** | [LionOrganizer-x86_64.AppImage](https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/LionOrganizer-x86_64.AppImage) |
 
-          **macOS / Linux**: \`curl -fsSL https://github.com/${GITHUB_REPOSITORY}/releases/latest/download/install.sh | bash\`
+          Command line: \`irm https://github.com/${GITHUB_REPOSITORY}/releases/latest/download/install.ps1 | iex\` (Windows) or
+          \`curl -fsSL https://github.com/${GITHUB_REPOSITORY}/releases/latest/download/install.sh | bash\` (macOS, Linux).
 
-          Every download is verified with SHA-256. See [docs/INSTALL.md](https://github.com/${GITHUB_REPOSITORY}/blob/${TAG}/docs/INSTALL.md) for options and how to verify the build provenance.
+          The installers are not signed with a paid certificate yet: Windows may show "Windows protected your PC" (More info › Run anyway) and macOS asks you to confirm in System Settings › Privacy & Security › Open Anyway. Every file is listed in SHA256SUMS and has a build-provenance attestation. See [docs/INSTALL.md](https://github.com/${GITHUB_REPOSITORY}/blob/${TAG}/docs/INSTALL.md).
           EOF
           cat "$RUNNER_TEMP/notes.md"
 

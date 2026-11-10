@@ -339,6 +339,14 @@ do_install() {
   verify_sum "$TMP/manifest.txt" "$TMP/SHA256SUMS" manifest.txt
   ok "Release ${M_VERSION} (Electron ${M_ELECTRON})"
 
+  if [ "$PLATFORM" = linux ] && [ "$FORCE" = 0 ]; then
+    # Installed from the .deb/.rpm package: update it with the package, not with a second copy.
+    if { command -v dpkg-query >/dev/null 2>&1 && dpkg-query -W -f='${Status}' "$APP_ID" 2>/dev/null | grep -q 'ok installed'; } ||
+       { command -v rpm >/dev/null 2>&1 && rpm -q "$APP_ID" >/dev/null 2>&1; }; then
+      die "${APP_NAME} is installed from a .deb/.rpm package. Update it by installing the newer package from ${RELEASES_URL}/latest (or use --force to install a separate copy)."
+    fi
+  fi
+
   local current; current="$(installed_version)"
   if [ "$current" = "$M_VERSION" ] && [ "$FORCE" = 0 ]; then ok "${APP_NAME} ${M_VERSION} is already installed and up to date."; return; fi
 

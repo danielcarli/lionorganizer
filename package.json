@@ -1,6 +1,6 @@
 {
   "name": "lionorganizer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "LionOrganizer — disk space analysis & cleanup. See what takes up space in your folders, find true duplicates by content and safely free up what you no longer need.",
   "main": "src/code/electron-main/main.js",
   "desktopName": "lionorganizer.desktop",
@@ -91,21 +91,15 @@
           "arch": [
             "universal"
           ]
-        },
-        {
-          "target": "zip",
-          "arch": [
-            "universal"
-          ]
         }
       ],
       "category": "public.app-category.utilities",
       "icon": "build/icon.png",
-      "hardenedRuntime": true,
-      "gatekeeperAssess": false,
+      "hardenedRuntime": false,
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",
-      "artifactName": "LionOrganizer-${version}-mac-${arch}.${ext}"
+      "artifactName": "LionOrganizer-mac-${arch}.${ext}",
+      "identity": "-"
     },
     "dmg": {
       "title": "LionOrganizer ${version}"
@@ -114,8 +108,7 @@
       "target": [
         "deb",
         "rpm",
-        "AppImage",
-        "tar.gz"
+        "AppImage"
       ],
       "category": "Utility",
       "icon": "build/icons",
@@ -136,13 +129,13 @@
       "artifactName": "LionOrganizer-${version}-linux-${arch}.${ext}"
     },
     "deb": {
-      "artifactName": "lionorganizer_${version}_${arch}.${ext}"
+      "artifactName": "lionorganizer_${arch}.${ext}"
     },
     "rpm": {
-      "artifactName": "lionorganizer-${version}.${arch}.${ext}"
+      "artifactName": "lionorganizer.${arch}.${ext}"
     },
     "appImage": {
-      "artifactName": "LionOrganizer-${version}-${arch}.${ext}"
+      "artifactName": "LionOrganizer-${arch}.${ext}"
     }
   },
   "keywords": [

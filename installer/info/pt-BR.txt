@@ -1,0 +1,20 @@
+﻿O QUE ESTE INSTALADOR FAZ
+
+Este instalador não traz o programa pronto. Ele baixa a versão mais recente publicada em github.com/danielcarli/lionorganizer e confere cada arquivo:
+
+ 1. consulta a última release e confere a lista de arquivos dela (SHA-256);
+ 2. baixa o LionOrganizer (menos de 1 MB) e confere o SHA-256;
+ 3. baixa o Electron oficial (cerca de 110 MB) das releases do Electron no GitHub e confere com os checksums que o Electron publica;
+ 4. monta o programa e o instala na sua pasta de usuário.
+
+Tudo é baixado por HTTPS. Não são necessários direitos de administrador. Se alguma conferência falhar, nada é instalado e uma instalação existente fica como estava.
+
+REQUISITOS
+
+ - Windows 10 (versão 1809 ou mais nova) ou Windows 11, de 64 bits (x64 ou ARM);
+ - conexão com a internet durante a instalação (cerca de 110 MB de downloads);
+ - cerca de um minuto, conforme a sua internet.
+
+ATUALIZAR
+
+Use o atalho "Atualizar o LionOrganizer" no menu Iniciar, ou rode este instalador de novo. Ele busca de novo a última versão no GitHub; suas configurações e o catálogo são mantidos.

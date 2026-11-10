@@ -11,7 +11,7 @@ Scopri cosa occupa spazio nelle tue cartelle, trova i veri duplicati in base al 
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · **Italiano** · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.0.1](https://img.shields.io/badge/version-1.0.1-161214)
+![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-161214)
 ![Licenza: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Piattaforma: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -71,21 +71,31 @@ Eliminare il file sbagliato è peggio di un disco pieno, per questo LionOrganize
 
 ## Installazione
 
-Il programma di installazione è un piccolo script che scarica l'ultima versione da GitHub, verifica ogni file (SHA-256 e provenienza firmata della build) e installa LionOrganizer come si installa VS Code su ciascun sistema. Eseguilo di nuovo in qualsiasi momento per aggiornare.
+Scarica il programma di installazione per il tuo sistema. Prende sempre l'**ultima versione** da GitHub e verifica ogni file (SHA-256 e provenienza firmata della build).
 
-**Windows** — in PowerShell (non servono i diritti di amministratore):
+| Sistema | Download |
+|---|---|
+| **Windows** 10/11 | [LionOrganizer-Setup.exe](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe) — installazione guidata di circa 2 MB: scarica e verifica l'applicazione durante l'installazione |
+| **macOS** 11+ | [LionOrganizer-mac-universal.dmg](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg) — aprilo e trascina l'app in Applicazioni |
+| **Linux** (Ubuntu, Debian, Mint…) | [lionorganizer_amd64.deb](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb) |
+| **Linux** (Fedora, RHEL, openSUSE…) | [lionorganizer.x86_64.rpm](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm) |
+| **Linux** (Qualsiasi Linux) | [LionOrganizer-x86_64.AppImage](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage) — nessuna installazione |
+
+> I programmi di installazione non sono ancora firmati con un certificato a pagamento. Al primo avvio Windows può mostrare "PC protetto da Windows" (**Ulteriori informazioni › Esegui comunque**) e macOS chiede di consentire l'app in **Impostazioni di Sistema › Privacy e sicurezza › Apri comunque**.
+
+**Preferisci il terminale?** Windows (PowerShell, senza diritti di amministratore):
 
 ```powershell
 irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
 ```
 
-**macOS e Linux** (Debian/Ubuntu, Fedora/RHEL, openSUSE, Arch e derivate):
+macOS e Linux:
 
 ```bash
 curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
 ```
 
-Vedi **[INSTALL.md](INSTALL.md)** (in inglese) per le opzioni, come controllare lo script prima di eseguirlo, il modello di sicurezza e la disinstallazione.
+Vedi **[INSTALL.md](INSTALL.md)** (in inglese) per i dettagli, il modello di sicurezza, gli aggiornamenti e la disinstallazione.
 
 ## Per iniziare
 

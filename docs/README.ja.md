@@ -11,7 +11,7 @@
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · **日本語** · [한국어](README.ko.md)
 
-![Version 1.0.1](https://img.shields.io/badge/version-1.0.1-161214)
+![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-161214)
 ![ライセンス：GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![プラットフォーム：Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -71,21 +71,31 @@
 
 ## インストール
 
-インストーラーは小さなスクリプトです。GitHub から最新リリースをダウンロードし、すべてのファイルを検証（SHA-256 と署名付きビルド来歴）して、各 OS での VS Code と同じ方法で LionOrganizer をインストールします。もう一度実行すればいつでも更新できます。
+お使いのシステム用のインストーラーをダウンロードしてください。常に GitHub から**最新バージョン**を取得し、すべてのファイルを検証します（SHA-256 と署名付きビルド来歴）。
 
-**Windows** — PowerShell で実行（管理者権限は不要）：
+| システム | ダウンロード |
+|---|---|
+| **Windows** 10/11 | [LionOrganizer-Setup.exe](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-Setup.exe) — 約 2 MB のセットアップ ウィザード：インストール中にアプリをダウンロードして検証 |
+| **macOS** 11+ | [LionOrganizer-mac-universal.dmg](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-mac-universal.dmg) — 開いてアプリを「アプリケーション」へドラッグ |
+| **Linux** (Ubuntu、Debian、Mint…) | [lionorganizer_amd64.deb](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer_amd64.deb) |
+| **Linux** (Fedora、RHEL、openSUSE…) | [lionorganizer.x86_64.rpm](https://github.com/danielcarli/lionorganizer/releases/latest/download/lionorganizer.x86_64.rpm) |
+| **Linux** (すべての Linux) | [LionOrganizer-x86_64.AppImage](https://github.com/danielcarli/lionorganizer/releases/latest/download/LionOrganizer-x86_64.AppImage) — インストール不要 |
+
+> インストーラーはまだ有料証明書で署名されていません。初回起動時、Windows では「Windows によって PC が保護されました」と表示されることがあります（**詳細情報 › 実行**）。macOS では **システム設定 › プライバシーとセキュリティ › このまま開く** で許可してください。
+
+**ターミナル派の方は** Windows（PowerShell、管理者権限は不要）：
 
 ```powershell
 irm https://github.com/danielcarli/lionorganizer/releases/latest/download/install.ps1 | iex
 ```
 
-**macOS と Linux**（Debian/Ubuntu、Fedora/RHEL、openSUSE、Arch とその派生）：
+macOS と Linux：
 
 ```bash
 curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download/install.sh | bash
 ```
 
-オプション、実行前にスクリプトを確認する方法、セキュリティモデル、アンインストールについては **[INSTALL.md](INSTALL.md)**（英語）を参照してください。
+詳細、セキュリティモデル、更新とアンインストールについては **[INSTALL.md](INSTALL.md)**（英語）を参照してください。
 
 ## はじめに
 

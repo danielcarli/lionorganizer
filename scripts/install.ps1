@@ -26,6 +26,11 @@
   .\install.ps1 -Scope Machine       # all users (run from an elevated PowerShell)
 .EXAMPLE
   .\install.ps1 -Uninstall -Purge    # remove the app, its settings and its catalog
+.EXAMPLE
+  .\install.ps1 -AssembleTo C:\temp\lion   # only download, verify and assemble the app into a folder
+  Used by the graphical installer (LionOrganizer-Setup.exe, Inno Setup), which then installs the files.
+  Progress is written as "@@STEP|n|total|text" lines; at the end "@@VERSION|x.y.z" and "@@DONE", or
+  "@@ERROR|message" and exit code 1.
 #>
 [CmdletBinding()]
 param(
@@ -36,7 +41,8 @@ param(
   [switch] $Force,
   [switch] $Yes,
   [switch] $Uninstall,
-  [switch] $Purge
+  [switch] $Purge,
+  [string] $AssembleTo = ''
 )
 
 Set-StrictMode -Version 3.0
@@ -62,6 +68,12 @@ function Write-Step([string] $Text) { Write-Host "==> $Text" -ForegroundColor Cy
 function Write-Ok([string] $Text) { Write-Host "  [ok] $Text" -ForegroundColor Green }
 function Write-Note([string] $Text) { Write-Host "  [!] $Text" -ForegroundColor Yellow }
 function Stop-Install([string] $Text) { throw "LionOrganizer installer: $Text" }
+# Progress for the graphical installer (only in -AssembleTo mode); Write-Step for the console.
+$StepTotal = 4
+function Write-Stage([int] $N, [string] $Text) {
+  if ($AssembleTo) { Write-Output "@@STEP|$N|$StepTotal|$Text" }
+  Write-Step $Text
+}
 
 # --------------------------------------------------------------------------------------- downloads & checks
 function Assert-SecureUrl([string] $Url) {
@@ -212,7 +224,7 @@ function Invoke-Install {
   New-Item -ItemType Directory -Path $tmp | Out-Null
   try {
     $label = if ($Version) { 'requested' } else { 'latest' }
-    Write-Step "Looking for the $label $AppName release"
+    Write-Stage 1 "Looking for the $label $AppName release"
     $base = if ($Version) { "$ReleasesUrl/download/v$($Version.TrimStart('v'))" } else { "$ReleasesUrl/latest/download" }
     Get-Download "$base/manifest.txt" (Join-Path $tmp 'manifest.txt')
     $m = Read-Manifest (Join-Path $tmp 'manifest.txt')
@@ -221,20 +233,23 @@ function Invoke-Install {
     Get-Download "$base/SHA256SUMS" $sums
     Assert-Checksum (Join-Path $tmp 'manifest.txt') $sums 'manifest.txt'
     Write-Ok "Release $($m.version) (Electron $($m.electron))"
+    if ($AssembleTo) { Write-Output "@@VERSION|$($m.version)" }
 
-    $current = Get-InstalledVersion $loc.Dir
-    if ($current -eq $m.version -and -not $Force) { Write-Ok "$AppName $($m.version) is already installed and up to date."; return }
-    Write-Host ''
-    Write-Host ("  Version:   {0}{1}" -f $m.version, $(if ($current) { " (installed: $current)" } else { '' }))
-    Write-Host "  Location:  $($loc.Dir)"
-    Write-Host "  System:    Windows $arch, $Scope install"
-    Write-Host ''
-    if (-not $Yes) {
-      $answer = Read-Host "Install $AppName $($m.version)? [Y/n]"
-      if ($answer -and $answer -notmatch '^(y|yes|s|sim)$') { Stop-Install 'Cancelled.' }
+    $current = if ($AssembleTo) { '' } else { Get-InstalledVersion $loc.Dir }
+    if ($current -and $current -eq $m.version -and -not $Force) { Write-Ok "$AppName $($m.version) is already installed and up to date."; return }
+    if (-not $AssembleTo) {
+      Write-Host ''
+      Write-Host ("  Version:   {0}{1}" -f $m.version, $(if ($current) { " (installed: $current)" } else { '' }))
+      Write-Host "  Location:  $($loc.Dir)"
+      Write-Host "  System:    Windows $arch, $Scope install"
+      Write-Host ''
+      if (-not $Yes) {
+        $answer = Read-Host "Install $AppName $($m.version)? [Y/n]"
+        if ($answer -and $answer -notmatch '^(y|yes|s|sim)$') { Stop-Install 'Cancelled.' }
+      }
     }
 
-    Write-Step "Downloading $AppName $($m.version)"
+    Write-Stage 2 "Downloading $AppName $($m.version)"
     $srcZip = Join-Path $tmp $m.source_zip
     Get-Download "$base/$($m.source_zip)" $srcZip
     Assert-Checksum $srcZip $sums $m.source_zip
@@ -244,13 +259,13 @@ function Invoke-Install {
     Assert-Checksum $setup $sums 'install.ps1'
 
     $ezip = "electron-v$($m.electron)-win32-$arch.zip"
-    Write-Step "Downloading the Electron $($m.electron) runtime (win32-$arch)"
+    Write-Stage 3 "Downloading the Electron $($m.electron) runtime (win32-$arch)"
     $esums = Join-Path $tmp 'ELECTRON-SHASUMS256.txt'
     Get-Download "$ElectronMirror/v$($m.electron)/SHASUMS256.txt" $esums
     Get-Download "$ElectronMirror/v$($m.electron)/$ezip" (Join-Path $tmp $ezip)
     Assert-Checksum (Join-Path $tmp $ezip) $esums $ezip
 
-    Write-Step 'Assembling the application'
+    Write-Stage 4 'Assembling the application'
     $stage = Join-Path $tmp 'stage'
     Expand-Archive -LiteralPath (Join-Path $tmp $ezip) -DestinationPath $stage
     Expand-Archive -LiteralPath $srcZip -DestinationPath (Join-Path $tmp 'src')
@@ -276,6 +291,19 @@ function Invoke-Install {
       if ($LASTEXITCODE -ne 0) { throw "rcedit exit code $LASTEXITCODE" }
       Write-Ok 'App icon and version info applied'
     } catch { Write-Note "Keeping the default executable icon ($($_.Exception.Message))." }
+
+    if ($AssembleTo) {
+      # Graphical installer: hand the assembled app over; Inno Setup installs it, adds the shortcuts and
+      # the entry in Settings > Apps.
+      Remove-Item -LiteralPath (Join-Path $stage 'install.ps1') -Force -ErrorAction SilentlyContinue
+      Remove-Item -LiteralPath $AssembleTo -Recurse -Force -ErrorAction SilentlyContinue
+      $parent = Split-Path $AssembleTo -Parent
+      if ($parent -and -not (Test-Path -LiteralPath $parent)) { New-Item -ItemType Directory -Path $parent | Out-Null }
+      Move-Item -LiteralPath $stage -Destination $AssembleTo
+      Write-Ok "Assembled in $AssembleTo"
+      Write-Output '@@DONE'
+      return
+    }
 
     Write-Step "Installing to $($loc.Dir)"
     Stop-RunningApp $loc.Dir
@@ -316,5 +344,11 @@ function Invoke-Install {
 
 # Dot-sourcing (". .\install.ps1") only loads the functions - used by the test suite.
 if ($MyInvocation.InvocationName -ne '.') {
-  if ($Uninstall) { Invoke-Uninstall } else { Invoke-Install }
+  if ($AssembleTo) {
+    try { Invoke-Install }
+    catch {
+      Write-Output ('@@ERROR|' + ($_.Exception.Message -replace '^LionOrganizer installer: ', '' -replace '[\r\n]+', ' '))
+      exit 1
+    }
+  } elseif ($Uninstall) { Invoke-Uninstall } else { Invoke-Install }
 }

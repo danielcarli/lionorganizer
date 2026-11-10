@@ -89,3 +89,113 @@ jobs:
           if bash scripts/install.sh --user --yes --no-deps --force; then echo "tampered bundle was accepted"; exit 1; fi
           bash scripts/install.sh --uninstall --purge --yes
           test ! -e "$HOME/.local/share/lionorganizer"
+
+  windows:
+    name: Windows installers
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - name: Release assets
+        shell: pwsh
+        run: node tools/make-release.js --out "$env:RUNNER_TEMP\r1"
+
+      - name: Inno Setup 6.7.4 (pinned by SHA-256)
+        shell: pwsh
+        run: |
+          $exe = Join-Path $env:RUNNER_TEMP 'innosetup.exe'
+          Invoke-WebRequest -UseBasicParsing 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_4/innosetup-6.7.4.exe' -OutFile $exe
+          $hash = (Get-FileHash $exe -Algorithm SHA256).Hash
+          if ($hash -ne 'A549929319F9120716677C685535CA4671E4B937B5FDC87E2585F32D8EB30E8C') { throw "Inno Setup checksum mismatch: $hash" }
+          $dir = Join-Path $env:RUNNER_TEMP 'inno'
+          Start-Process $exe -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', '/CURRENTUSER', "/DIR=$dir" -Wait
+          Add-Content -Path $env:GITHUB_PATH -Value $dir
+
+      - name: Build the graphical installer
+        shell: pwsh
+        run: |
+          $v = node -p "require('./package.json').version"
+          ISCC.exe /Q "/DAppVersion=$v" installer\lionorganizer.iss
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          Get-Item dist-installer\LionOrganizer-Setup.exe | Format-Table Name, Length
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: installer-windows
+          path: dist-installer/LionOrganizer-Setup.exe
+          if-no-files-found: error
+
+      - name: Installers end to end (local release, real Electron download)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $v = node -p "require('./package.json').version"
+          $srv = Join-Path $env:RUNNER_TEMP 'srv'
+          $rel = Join-Path $srv 'releases'
+          New-Item -ItemType Directory -Force -Path "$rel\latest\download", "$rel\download\v$v" | Out-Null
+          Copy-Item "$env:RUNNER_TEMP\r1\*" "$rel\latest\download\"
+          Copy-Item "$env:RUNNER_TEMP\r1\*" "$rel\download\v$v\"
+          $server = Start-Process python -ArgumentList '-m', 'http.server', '8765', '--bind', '127.0.0.1', '--directory', $srv -PassThru -WindowStyle Hidden
+          Start-Sleep -Seconds 3
+          $env:LIONORGANIZER_ALLOW_INSECURE_FOR_TESTS = '1'
+          $env:LIONORGANIZER_RELEASES_URL = 'http://127.0.0.1:8765/releases'
+          $app = Join-Path $env:LOCALAPPDATA 'Programs\LionOrganizer'
+          $innoKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{3DB12C40-AF27-4CC9-93C6-10C9EB0AA79B}_is1'
+          function Assert-True($ok, [string] $msg) { if (-not $ok) { throw "FAILED: $msg" }; Write-Host "OK   $msg" }
+          function Test-AppStarts {
+            $p = Start-Process (Join-Path $app 'LionOrganizer.exe') -PassThru
+            Start-Sleep -Seconds 12
+            $alive = -not $p.HasExited
+            Get-Process LionOrganizer -ErrorAction SilentlyContinue | Stop-Process -Force
+            Start-Sleep -Seconds 3
+            return $alive
+          }
+          function Wait-Gone([string] $path) { for ($i = 0; $i -lt 30 -and (Test-Path $path); $i++) { Start-Sleep -Seconds 1 }; -not (Test-Path $path) }
+          function Invoke-Setup([string] $exe, [string[]] $extra) {
+            $log = Join-Path $env:RUNNER_TEMP ("setup-" + [Guid]::NewGuid().ToString('N') + '.log')
+            $p = Start-Process $exe -ArgumentList (@('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/LOG=$log") + $extra) -Wait -PassThru
+            Get-Content $log -Tail 15 -ErrorAction SilentlyContinue | ForEach-Object { "   | $_" }
+            return $p.ExitCode
+          }
+          try {
+            # 1. the PowerShell script, under Windows PowerShell 5.1 (what users have)
+            powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\install.ps1 -Yes
+            Assert-True ($LASTEXITCODE -eq 0) 'install.ps1 finished'
+            Assert-True ((Get-Content "$app\resources\app\package.json" -Raw | ConvertFrom-Json).version -eq $v) "install.ps1 installed version $v"
+            Assert-True (Test-Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\LionOrganizer') 'install.ps1 entry in Settings > Apps'
+            Assert-True (Test-AppStarts) 'the app installed by install.ps1 starts'
+            powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$app\install.ps1" -Uninstall -Yes
+            Assert-True (-not (Test-Path "$app\LionOrganizer.exe")) 'install.ps1 -Uninstall removed the app'
+
+            # 2. the graphical installer, silent
+            $code = Invoke-Setup 'dist-installer\LionOrganizer-Setup.exe' @()
+            Assert-True ($code -eq 0) "LionOrganizer-Setup.exe finished (exit code $code)"
+            Assert-True ((Get-Content "$app\resources\app\package.json" -Raw | ConvertFrom-Json).version -eq $v) "setup installed version $v"
+            Assert-True ((Get-ItemProperty $innoKey).DisplayVersion -eq $v) 'setup entry in Settings > Apps shows the installed version'
+            Assert-True (Test-Path "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\LionOrganizer.lnk") 'Start menu shortcut'
+            Assert-True (Test-Path "$env:LOCALAPPDATA\LionOrganizer-Installer\LionOrganizer-Setup.exe") 'installer copy for updates'
+            Assert-True (-not (Test-Path "$env:LOCALAPPDATA\LionOrganizer-Installer\staging")) 'temporary folder removed'
+            Assert-True (Test-AppStarts) 'the app installed by the setup starts'
+
+            # 3. update with the copy used by the "Update LionOrganizer" shortcut
+            $code = Invoke-Setup "$env:LOCALAPPDATA\LionOrganizer-Installer\LionOrganizer-Setup.exe" @('/UPDATE')
+            Assert-True ($code -eq 0) "update from the Start menu copy (exit code $code)"
+
+            # 4. a tampered release is refused and the installed version is kept
+            Add-Content -Path "$rel\download\v$v\lionorganizer-$v.zip" -Value 'x'
+            $code = Invoke-Setup 'dist-installer\LionOrganizer-Setup.exe' @()
+            Assert-True ($code -ne 0) "tampered package refused (exit code $code)"
+            Assert-True (Test-Path "$app\LionOrganizer.exe") 'the installed version was kept'
+
+            # 5. uninstall
+            $code = Invoke-Setup "$app\unins000.exe" @()
+            Assert-True (Wait-Gone "$app\LionOrganizer.exe") 'uninstaller removed the app'
+            Assert-True (Wait-Gone $innoKey) 'uninstaller removed the entry in Settings > Apps'
+          } finally {
+            Stop-Process $server -ErrorAction SilentlyContinue
+          }
