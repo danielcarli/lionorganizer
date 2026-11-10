@@ -11,7 +11,7 @@ See what takes up space in your folders, find true duplicates by content and saf
 
 **English** · [Português (Brasil)](docs/README.pt-BR.md) · [Português (Portugal)](docs/README.pt-PT.md) · [Español](docs/README.es.md) · [Français](docs/README.fr.md) · [Deutsch](docs/README.de.md) · [Italiano](docs/README.it.md) · [简体中文](docs/README.zh-CN.md) · [日本語](docs/README.ja.md) · [한국어](docs/README.ko.md)
 
-![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-161214)
+![Version 1.0.3](https://img.shields.io/badge/version-1.0.3-161214)
 ![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Platforms: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -26,7 +26,18 @@ See what takes up space in your folders, find true duplicates by content and saf
 
 Disk analyzers tell you *what* is big. LionOrganizer also helps you decide *what can go* — and makes sure nothing is deleted by accident. It was born from a very concrete problem: architecture and design projects pile up CAD backups (`.skb`, `.0001.rvt`, `.bak`), renders, videos and copies of copies until the disk is full.
 
-Everything runs **locally**. There is no account, no telemetry and no network access.
+Everything runs **locally**. There is no account and no telemetry; the only connection is an optional check for new versions.
+
+**What sets LionOrganizer apart**
+
+- **It helps you decide, not just measure** — cleanup suggestions grouped by reason, including the CAD/BIM backups that pile up in architecture projects (SketchUp `.skb`, Revit `.0001.rvt`, AutoCAD `.bak`).
+- **Nothing is deleted by accident** — every deletion asks for a code you type, checked by the app itself, and files go to the Recycle Bin.
+- **True duplicates, by content** — confirmed with SHA-256, and you choose which copy to keep.
+- **Memory across analyses** — a local catalog to search every folder you have analyzed (even disconnected drives) and see what is new, removed or growing.
+- **Organize and rename, with undo** — loose files sorted into folders by type and batch renaming with patterns, always with a preview.
+- **A second opinion from AI** — export a report in your language for an AI to point out what is probably the safest to delete; the app sends it nowhere.
+- **Knows when files disappear** — files deleted or moved outside the app are shown in gray, and you can remove them from the lists.
+- **For everyone** — 10 languages, light and dark themes, and verified installers for Windows, macOS and Linux.
 
 ## Download
 
@@ -147,7 +158,9 @@ Want to add or improve a language? See [CONTRIBUTING.md](CONTRIBUTING.md#transla
 
 ## Privacy
 
-LionOrganizer works offline. The catalog is a single file on your computer:
+LionOrganizer works offline. Its only connection is the check for new versions: it reads one small file from the project's releases on GitHub and sends no data about you or your files. You can turn it off by clicking the version number in the bottom-right corner. The *Export for AI* report is never sent anywhere by the app: you choose where to paste it.
+
+The catalog is a single file on your computer:
 
 ```
 %APPDATA%\LionOrganizer\catalog.sqlite
@@ -199,7 +212,7 @@ $env:E2E_FOLDER="C:\temp\lion-test"; $env:E2E_OUT="C:\temp\lion-out"; npm run te
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) — current version: **1.0.2**.
+See [CHANGELOG.md](CHANGELOG.md) — current version: **1.0.3**.
 
 ## Contributing
 

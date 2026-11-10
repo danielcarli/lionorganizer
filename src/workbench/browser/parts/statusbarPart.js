@@ -3,11 +3,13 @@
  *  Created and conceived by Daniel Michelon De Carli.
  *  Licensed under the GNU General Public License v3.0 or later. See LICENSE in the project root.
  *--------------------------------------------------------------------------------------------*/
-// Status bar: analysis state, totals, configured depth, warnings, theme and language pickers.
+// Status bar: analysis state, totals, configured depth, warnings, theme and language pickers, and the
+// version indicator (bottom-right corner), which shows when a new version is available.
 import { h, clear, setChildren } from '../../../base/browser/dom.js';
 import { icon } from '../../../base/browser/icons.js';
 import { formatBytes, formatDuration } from '../../../base/common/format.js';
 import { t, tn, getLocales, getLocalePreference, setLocalePreference } from '../../../base/common/nls.js';
+import { showUpdateDialog } from '../../contrib/update/updateDialog.js';
 
 export class StatusbarPart {
   constructor(services) {
@@ -16,7 +18,10 @@ export class StatusbarPart {
     this.right = h('div.status-right');
     this.themeSwitch = h('div.theme-switch', { role: 'radiogroup', 'aria-label': t('statusbar.theme') });
     this.languagePicker = this.#createLanguagePicker();
-    this.element = h('footer.part.statusbar', this.left, h('div.status-right-wrap', this.right, this.themeSwitch, this.languagePicker));
+    this.versionButton = h('button.status-version', { onclick: () => showUpdateDialog(services) });
+    this.element = h('footer.part.statusbar', this.left, h('div.status-right-wrap', this.right, this.themeSwitch, this.languagePicker, this.versionButton));
+    this.update.onDidChange(() => this.#renderVersion());
+    this.#renderVersion();
     this.layout.onDidChangeTheme(() => this.#renderThemeSwitch());
     this.#renderThemeSwitch();
     const r = () => this.render();
@@ -56,6 +61,24 @@ export class StatusbarPart {
     }
     const depthText = scan.settings.unlimited ? t('statusbar.depthUnlimited') : tn('statusbar.depth', scan.settings.depth);
     this.right.append(item('layers', depthText, { title: t('statusbar.depthTitle') }));
+  }
+
+  /** Version indicator: "v1.0.3", highlighted when a new version is available. */
+  #renderVersion() {
+    const { status, info, version } = this.update;
+    const available = status === 'available';
+    const b = this.versionButton;
+    b.classList.toggle('update-available', available);
+    const title = available ? t('update.status.availableTitle', { version: info.latest })
+      : status === 'checking' ? t('update.status.checking')
+      : status === 'current' ? t('update.status.currentTitle')
+      : status === 'error' ? t('update.status.errorTitle')
+      : t('update.status.title');
+    b.title = title;
+    b.setAttribute('aria-label', title);
+    setChildren(b,
+      h(`span.status-icon${status === 'checking' ? '.spin' : ''}`, { html: icon(available ? 'download' : status === 'checking' ? 'refresh' : 'info', 12) }),
+      available ? t('update.status.available', { version: info.latest }) : version ? `v${version}` : '');
   }
 
   #renderThemeSwitch() {

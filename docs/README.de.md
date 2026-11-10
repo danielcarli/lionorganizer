@@ -11,7 +11,7 @@ Sehen, was in den Ordnern Platz belegt, echte Duplikate anhand ihres Inhalts fin
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · **Deutsch** · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-161214)
+![Version 1.0.3](https://img.shields.io/badge/version-1.0.3-161214)
 ![Lizenz: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Plattform: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -26,7 +26,18 @@ Sehen, was in den Ordnern Platz belegt, echte Duplikate anhand ihres Inhalts fin
 
 Speicheranalyse-Tools zeigen, *was* groß ist. LionOrganizer hilft außerdem bei der Entscheidung, *was weg kann* – und sorgt dafür, dass nichts versehentlich gelöscht wird. Entstanden ist es aus einem ganz konkreten Problem: In Architektur- und Designprojekten sammeln sich CAD-Sicherungen (`.skb`, `.0001.rvt`, `.bak`), Renderings, Videos und Kopien von Kopien, bis der Datenträger voll ist.
 
-Alles läuft **lokal**. Kein Konto, keine Telemetrie, kein Netzwerkzugriff.
+Alles läuft **lokal**. Kein Konto, keine Telemetrie; die einzige Verbindung ist eine optionale Suche nach neuen Versionen.
+
+**Was LionOrganizer besonders macht**
+
+- **Hilft beim Entscheiden, nicht nur beim Messen** — Aufräumvorschläge nach Grund gruppiert, auch für die CAD-/BIM-Sicherungen, die sich in Architekturprojekten ansammeln (SketchUp `.skb`, Revit `.0001.rvt`, AutoCAD `.bak`).
+- **Nichts wird versehentlich gelöscht** — jedes Löschen verlangt einen eingetippten Code, den die App selbst prüft, und Dateien kommen in den Papierkorb.
+- **Echte Duplikate, nach Inhalt** — per SHA-256 bestätigt, und Sie entscheiden, welche Kopie bleibt.
+- **Gedächtnis über Analysen hinweg** — ein lokaler Katalog, um alle analysierten Ordner zu durchsuchen (auch getrennte Laufwerke) und zu sehen, was neu, entfernt oder gewachsen ist.
+- **Ordnen und umbenennen, mit Rückgängig** — lose Dateien nach Typ in Ordner sortieren und Stapelumbenennung mit Mustern, immer mit Vorschau.
+- **Eine zweite Meinung von der KI** — exportieren Sie einen Bericht in Ihrer Sprache, damit eine KI zeigt, was sich wahrscheinlich am sichersten löschen lässt; die App sendet nichts.
+- **Merkt, wenn Dateien verschwinden** — außerhalb der App gelöschte oder verschobene Dateien erscheinen grau und lassen sich aus den Listen entfernen.
+- **Für alle** — 10 Sprachen, helles und dunkles Design und geprüfte Installationsprogramme für Windows, macOS und Linux.
 
 ## Download
 
@@ -149,7 +160,9 @@ Eine Sprache hinzufügen oder verbessern? Siehe [CONTRIBUTING.md](../CONTRIBUTIN
 
 ## Datenschutz
 
-LionOrganizer funktioniert offline. Der Katalog ist eine einzelne Datei auf dem eigenen Computer:
+LionOrganizer funktioniert offline. Die einzige Verbindung ist die Suche nach neuen Versionen: Sie liest eine kleine Datei aus den auf GitHub veröffentlichten Versionen und sendet keine Daten über Sie oder Ihre Dateien. Sie lässt sich abschalten, indem Sie unten rechts auf die Versionsnummer klicken. Den Bericht *Für KI exportieren* sendet die App nie: Sie entscheiden, wo Sie ihn einfügen.
+
+Der Katalog ist eine einzelne Datei auf dem eigenen Computer:
 
 ```
 %APPDATA%\LionOrganizer\catalog.sqlite

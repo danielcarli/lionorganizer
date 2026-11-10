@@ -18,15 +18,19 @@ contextBridge.exposeInMainWorld('host', {
   pathSep: process.platform === 'win32' ? '\\' : '/',
   setTheme: (dark) => ipcRenderer.send('window:setTheme', !!dark),
   setLocale: (locale) => ipcRenderer.send('nls:setLocale', locale),
+  reloadWindow: () => ipcRenderer.send('window:reload'),
   appInfo: () => ipcRenderer.invoke('app:info'),
 
   // folder and scan
   pickFolder: () => ipcRenderer.invoke('dialog:pickFolder'),
   saveCsv: (name, content) => ipcRenderer.invoke('dialog:saveCsv', name, content),
+  saveReport: (name, content) => ipcRenderer.invoke('dialog:saveReport', name, content),
   startScan: (root, depth, record) => ipcRenderer.invoke('scan:start', root, depth, !!record),
   cancelScan: () => ipcRenderer.invoke('scan:cancel'),
   onScanProgress: on('scan:progress'),
   reveal: (p) => ipcRenderer.invoke('shell:reveal', p),
+  missingFiles: (paths) => ipcRenderer.invoke('shell:missing', paths),
+  copyText: (text) => ipcRenderer.invoke('shell:copyText', text),
 
   // duplicates by hash
   findDuplicates: (opts) => ipcRenderer.invoke('hash:find', opts),
@@ -43,6 +47,13 @@ contextBridge.exposeInMainWorld('host', {
     operations: () => ipcRenderer.invoke('catalog:operations'),
     exportCsv: () => ipcRenderer.invoke('catalog:exportCsv'),
     revealDb: () => ipcRenderer.invoke('catalog:revealDb'),
+  },
+
+  // new versions (the app's only network access: reads manifest.txt of the latest GitHub release)
+  update: {
+    check: () => ipcRenderer.invoke('update:check'),
+    install: () => ipcRenderer.invoke('update:install'),
+    openReleasePage: () => ipcRenderer.invoke('update:openReleasePage'),
   },
 
   // operations with a confirmation code (Recycle Bin, organize, rename, undo, clear catalog)

@@ -8,6 +8,7 @@
 import { ViewPane } from '../../browser/viewPane.js';
 import { h, setChildren } from '../../../base/browser/dom.js';
 import { icon } from '../../../base/browser/icons.js';
+import { missingBadge, removeFromListButton } from '../../browser/missingFile.js';
 import { formatBytes, formatNumber, formatDate, formatDuration, formatPercent } from '../../../base/common/format.js';
 import { t, tn } from '../../../base/common/nls.js';
 import { categoryColor } from '../../browser/chartTheme.js';
@@ -103,7 +104,9 @@ export class DuplicatesView extends ViewPane {
       return h('div', hero, h('div.empty-state', h('span', { html: icon('shield', 28) }), h('h3', t('duplicates.empty.title')), h('p.muted', t('duplicates.empty.body'))));
     }
 
-    const list = h('div.dup-groups', groups.slice(0, this.shown).map((g) => this.#group(g)));
+    const shownGroups = groups.slice(0, this.shown);
+    this.analysis.verify('duplicates', shownGroups.flatMap((g) => g.files.map((f) => f.path)));
+    const list = h('div.dup-groups', shownGroups.map((g) => this.#group(g)));
     const more = groups.length > this.shown
       ? h('button.btn.btn-secondary.dup-more', { onclick: () => { this.shown += PAGE; this.render(); } }, tn('duplicates.showMore', Math.min(PAGE, groups.length - this.shown)))
       : null;
@@ -123,14 +126,17 @@ export class DuplicatesView extends ViewPane {
         h('code.hash', { title: `SHA-256 ${g.hash}` }, `${g.hash.slice(0, 8)}…${g.hash.slice(-6)}`)),
       h('ul.dup-copies', g.files.map((f) => {
         const keep = f.path === g.keep;
-        return h(`li${keep ? '.keep' : ''}`,
+        const missing = this.analysis.isMissing(f.path);
+        return h(`li${keep ? '.keep' : ''}${missing ? '.is-missing' : ''}`,
           h('label.dup-keep', { title: t('duplicates.copy.keepTitle') },
             h('input', { type: 'radio', name, checked: keep, onchange: () => d.setKeep(g.hash, f.path) }),
             h('span.dup-keep-tag', keep ? t('duplicates.copy.keep') : t('duplicates.copy.delete'))),
-          h('span.dup-path', { title: f.path }, h('span.dup-file', f.name), h('span.muted', f.folder || t('common.rootFolder'))),
+          h('span.dup-path', { title: f.path }, h('span.dup-file', missing ? missingBadge() : null, f.name), h('span.muted', f.folder || t('common.rootFolder'))),
           h('span.dup-date.muted', formatDate(f.mtime)),
-          h('button.icon-button', { title: t('common.showIn', { explorer: this.actions.explorerName }), html: icon('reveal', 15), onclick: () => this.actions.reveal(f.path) }),
-          h('button.icon-button.danger', { title: t('duplicates.copy.deleteTitle'), disabled: keep, html: icon('trash', 15), onclick: () => this.actions.trash([f]) }));
+          missing
+            ? [h('span'), removeFromListButton(this.actions, f.path, { compact: true })]
+            : [h('button.icon-button', { title: t('common.showIn', { explorer: this.actions.explorerName }), html: icon('reveal', 15), onclick: () => this.actions.reveal(f.path) }),
+              h('button.icon-button.danger', { title: t('duplicates.copy.deleteTitle'), disabled: keep, html: icon('trash', 15), onclick: () => this.actions.trash([f]) })]);
       })),
       g.elsewhere.length
         ? h('div.dup-elsewhere',

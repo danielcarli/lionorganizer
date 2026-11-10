@@ -11,7 +11,7 @@
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · **简体中文** · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-161214)
+![Version 1.0.3](https://img.shields.io/badge/version-1.0.3-161214)
 ![许可证：GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![平台：Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -26,7 +26,18 @@
 
 磁盘分析工具会告诉你*什么*占用了大量空间。LionOrganizer 还能帮你判断*哪些可以删除*——并确保不会误删任何文件。它源于一个非常具体的问题：建筑和设计项目会不断堆积 CAD 备份（`.skb`、`.0001.rvt`、`.bak`）、渲染图、视频以及副本的副本，直到磁盘被占满。
 
-一切都在**本地**运行。无需账户，没有遥测，也不访问网络。
+一切都在**本地**运行。无需账户，没有遥测；唯一的联网操作是可选的新版本检查。
+
+**LionOrganizer 的与众不同之处**
+
+- **帮你做决定，而不只是测量** — 按原因分组的清理建议，包括建筑项目中不断堆积的 CAD/BIM 备份（SketchUp `.skb`、Revit `.0001.rvt`、AutoCAD `.bak`）。
+- **不会误删任何文件** — 每次删除都需要输入一个由应用自身校验的确认码，文件会移到回收站。
+- **按内容识别真正的重复文件** — 经 SHA-256 确认，由你选择保留哪一份。
+- **跨分析的记忆** — 本地索引库可搜索所有分析过的文件夹（包括已断开的磁盘），并查看新增、删除或增长的内容。
+- **整理与重命名，可撤销** — 按类型把零散文件归入文件夹，并按模板批量重命名，始终带预览。
+- **来自 AI 的第二意见** — 用你的语言导出报告，让 AI 指出哪些文件很可能最适合删除；应用不会发送任何内容。
+- **察觉文件消失** — 在应用之外被删除或移动的文件会以灰色显示，并可从列表中移除。
+- **人人可用** — 10 种语言、浅色和深色主题，以及经过校验的 Windows、macOS 和 Linux 安装程序。
 
 ## 下载
 
@@ -149,7 +160,9 @@ npm start
 
 ## 隐私
 
-LionOrganizer 离线运行。索引库是你电脑上的一个文件：
+LionOrganizer 离线运行。唯一的联网操作是检查新版本：它只从 GitHub 上项目已发布的版本中读取一个小文件，不会发送任何关于你或你的文件的数据。点击右下角的版本号即可关闭此检查。“导出给 AI”的报告从不由应用发送：由你决定粘贴到哪里。
+
+索引库是你电脑上的一个文件：
 
 ```
 %APPDATA%\LionOrganizer\catalog.sqlite

@@ -1019,3 +1019,53 @@ code.hash { font: 500 11px var(--font-mono); color: var(--text-secondary); paddi
 .about-credit { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--text-primary); }
 .about-credit span { color: var(--brand-magenta); }
 .about-team { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
+
+/* ---------- files that no longer exist (deleted or moved outside the app): gray, with "Remove from list" */
+.missing-badge {
+  display: inline-flex; align-items: center; gap: 4px; margin-right: 6px; padding: 1px 7px; vertical-align: 1px;
+  font: 500 10.5px var(--font-ui); white-space: nowrap; color: var(--text-secondary);
+  background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 99px;
+}
+.missing-badge svg { flex: none; }
+.is-missing .swatch, .is-missing .size-bar { filter: grayscale(1); opacity: 0.35; }
+.file-item.is-missing .file-item-name, .file-item.is-missing .file-item-size,
+tr.is-missing td:not(.col-actions), tr.is-missing .cell-text,
+.cleanup-preview li.is-missing > span, .dup-copies li.is-missing .dup-file, .dup-copies li.is-missing .dup-date { color: var(--text-muted); }
+.file-item.is-missing .file-item-name, tr.is-missing .cell-text, .cleanup-preview li.is-missing .cp-name, .dup-copies li.is-missing .dup-file { text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--text-muted) 60%, transparent); }
+.missing-badge, .is-missing .missing-badge { text-decoration: none; }
+.missing-remove.btn { white-space: nowrap; flex: none; }
+td.col-actions .missing-remove.icon-button { opacity: 1; }
+
+/* ---------- version indicator (bottom-right corner) and update dialog */
+.status-version {
+  display: inline-flex; align-items: center; gap: 4px; height: 18px; padding: 0 7px; margin-left: 6px; flex: none;
+  font: 11px var(--font-mono); color: var(--text-muted); background: transparent; border: 0; border-radius: 6px; cursor: pointer;
+}
+.status-version:hover, .status-version:focus-visible { background: var(--hover); color: var(--text-primary); }
+.status-version .status-icon { display: inline-flex; }
+.status-version.update-available { color: #fff; background: var(--brand-magenta); font-weight: 600; }
+.status-version.update-available:hover { background: color-mix(in srgb, var(--brand-magenta) 85%, #000); color: #fff; }
+.update-dialog { width: min(460px, 100%); }
+.update-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.update-head h2 { margin: 0; font-size: 18px; }
+.update-icon { display: inline-flex; color: var(--text-muted); }
+.update-head.is-available .update-icon { color: var(--brand-magenta); }
+.update-versions { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 0 0 12px; font-size: 13px; }
+.update-versions dt { color: var(--text-muted); }
+.update-versions dd { margin: 0; font-family: var(--font-mono); }
+.update-versions .update-new { color: var(--brand-magenta); font-weight: 700; }
+.update-dialog p { margin: 8px 0; line-height: 1.5; }
+.update-question { font-weight: 600; }
+.update-auto { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 12.5px; }
+.update-privacy { margin: 4px 0 0 !important; }
+
+/* ---------- export for AI analysis */
+.ai-report-dialog { width: min(520px, 100%); }
+.ai-report-dialog p { margin: 8px 0; line-height: 1.5; }
+.update-icon.is-brand { color: var(--brand-magenta); }
+.ai-report-list { margin: 8px 0 12px; padding-left: 18px; line-height: 1.5; font-size: 13px; color: var(--text-secondary); }
+.ai-report-list li { margin: 4px 0; }
+.ai-report-count { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; }
+.ai-report-preview { margin: 6px 0 0 !important; text-align: right; }
+.cleanup-hero-text .ai-report-button { align-self: flex-start; margin-top: 10px; }
+.ai-report-button .icon, .ai-report-button span:first-child { color: var(--brand-magenta); }

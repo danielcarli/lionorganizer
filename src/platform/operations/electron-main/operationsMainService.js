@@ -34,6 +34,11 @@ async function exists(p) {
   try { await fs.promises.lstat(p); return true; } catch { return false; }
 }
 
+/** True only when the file or one of its folders is really gone (not for "access denied"). */
+async function isGone(p) {
+  try { await fs.promises.lstat(p); return false; } catch (err) { return err.code === 'ENOENT' || err.code === 'ENOTDIR'; }
+}
+
 async function uniquePath(p) {
   if (!(await exists(p))) return p;
   const dir = path.dirname(p);
@@ -117,11 +122,15 @@ class OperationsMainService {
   }
 
   // ------------------------------------------------------------------ Recycle Bin
-  #planTrash({ paths }) {
+  async #planTrash({ paths }) {
     if (!Array.isArray(paths) || !paths.length) throw new Error(t('main.ops.trash.errors.noneSelected'));
     if (paths.length > MAX_ITEMS) throw new Error(t('main.ops.errors.tooManyFiles'));
-    const valid = [...new Set(paths)].filter((p) => this.scan.isKnownFile(p));
-    if (!valid.length) throw new Error(t('main.ops.trash.errors.notInScan'));
+    const known = [...new Set(paths)].filter((p) => this.scan.isKnownFile(p));
+    if (!known.length) throw new Error(t('main.ops.trash.errors.notInScan'));
+    // files that no longer exist are left out: there is nothing to move to the Recycle Bin
+    const gone = await Promise.all(known.map((p) => isGone(p)));
+    const valid = known.filter((_, i) => !gone[i]);
+    if (!valid.length) throw new Error(tn('main.ops.trash.errors.allMissing', known.length));
     const bytes = valid.reduce((s, p) => s + (this.scan.files.get(p)?.size || 0), 0);
     const root = this.scan.currentRoot;
     const sizes = Object.fromEntries(valid.map((p) => [p, this.scan.files.get(p)?.size || 0]));
@@ -142,13 +151,15 @@ class OperationsMainService {
   async #runTrash(plan) {
     const removed = [];
     const failed = [];
+    const missing = [];
     for (const p of plan.paths) {
       try {
         await shell.trashItem(p);
         this.scan.forget(p);
         removed.push(p);
       } catch {
-        failed.push(p);
+        // deleted or moved in the meantime (e.g. in Explorer) is not the same as "in use"
+        if (await isGone(p)) missing.push(p); else failed.push(p);
       }
     }
     const bytes = removed.reduce((s, p) => s + (plan.sizes?.[p] || 0), 0);
@@ -159,7 +170,7 @@ class OperationsMainService {
         opId = this.db.logOperation({ kind: 'trash', root: this.scan.currentRoot, summary: tn('main.ops.trash.summary', removed.length), bytes, items: removed.map((src) => ({ src })) });
       } catch (err) { console.error(err); }
     }
-    return { removed, failed, opId, bytes };
+    return { removed, failed, missing, opId, bytes };
   }
 
   // ------------------------------------------------------------------ Organize by type

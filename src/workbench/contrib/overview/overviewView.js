@@ -8,6 +8,7 @@
 import { ViewPane } from '../../browser/viewPane.js';
 import { h, clear, setChildren } from '../../../base/browser/dom.js';
 import { icon } from '../../../base/browser/icons.js';
+import { missingBadge, removeFromListButton } from '../../browser/missingFile.js';
 import { formatBytes, formatNumber, formatPercent, formatDate, bytesParts } from '../../../base/common/format.js';
 import { t, tn } from '../../../base/common/nls.js';
 import { CATEGORIES, CATEGORY_BY_ID } from '../../services/analysis/common/fileCategories.js';
@@ -159,16 +160,21 @@ export class OverviewView extends ViewPane {
   #biggest() {
     const files = [...this.analysis.scopeFiles()].sort((a, b) => b.size - a.size).slice(0, TOP_FILES);
     const max = files[0]?.size || 1;
-    return h('div.file-list', files.map((f) =>
-      h('div.file-item',
+    this.analysis.verify('overview', files.map((f) => f.path));
+    return h('div.file-list', files.map((f) => {
+      const missing = this.analysis.isMissing(f.path);
+      return h(`div.file-item${missing ? '.is-missing' : ''}`,
         h('span.swatch', { style: { background: categoryColor(f.cat) } }),
         h('div.file-item-main',
           h('div.file-item-name', { title: f.path }, f.name),
-          h('div.file-item-meta', `${f.folder || t('common.rootFolder')} · ${formatDate(f.mtime)}`),
+          h('div.file-item-meta', missing ? missingBadge() : null, `${f.folder || t('common.rootFolder')} · ${formatDate(f.mtime)}`),
           h('div.size-bar', h('span', { style: { width: `${(f.size / max) * 100}%` } }))),
         h('span.file-item-size', formatBytes(f.size)),
-        h('button.icon-button', { title: t('common.showIn', { explorer: this.actions.explorerName }), html: icon('reveal', 16), onclick: () => this.actions.reveal(f.path) }),
-        h('button.icon-button.danger', { title: t('common.moveToTrash'), html: icon('trash', 16), onclick: () => this.actions.trash([f]) }))));
+        missing
+          ? removeFromListButton(this.actions, f.path)
+          : [h('button.icon-button', { title: t('common.showIn', { explorer: this.actions.explorerName }), html: icon('reveal', 16), onclick: () => this.actions.reveal(f.path) }),
+            h('button.icon-button.danger', { title: t('common.moveToTrash'), html: icon('trash', 16), onclick: () => this.actions.trash([f]) })]);
+    }));
   }
 
   #openFilesWith(patch) {

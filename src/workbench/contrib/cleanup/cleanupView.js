@@ -7,6 +7,8 @@
 import { ViewPane } from '../../browser/viewPane.js';
 import { h, clear, setChildren } from '../../../base/browser/dom.js';
 import { icon } from '../../../base/browser/icons.js';
+import { showAiReportDialog } from '../report/aiReportDialog.js';
+import { missingBadge, removeFromListButton } from '../../browser/missingFile.js';
 import { formatBytes, formatDate } from '../../../base/common/format.js';
 import { categoryColor, freeDotColor } from '../../browser/chartTheme.js';
 import { dotMatrix } from '../../../base/browser/ui/charts/dotMatrix.js';
@@ -43,7 +45,9 @@ export class CleanupView extends ViewPane {
           h('p.muted', t('cleanup.hero.summary', { files: tn('common.files', unique.size), groups: tn('cleanup.hero.groups', groups.length), percent: formatPercent(total, scopeBytes) })),
           h('p.cleanup-explain',
             h('span', { html: icon('info', 14) }),
-            t('cleanup.hero.explain'))),
+            t('cleanup.hero.explain')),
+          h('button.btn.btn-secondary.btn-sm.ai-report-button', { title: t('report.buttonTitle'), onclick: () => showAiReportDialog(this) },
+            h('span', { html: icon('sparkle', 14) }), t('report.button'))),
         dotMatrix([
           { value: total, color: freeDotColor(), tooltip: { title: t('cleanup.chart.freeable'), color: freeDotColor(), lines: [formatBytes(total)] } },
           { value: Math.max(0, scopeBytes - total), dim: true, tooltip: { title: t('cleanup.chart.remaining'), lines: [formatBytes(Math.max(0, scopeBytes - total))] } },
@@ -51,6 +55,13 @@ export class CleanupView extends ViewPane {
       groups.length
         ? h('div.cleanup-grid', groups.map((g) => this.#group(g, maxGroup)))
         : h('div.empty-state', h('span', { html: icon('sparkle', 28) }), h('h3', t('cleanup.empty.title')), h('p.muted', t('cleanup.empty.body'))));
+  }
+
+  /** The first files of a group, checked in the background (they may have been deleted meanwhile). */
+  #preview(g) {
+    const files = g.files.slice(0, PREVIEW);
+    this.analysis.verify('cleanup:' + g.id, files.map((f) => f.path));
+    return files;
   }
 
   #group(g, maxGroup) {
@@ -61,14 +72,18 @@ export class CleanupView extends ViewPane {
           h('p.muted', g.desc)),
         h('div.cleanup-card-size', h('strong', formatBytes(g.size)), h('span.muted', tn('common.files', g.files.length)))),
       h('div.size-bar.wide', h('span', { style: { width: `${Math.max(1, (g.size / maxGroup) * 100)}%` } })),
-      h('ul.cleanup-preview', g.files.slice(0, PREVIEW).map((f) =>
-        h('li',
+      h('ul.cleanup-preview', this.#preview(g).map((f) => {
+        const missing = this.analysis.isMissing(f.path);
+        return h(`li${missing ? '.is-missing' : ''}`,
           h('span.swatch', { style: { background: categoryColor(f.cat) } }),
-          h('span.cp-name', { title: f.path }, f.name),
+          h('span.cp-name', { title: missing ? t('files.missing.title') : f.path }, missing ? missingBadge() : null, f.name),
           h('span.cp-folder.muted', { title: f.folder }, f.folder || t('common.rootFolder')),
           h('span.cp-date.muted', formatDate(f.mtime)),
           h('span.cp-size', formatBytes(f.size)),
-          h('button.icon-button', { title: t('common.showIn', { explorer: this.actions.explorerName }), html: icon('reveal', 15), onclick: () => this.actions.reveal(f.path) })))),
+          missing
+            ? removeFromListButton(this.actions, f.path, { compact: true })
+            : h('button.icon-button', { title: t('common.showIn', { explorer: this.actions.explorerName }), html: icon('reveal', 15), onclick: () => this.actions.reveal(f.path) }));
+      })),
       h('footer.cleanup-actions',
         g.files.length > PREVIEW ? h('span.muted', tn('cleanup.group.more', g.files.length - PREVIEW)) : h('span'),
         h('div.btn-row',

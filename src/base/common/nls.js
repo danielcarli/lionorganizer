@@ -73,7 +73,9 @@ export function setLocalePreference(pref, rescan = false) {
     localStorage.setItem(PREF_KEY, pref);
     if (rescan) sessionStorage.setItem(RESCAN_KEY, '1');
   } catch { /* storage unavailable */ }
-  location.reload();
+  // The window blocks navigations started by the page, so the reload is asked to the main process.
+  if (globalThis.host?.reloadWindow) globalThis.host.reloadWindow();
+  else location.reload();
 }
 
 /** True once, right after a reload triggered by a language change with an analysis open. */

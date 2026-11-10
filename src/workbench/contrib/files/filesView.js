@@ -7,6 +7,8 @@
 import { ViewPane } from '../../browser/viewPane.js';
 import { h, clear, setChildren } from '../../../base/browser/dom.js';
 import { icon } from '../../../base/browser/icons.js';
+import { showAiReportDialog } from '../report/aiReportDialog.js';
+import { missingBadge, removeFromListButton } from '../../browser/missingFile.js';
 import { debounce } from '../../../base/common/event.js';
 import { formatBytes, formatDate } from '../../../base/common/format.js';
 import { t, tn } from '../../../base/common/nls.js';
@@ -86,7 +88,9 @@ export class FilesView extends ViewPane {
       h('div.toolbar-spacer'),
       h('span.toolbar-count', tn('files.toolbar.count', list.length, { size: formatBytes(total) })),
       h('button.btn.btn-secondary.btn-sm', { onclick: () => this.actions.exportCsv(list), title: t('files.toolbar.exportTitle') },
-        h('span', { html: icon('download', 14) }), t('files.toolbar.export')));
+        h('span', { html: icon('download', 14) }), t('files.toolbar.export')),
+      h('button.btn.btn-secondary.btn-sm.ai-report-button', { onclick: () => showAiReportDialog(this), title: t('report.buttonTitle') },
+        h('span', { html: icon('sparkle', 14) }), t('report.button')));
   }
 
   #renderSelectionBar() {
@@ -127,23 +131,26 @@ export class FilesView extends ViewPane {
       return;
     }
     const frag = document.createDocumentFragment();
+    analysis.verify('files', pageItems.map((f) => f.path));
     for (const f of pageItems) {
-      const check = h('input', { type: 'checkbox', checked: analysis.selection.has(f.path), 'aria-label': t('files.table.selectFile', { name: f.name }), onchange: (e) => analysis.toggleSelected(f.path, e.target.checked) });
+      const missing = analysis.isMissing(f.path);
+      const check = h('input', { type: 'checkbox', disabled: missing, checked: !missing && analysis.selection.has(f.path), 'aria-label': t('files.table.selectFile', { name: f.name }), onchange: (e) => analysis.toggleSelected(f.path, e.target.checked) });
       const ext = f.ext ? '.' + f.ext : '—';
       frag.append(h('tr', {
         'data-path': f.path,
-        ondblclick: () => this.actions.reveal(f.path),
-        class: analysis.selection.has(f.path) ? 'is-selected' : undefined,
+        ondblclick: missing ? undefined : () => this.actions.reveal(f.path),
+        class: missing ? 'is-missing' : analysis.selection.has(f.path) ? 'is-selected' : undefined,
       },
         h('td.col-check', check),
-        h('td.col-name', { title: f.path }, h('span.swatch', { style: { background: categoryColor(f.cat) } }), h('span.cell-text', f.name)),
+        h('td.col-name', { title: f.path }, h('span.swatch', { style: { background: categoryColor(f.cat) } }), h('span.cell-text', f.name), missing ? missingBadge() : null),
         h('td.col-folder', { title: f.folder || t('common.rootFolder') }, h('span.cell-text.muted', f.folder || '·')),
         h('td.col-ext', { title: CATEGORY_BY_ID[f.cat].label }, h('span.ext-badge', ext)),
         h('td.col-size.num', h('div.size-cell', h('span', formatBytes(f.size)), h('div.size-bar', h('span', { style: { width: `${Math.max(0.5, (f.size / max) * 100)}%` } })))),
         h('td.col-mtime.num.muted', formatDate(f.mtime)),
-        h('td.col-actions',
-          h('button.icon-button', { title: t('common.showIn', { explorer: this.actions.explorerName }), html: icon('reveal', 16), onclick: () => this.actions.reveal(f.path) }),
-          h('button.icon-button.danger', { title: t('common.moveToTrash'), html: icon('trash', 16), onclick: () => this.actions.trash([f]) }))));
+        h('td.col-actions', missing
+          ? removeFromListButton(this.actions, f.path, { compact: true })
+          : [h('button.icon-button', { title: t('common.showIn', { explorer: this.actions.explorerName }), html: icon('reveal', 16), onclick: () => this.actions.reveal(f.path) }),
+            h('button.icon-button.danger', { title: t('common.moveToTrash'), html: icon('trash', 16), onclick: () => this.actions.trash([f]) })])));
     }
     this.tbody.append(frag);
     this.#syncChecks();

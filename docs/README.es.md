@@ -11,7 +11,7 @@ Descubre qué ocupa espacio en tus carpetas, encuentra duplicados reales por su 
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · **Español** · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-161214)
+![Version 1.0.3](https://img.shields.io/badge/version-1.0.3-161214)
 ![Licencia: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Plataforma: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -26,7 +26,18 @@ Descubre qué ocupa espacio en tus carpetas, encuentra duplicados reales por su 
 
 Los analizadores de disco te dicen *qué* es grande. LionOrganizer también te ayuda a decidir *qué puede irse*, y se asegura de que nada se elimine por accidente. Nació de un problema muy concreto: los proyectos de arquitectura y diseño acumulan copias de seguridad de CAD (`.skb`, `.0001.rvt`, `.bak`), renders, videos y copias de copias hasta que el disco se llena.
 
-Todo se ejecuta **localmente**. No hay cuenta, ni telemetría, ni acceso a la red.
+Todo se ejecuta **localmente**. No hay cuenta ni telemetría; la única conexión es la búsqueda opcional de nuevas versiones.
+
+**Lo que hace diferente a LionOrganizer**
+
+- **Ayuda a decidir, no solo a medir** — sugerencias de limpieza agrupadas por motivo, incluidas las copias de seguridad de CAD/BIM que se acumulan en los proyectos de arquitectura (SketchUp `.skb`, Revit `.0001.rvt`, AutoCAD `.bak`).
+- **Nada se elimina por error** — cada eliminación pide un código que escribes, verificado por la propia app, y los archivos van a la Papelera de reciclaje.
+- **Duplicados de verdad, por contenido** — confirmados con SHA-256, y tú eliges qué copia conservar.
+- **Memoria entre análisis** — un catálogo local para buscar en todas las carpetas analizadas (incluso discos desconectados) y ver qué es nuevo, qué se eliminó o qué creció.
+- **Organizar y renombrar, con deshacer** — archivos sueltos ordenados en carpetas por tipo y renombrado por lotes con patrones, siempre con vista previa.
+- **Una segunda opinión de la IA** — exporta un informe en tu idioma para que una IA indique qué es probablemente más seguro eliminar; la app no envía nada.
+- **Detecta cuando los archivos desaparecen** — los archivos eliminados o movidos fuera de la app aparecen en gris, y puedes quitarlos de las listas.
+- **Para todos** — 10 idiomas, temas claro y oscuro e instaladores verificados para Windows, macOS y Linux.
 
 ## Descargar
 
@@ -149,7 +160,9 @@ De forma predeterminada, el idioma sigue al de Windows y se puede cambiar en la 
 
 ## Privacidad
 
-LionOrganizer funciona sin conexión. El catálogo es un único archivo en tu equipo:
+LionOrganizer funciona sin conexión. Su única conexión es la búsqueda de nuevas versiones: lee un archivo pequeño de las versiones publicadas del proyecto en GitHub y no envía ningún dato sobre ti ni sobre tus archivos. Puedes desactivarla haciendo clic en el número de versión, en la esquina inferior derecha. La app nunca envía el informe de *Exportar para IA*: tú eliges dónde pegarlo.
+
+El catálogo es un único archivo en tu equipo:
 
 ```
 %APPDATA%\LionOrganizer\catalog.sqlite

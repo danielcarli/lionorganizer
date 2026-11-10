@@ -18,6 +18,7 @@ const { HashMainService } = require('../../platform/catalog/electron-main/hashMa
 const { ScanMainService } = require('../../platform/files/electron-main/scanMainService');
 const { ShellMainService } = require('../../platform/shell/electron-main/shellMainService');
 const { OperationsMainService } = require('../../platform/operations/electron-main/operationsMainService');
+const { UpdateMainService } = require('../../platform/update/electron-main/updateMainService');
 const { setLocale } = require('../../platform/nls/common/nls');
 
 const APP_ROOT = path.resolve(__dirname, '..', '..', '..');
@@ -120,8 +121,13 @@ app.whenReady().then(() => {
   const hash = new HashMainService(scan, catalog);
   const shell = new ShellMainService(scan, catalog);
   const operations = new OperationsMainService(scan, catalog);
-  [dialogs, catalog, scan, hash, shell, operations].forEach((s) => s.registerChannels(ipcMain));
+  const update = new UpdateMainService(APP_ROOT);
+  [dialogs, catalog, scan, hash, shell, operations, update].forEach((s) => s.registerChannels(ipcMain));
   app.on('will-quit', () => catalog.db?.close());
+
+  // Reload asked by the UI (e.g. after changing the language). Done here because the window blocks every
+  // navigation started by the page (will-navigate), and recent Electron versions treat location.reload() as one.
+  ipcMain.on('window:reload', (event) => event.sender.reload());
 
   // The UI reports the chosen theme (light/dark) so the window buttons match.
   ipcMain.on('window:setTheme', (event, dark) => {

@@ -14,6 +14,8 @@ import { ConfirmationService } from '../services/dialog/browser/confirmationServ
 import { OperationsService } from '../services/operations/browser/operationsService.js';
 import { DuplicatesService } from '../services/duplicates/browser/duplicatesService.js';
 import { CatalogService } from '../services/catalog/browser/catalogService.js';
+import { UpdateService } from '../services/update/browser/updateService.js';
+import { AiReportService } from '../services/report/browser/aiReportService.js';
 
 import { TitlebarPart } from './parts/titlebarPart.js';
 import { ActivitybarPart } from './parts/activitybarPart.js';
@@ -38,7 +40,7 @@ document.documentElement.dataset.platform = host.platform;
 const services = {};
 services.host = host;
 services.layout = new LayoutService(host);
-services.analysis = new AnalysisService();
+services.analysis = new AnalysisService(host);
 services.scan = new ScanService(host, services.analysis);
 services.notifications = new NotificationService();
 services.confirmation = new ConfirmationService();
@@ -46,6 +48,8 @@ services.operations = new OperationsService(services);
 services.actions = new FileActionsService(services);
 services.duplicates = new DuplicatesService(services);
 services.catalog = new CatalogService(services);
+services.update = new UpdateService(services);
+services.report = new AiReportService(services);
 // moved/renamed files are still recognized in the duplicate groups
 services.operations.onDidRun(({ result }) => services.duplicates.trackMoves(result.moved));
 
@@ -78,6 +82,9 @@ root.append(
 if (consumeRescanFlag() && services.scan.folder) services.scan.scan();
 
 // ---- keyboard shortcuts ----
+// Back to the window: files may have been deleted, moved or restored meanwhile (e.g. in Explorer).
+window.addEventListener('focus', () => services.analysis.recheck());
+
 window.addEventListener('keydown', (e) => {
   const mod = e.ctrlKey || e.metaKey;
   if (mod && e.key.toLowerCase() === 'o') { e.preventDefault(); services.actions.openFolderAndScan(); }

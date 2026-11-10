@@ -11,7 +11,7 @@
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · **한국어**
 
-![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-161214)
+![Version 1.0.3](https://img.shields.io/badge/version-1.0.3-161214)
 ![라이선스: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![플랫폼: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -26,7 +26,18 @@
 
 디스크 분석 도구는 *무엇이* 큰지 알려 줍니다. LionOrganizer는 여기서 더 나아가 *무엇을 지워도 되는지* 판단하도록 돕고, 실수로 삭제되는 일이 없도록 합니다. 이 앱은 아주 구체적인 문제에서 시작되었습니다. 건축과 디자인 프로젝트에서는 CAD 백업(`.skb`, `.0001.rvt`, `.bak`), 렌더링 이미지, 동영상, 사본의 사본이 계속 쌓여 결국 디스크가 가득 차게 됩니다.
 
-모든 작업은 **로컬**에서 실행됩니다. 계정, 원격 분석, 네트워크 연결이 없습니다.
+모든 작업은 **로컬**에서 실행됩니다. 계정과 원격 분석이 없으며, 유일한 연결은 끌 수 있는 새 버전 확인입니다.
+
+**LionOrganizer만의 차별점**
+
+- **측정만 하지 않고 결정을 돕습니다** — 이유별로 묶은 정리 제안. 건축 프로젝트에 쌓이는 CAD/BIM 백업(SketchUp `.skb`, Revit `.0001.rvt`, AutoCAD `.bak`)도 포함합니다.
+- **실수로 삭제되는 일이 없습니다** — 삭제할 때마다 앱이 직접 검증하는 확인 코드를 입력해야 하며, 파일은 휴지통으로 이동합니다.
+- **내용 기준의 진짜 중복** — SHA-256으로 확인하며, 남길 사본은 사용자가 고릅니다.
+- **분석 간의 기록** — 로컬 카탈로그로 분석한 모든 폴더(연결이 끊긴 드라이브 포함)를 검색하고, 새로 생긴 것·삭제된 것·커진 것을 볼 수 있습니다.
+- **정리와 이름 바꾸기, 실행 취소 가능** — 흩어진 파일을 유형별 폴더로 정리하고 패턴으로 일괄 이름 바꾸기. 항상 미리보기를 제공합니다.
+- **AI의 두 번째 의견** — 사용자의 언어로 보고서를 내보내 AI가 가장 안전하게 삭제할 수 있을 것 같은 항목을 알려 주게 합니다. 앱은 아무것도 보내지 않습니다.
+- **파일이 사라지면 알아챕니다** — 앱 밖에서 삭제되거나 이동된 파일은 회색으로 표시되며, 목록에서 제거할 수 있습니다.
+- **모두를 위해** — 10개 언어, 밝은/어두운 테마, 그리고 Windows·macOS·Linux용 검증된 설치 프로그램.
 
 ## 다운로드
 
@@ -149,7 +160,9 @@ npm start
 
 ## 개인정보 보호
 
-LionOrganizer는 오프라인으로 작동합니다. 카탈로그는 컴퓨터에 있는 파일 하나입니다.
+LionOrganizer는 오프라인으로 작동합니다. 유일한 연결은 새 버전 확인으로, GitHub에 게시된 프로젝트 버전에서 작은 파일 하나만 읽으며 사용자나 파일에 관한 데이터는 보내지 않습니다. 오른쪽 아래의 버전 번호를 클릭하면 끌 수 있습니다. "AI용으로 내보내기" 보고서는 앱이 어디에도 보내지 않으며, 붙여 넣을 곳은 사용자가 정합니다.
+
+카탈로그는 컴퓨터에 있는 파일 하나입니다.
 
 ```
 %APPDATA%\LionOrganizer\catalog.sqlite

@@ -7,11 +7,34 @@
 // Moving to the Recycle Bin is delegated to OperationsService, which requires the confirmation code.
 import { formatBytes, formatDate, joinPath } from '../../../../base/common/format.js';
 import { CATEGORY_BY_ID } from '../../analysis/common/fileCategories.js';
-import { t } from '../../../../base/common/nls.js';
+import { t, tn } from '../../../../base/common/nls.js';
 
 export class FileActionsService {
+  #missingFound = 0;
+  #missingTimer = null;
+
   constructor({ host, analysis, scan, notifications, layout, operations }) {
     Object.assign(this, { host, analysis, scan, notifications, layout, operations });
+    // one notice for files found missing at about the same time (several views check at once)
+    analysis.onDidFindMissing((count) => {
+      this.#missingFound += count;
+      clearTimeout(this.#missingTimer);
+      this.#missingTimer = setTimeout(() => this.#noticeMissing(), 250);
+    });
+  }
+
+  #noticeMissing() {
+    const count = this.#missingFound;
+    this.#missingFound = 0;
+    if (!count) return;
+    this.notifications.warn(tn('files.missing.found', count), 12000,
+      { label: t('files.missing.removeFromList'), run: () => this.removeFromList() });
+  }
+
+  /** Removes files that no longer exist from the lists. Only the interface changes, nothing on disk. */
+  removeFromList(paths) {
+    const n = this.analysis.dismissMissing(paths);
+    if (n) this.notifications.info(tn('files.missing.removed', n));
   }
 
   get explorerName() {
@@ -25,8 +48,15 @@ export class FileActionsService {
   }
 
   async reveal(path) {
-    const ok = await this.host.reveal(path);
-    if (!ok) this.notifications.warn(t('actions.revealFailed'));
+    const status = await this.host.reveal(path);
+    if (status === 'ok' || status === true) return;
+    if (status === 'missing') {
+      // a file of the analysis: show it in gray (the notice comes from onDidFindMissing)
+      if (this.analysis.hasFile(path)) this.analysis.markMissing([path]);
+      else this.notifications.warn(t('actions.notFound'));
+      return;
+    }
+    this.notifications.warn(t('actions.revealFailed'));
   }
 
   revealFolder(rel) {

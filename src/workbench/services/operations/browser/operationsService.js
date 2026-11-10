@@ -20,13 +20,24 @@ export class OperationsService {
 
   /** Recycle Bin (deletion). Always asks for the code, for 1 or many files. */
   async trash(files) {
-    if (!files?.length) return null;
+    files = (files || []).filter((f) => !this.analysis.isMissing(f.path));
+    if (!files.length) return null;
+    // files deleted or moved outside the app: shown in gray, and no code is asked for them
+    let gone = [];
+    try { gone = await this.host.missingFiles?.(files.map((f) => f.path)) || []; } catch { gone = []; }
+    if (gone.length) {
+      this.analysis.markMissing(gone);
+      const goneSet = new Set(gone);
+      files = files.filter((f) => !goneSet.has(f.path));
+      if (!files.length) return null;
+    }
     const res = await this.#run('trash', { paths: files.map((f) => f.path) });
     if (!res) return null;
     if (res.removed.length) {
       this.analysis.removeFiles(res.removed);
       this.notifications.info(tn('ops.trashed', res.removed.length, { size: formatBytes(res.bytes) }));
     }
+    if (res.missing?.length) this.analysis.markMissing(res.missing);
     this.#warnFailed(res.failed, 'ops.failed.trash');
     return res;
   }

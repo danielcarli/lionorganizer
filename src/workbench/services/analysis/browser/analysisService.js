@@ -29,7 +29,10 @@ export class AnalysisService {
   #onDidChangeData = new Emitter();
   #onDidChangeFilter = new Emitter();
   #onDidChangeSelection = new Emitter();
+  #onDidFindMissing = new Emitter();
   onDidChangeData = this.#onDidChangeData.event;
+  /** Fires with the number of files newly found missing (deleted or moved outside the app). */
+  onDidFindMissing = this.#onDidFindMissing.event;
   onDidChangeFilter = this.#onDidChangeFilter.event;
   onDidChangeSelection = this.#onDidChangeSelection.event;
 
@@ -41,6 +44,13 @@ export class AnalysisService {
   selection = new Set();
   #cache = new Map();
   confirmedDuplicates = null; // Set of paths of extra copies confirmed by hash (or null)
+  /** Files of the analysis that no longer exist on disk: shown in gray until removed from the list. */
+  missing = new Set();
+  #checked = new Set();   // paths already checked since the last scan or window focus
+  #visible = new Map();   // view id → paths it shows (re-checked when the window gets focus)
+
+  /** @param {{ missingFiles?: (paths: string[]) => Promise<string[]> }} [host] */
+  constructor(host) { this.host = host; }
 
   get hasData() { return !!this.result; }
   get root() { return this.result?.root ?? ''; }
@@ -52,6 +62,9 @@ export class AnalysisService {
     this.files = files;
     this.filter = { ...EMPTY_FILTER };
     this.selection.clear();
+    this.missing.clear();
+    this.#checked.clear();
+    this.#visible.clear();
     this.#rebuild();
     this.#onDidChangeData.fire();
     this.#onDidChangeFilter.fire();
@@ -62,10 +75,69 @@ export class AnalysisService {
     const gone = new Set(paths);
     if (!gone.size) return;
     this.files = this.files.filter((f) => !gone.has(f.path));
-    for (const p of gone) this.selection.delete(p);
+    for (const p of gone) { this.selection.delete(p); this.missing.delete(p); }
     this.#rebuild();
     this.#onDidChangeData.fire();
     this.#onDidChangeSelection.fire();
+  }
+
+  // ---------- files that no longer exist ----------
+  isMissing(path) { return this.missing.has(path); }
+  hasFile(path) { return this.files.some((f) => f.path === path); }
+
+  /** Marks files as missing (shown in gray). Returns how many were new. */
+  markMissing(paths) {
+    const known = new Set(this.files.map((f) => f.path));
+    const fresh = (paths || []).filter((p) => known.has(p) && !this.missing.has(p));
+    if (!fresh.length) return 0;
+    for (const p of fresh) { this.missing.add(p); this.#checked.add(p); this.selection.delete(p); }
+    this.#onDidChangeData.fire();
+    this.#onDidChangeSelection.fire();
+    this.#onDidFindMissing.fire(fresh.length);
+    return fresh.length;
+  }
+
+  /** Removes missing files from the analysis (only from the interface — nothing on disk changes). */
+  dismissMissing(paths = [...this.missing]) {
+    const list = paths.filter((p) => this.missing.has(p));
+    if (list.length) this.removeFiles(list);
+    return list.length;
+  }
+
+  /**
+   * Checks in the background whether the files a view shows still exist. Each path is checked once,
+   * until the window gets focus again (see recheck).
+   * @param {string} viewId @param {string[]} paths
+   */
+  async verify(viewId, paths) {
+    if (!this.host?.missingFiles) return;
+    this.#visible.set(viewId, paths);
+    const todo = paths.filter((p) => !this.#checked.has(p));
+    if (!todo.length) return;
+    for (const p of todo) this.#checked.add(p);
+    let gone = [];
+    try { gone = await this.host.missingFiles(todo); } catch { return; }
+    this.markMissing(gone);
+  }
+
+  /** The user may have deleted, moved or restored files meanwhile: check what is on screen again. */
+  async recheck() {
+    if (!this.host?.missingFiles || !this.result) return;
+    this.#checked.clear();
+    const shown = new Set([...this.#visible.values()].flat());
+    for (const p of this.missing) shown.add(p);
+    const paths = [...shown];
+    if (!paths.length) return;
+    let gone = [];
+    try { gone = await this.host.missingFiles(paths); } catch { return; }
+    for (const p of paths) this.#checked.add(p);
+    const goneSet = new Set(gone);
+    const back = [...this.missing].filter((p) => !goneSet.has(p)); // restored (e.g. from the Recycle Bin)
+    if (back.length) {
+      for (const p of back) this.missing.delete(p);
+      this.#onDidChangeData.fire();
+    }
+    this.markMissing(gone);
   }
 
   /** Receives from DuplicatesService the extra copies confirmed by SHA-256. */

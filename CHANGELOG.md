@@ -2,6 +2,26 @@
 
 All notable changes to LionOrganizer are documented here. The project follows [Semantic Versioning](https://semver.org).
 
+## [1.0.3] — 2026-11-10
+
+### New version indicator
+- The version is shown in the bottom-right corner of the status bar. LionOrganizer checks once a day for a new version (it reads one small file from the GitHub releases and sends no data); when there is one, the indicator is highlighted.
+- Clicking it opens a dialog that shows the installed and the new version and asks whether to update. On Windows, the app closes and its installer downloads, checks and installs the new version; elsewhere, the download page opens. Automatic checking can be turned off in that dialog.
+
+### Export for AI analysis
+- New "Export for AI" button (Cleanup and Files views): a report, in the user's language, with instructions for an AI (Claude, ChatGPT…) to point out which files are probably the safest to delete, and why. It lists the largest files, the cleanup suggestions and the duplicates confirmed by SHA-256, with paths relative to the analyzed folder and never the contents of files. Copy it or save it as a `.md` file; the app sends it nowhere.
+
+### Files deleted outside the app
+- Files that no longer exist (deleted or moved in Explorer, or whose folder is gone) are detected when they appear on screen, when you come back to the window, when you click "Show in folder" and before moving files to the Recycle Bin.
+- They are shown in gray and marked "Not found", with a notice and a "Remove from list" button. Removing from the list only changes the interface, nothing on disk, so it needs no confirmation code.
+- Files that no longer exist are left out of Recycle Bin operations, so no confirmation code is asked for them, and they are no longer reported as "in use or no permission".
+
+### Fixed
+- Changing the language in the status bar now reloads the interface in the new language (the reload was blocked by the window's navigation protection).
+
+### Documentation
+- READMEs in 10 languages: "What sets LionOrganizer apart", and the privacy notes explain the only connection (the optional check for new versions).
+
 ## [1.0.2] — 2026-11-10
 
 ### Install

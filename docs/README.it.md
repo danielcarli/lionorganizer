@@ -11,7 +11,7 @@ Scopri cosa occupa spazio nelle tue cartelle, trova i veri duplicati in base al 
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · **Italiano** · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-161214)
+![Version 1.0.3](https://img.shields.io/badge/version-1.0.3-161214)
 ![Licenza: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Piattaforma: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -26,7 +26,18 @@ Scopri cosa occupa spazio nelle tue cartelle, trova i veri duplicati in base al 
 
 Gli analizzatori di disco ti dicono *cosa* è grande. LionOrganizer ti aiuta anche a decidere *cosa può sparire*, e fa in modo che nulla venga eliminato per errore. È nato da un problema molto concreto: i progetti di architettura e design accumulano backup CAD (`.skb`, `.0001.rvt`, `.bak`), render, video e copie di copie finché il disco non è pieno.
 
-Tutto viene eseguito **in locale**. Nessun account, nessuna telemetria, nessun accesso alla rete.
+Tutto viene eseguito **in locale**. Nessun account e nessuna telemetria; l’unica connessione è la ricerca facoltativa di nuove versioni.
+
+**Cosa rende diverso LionOrganizer**
+
+- **Aiuta a decidere, non solo a misurare** — suggerimenti di pulizia raggruppati per motivo, compresi i backup CAD/BIM che si accumulano nei progetti di architettura (SketchUp `.skb`, Revit `.0001.rvt`, AutoCAD `.bak`).
+- **Niente viene eliminato per errore** — ogni eliminazione chiede un codice da digitare, verificato dall’app stessa, e i file vanno nel Cestino.
+- **Duplicati veri, per contenuto** — confermati con SHA-256, e scegli tu quale copia tenere.
+- **Memoria tra le analisi** — un catalogo locale per cercare in tutte le cartelle analizzate (anche dischi scollegati) e vedere cosa è nuovo, rimosso o cresciuto.
+- **Organizza e rinomina, con annulla** — file sparsi ordinati in cartelle per tipo e rinomina in blocco con modelli, sempre con anteprima.
+- **Un secondo parere dall’IA** — esporta un rapporto nella tua lingua perché un’IA indichi cosa è probabilmente più sicuro eliminare; l’app non invia nulla.
+- **Si accorge quando i file spariscono** — i file eliminati o spostati fuori dall’app appaiono in grigio, e puoi rimuoverli dagli elenchi.
+- **Per tutti** — 10 lingue, tema chiaro e scuro e programmi di installazione verificati per Windows, macOS e Linux.
 
 ## Download
 
@@ -149,7 +160,9 @@ Vuoi aggiungere o migliorare una lingua? Consulta [CONTRIBUTING.md](../CONTRIBUT
 
 ## Privacy
 
-LionOrganizer funziona offline. Il catalogo è un unico file sul tuo computer:
+LionOrganizer funziona offline. L’unica connessione è la ricerca di nuove versioni: legge un piccolo file dalle versioni pubblicate del progetto su GitHub e non invia alcun dato su di te o sui tuoi file. Puoi disattivarla facendo clic sul numero di versione, in basso a destra. L’app non invia mai il rapporto *Esporta per l’IA*: scegli tu dove incollarlo.
+
+Il catalogo è un unico file sul tuo computer:
 
 ```
 %APPDATA%\LionOrganizer\catalog.sqlite

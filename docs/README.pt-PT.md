@@ -11,7 +11,7 @@ Veja o que ocupa espaço nas suas pastas, encontre duplicados verdadeiros pelo c
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · **Português (Portugal)** · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-161214)
+![Version 1.0.3](https://img.shields.io/badge/version-1.0.3-161214)
 ![Licença: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Plataforma: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -26,7 +26,18 @@ Veja o que ocupa espaço nas suas pastas, encontre duplicados verdadeiros pelo c
 
 Os analisadores de disco mostram *o que* é grande. O LionOrganizer também ajuda a decidir *o que pode sair* — e garante que nada é eliminado por engano. Nasceu de um problema muito concreto: os projetos de arquitetura e design acumulam cópias de segurança de CAD (`.skb`, `.0001.rvt`, `.bak`), renders, vídeos e cópias de cópias até o disco ficar cheio.
 
-Tudo é executado **localmente**. Não há conta, nem telemetria, nem acesso à rede.
+Tudo é executado **localmente**. Não há conta nem telemetria; a única ligação é a verificação opcional de novas versões.
+
+**O que torna o LionOrganizer diferente**
+
+- **Ajuda a decidir, não só a medir** — sugestões de limpeza agrupadas por motivo, incluindo as cópias de segurança de CAD/BIM que se acumulam em projetos de arquitetura (SketchUp `.skb`, Revit `.0001.rvt`, AutoCAD `.bak`).
+- **Nada é eliminado por engano** — cada eliminação pede um código escrito, verificado pela própria aplicação, e os ficheiros vão para a Reciclagem.
+- **Duplicados verdadeiros, pelo conteúdo** — confirmados por SHA-256, e é o utilizador que escolhe que cópia manter.
+- **Memória entre análises** — um catálogo local para pesquisar em todas as pastas já analisadas (até em discos desligados) e ver o que é novo, foi removido ou cresceu.
+- **Organizar e renomear, com anular** — ficheiros soltos arrumados em pastas por tipo e renomeação em lote com padrões, sempre com pré-visualização.
+- **Uma segunda opinião da IA** — exporte um relatório no seu idioma para uma IA indicar o que provavelmente é mais seguro eliminar; a aplicação não envia nada.
+- **Percebe quando os ficheiros desaparecem** — ficheiros eliminados ou movidos fora da aplicação aparecem a cinzento, e pode removê-los das listas.
+- **Para todos** — 10 idiomas, temas claro e escuro e instaladores verificados para Windows, macOS e Linux.
 
 ## Transferir
 
@@ -149,7 +160,9 @@ Quer adicionar ou melhorar um idioma? Consulte o [CONTRIBUTING.md](../CONTRIBUTI
 
 ## Privacidade
 
-O LionOrganizer funciona offline. O catálogo é um único ficheiro no seu computador:
+O LionOrganizer funciona offline. A única ligação é a verificação de novas versões: lê um ficheiro pequeno das versões publicadas do projeto no GitHub e não envia nenhum dado seu ou dos seus ficheiros. Pode desligá-la clicando no número da versão, no canto inferior direito. O relatório de *Exportar para IA* nunca é enviado pela aplicação: é o utilizador que escolhe onde o colar.
+
+O catálogo é um único ficheiro no seu computador:
 
 ```
 %APPDATA%\LionOrganizer\catalog.sqlite

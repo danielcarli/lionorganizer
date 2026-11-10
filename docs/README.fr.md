@@ -11,7 +11,7 @@ Voyez ce qui occupe de l’espace dans vos dossiers, trouvez les vrais doublons 
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · **Français** · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-161214)
+![Version 1.0.3](https://img.shields.io/badge/version-1.0.3-161214)
 ![Licence : GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Plateforme : Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -26,7 +26,18 @@ Voyez ce qui occupe de l’espace dans vos dossiers, trouvez les vrais doublons 
 
 Les analyseurs de disque vous disent *ce qui* est volumineux. LionOrganizer vous aide aussi à décider *ce qui peut partir* — et veille à ce que rien ne soit supprimé par accident. Il est né d’un problème très concret : les projets d’architecture et de design accumulent les sauvegardes CAO (`.skb`, `.0001.rvt`, `.bak`), les rendus, les vidéos et les copies de copies jusqu’à ce que le disque soit plein.
 
-Tout fonctionne **en local**. Pas de compte, pas de télémétrie, pas d’accès réseau.
+Tout fonctionne **en local**. Pas de compte ni de télémétrie ; la seule connexion est une recherche facultative de nouvelles versions.
+
+**Ce qui distingue LionOrganizer**
+
+- **Il aide à décider, pas seulement à mesurer** — des suggestions de nettoyage groupées par raison, y compris les sauvegardes CAO/BIM qui s’accumulent dans les projets d’architecture (SketchUp `.skb`, Revit `.0001.rvt`, AutoCAD `.bak`).
+- **Rien n’est supprimé par erreur** — chaque suppression demande un code à saisir, vérifié par l’application elle-même, et les fichiers vont à la Corbeille.
+- **De vrais doublons, par le contenu** — confirmés par SHA-256, et vous choisissez la copie à garder.
+- **Une mémoire entre les analyses** — un catalogue local pour chercher dans tous les dossiers analysés (même des disques débranchés) et voir ce qui est nouveau, supprimé ou en hausse.
+- **Ranger et renommer, avec annulation** — les fichiers en vrac classés dans des dossiers par type et le renommage par lots avec des modèles, toujours avec un aperçu.
+- **Un deuxième avis par l’IA** — exportez un rapport dans votre langue pour qu’une IA indique ce qui est probablement le plus sûr à supprimer ; l’application n’envoie rien.
+- **Il voit quand des fichiers disparaissent** — les fichiers supprimés ou déplacés en dehors de l’application apparaissent en gris, et vous pouvez les retirer des listes.
+- **Pour tout le monde** — 10 langues, thèmes clair et sombre, et des installateurs vérifiés pour Windows, macOS et Linux.
 
 ## Télécharger
 
@@ -149,7 +160,9 @@ Vous souhaitez ajouter ou améliorer une langue ? Consultez [CONTRIBUTING.md](
 
 ## Confidentialité
 
-LionOrganizer fonctionne hors ligne. Le catalogue est un fichier unique sur votre ordinateur :
+LionOrganizer fonctionne hors ligne. Sa seule connexion est la recherche de nouvelles versions : elle lit un petit fichier parmi les versions publiées du projet sur GitHub et n’envoie aucune donnée sur vous ni sur vos fichiers. Vous pouvez la désactiver en cliquant sur le numéro de version, en bas à droite. L’application n’envoie jamais le rapport *Exporter pour l’IA* : c’est vous qui choisissez où le coller.
+
+Le catalogue est un fichier unique sur votre ordinateur :
 
 ```
 %APPDATA%\LionOrganizer\catalog.sqlite
