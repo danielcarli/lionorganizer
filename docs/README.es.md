@@ -11,7 +11,7 @@ Descubre qué ocupa espacio en tus carpetas, encuentra duplicados reales por su 
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · **Español** · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.2.1](https://img.shields.io/badge/version-1.2.1-161214)
+![Version 1.2.3](https://img.shields.io/badge/version-1.2.3-161214)
 ![Licencia: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Plataforma: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -92,7 +92,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 
 Eliminar el archivo equivocado es peor que tener el disco lleno, así que LionOrganizer es cuidadoso a propósito:
 
-- **Código de confirmación escrito.** Toda acción que modifica archivos —*cualquier* eliminación (de un archivo o de muchos), organizar, cambiar nombres, deshacer y vaciar el catálogo— muestra un código de 6 caracteres que hay que **escribir** (pegar está desactivado) para que se habilite el botón. El código lo genera y lo comprueba el proceso principal, así que la interfaz no puede saltárselo. Cinco intentos fallidos cancelan la operación.
+- **Código de confirmación escrito.** Toda acción que modifica archivos —*cualquier* eliminación (de un archivo o de muchos), organizar, cambiar nombres, deshacer y vaciar el catálogo— muestra un código de 3 caracteres que hay que **escribir** (pegar está desactivado) para que se habilite el botón. El código lo genera y lo comprueba el proceso principal, así que la interfaz no puede saltárselo. Cinco intentos fallidos cancelan la operación.
 - **Papelera de reciclaje, no eliminación permanente.** Los archivos eliminados van a la Papelera de reciclaje de Windows.
 - **Acciones acotadas.** El proceso principal solo toca archivos que pertenecen a la carpeta analizada y que aparecieron en el último análisis.
 - **Deshacer.** Las operaciones de organizar y cambiar nombre quedan registradas y se pueden revertir desde *Catálogo → Operaciones recientes*.

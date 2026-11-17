@@ -11,7 +11,7 @@
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · **한국어**
 
-![Version 1.2.1](https://img.shields.io/badge/version-1.2.1-161214)
+![Version 1.2.3](https://img.shields.io/badge/version-1.2.3-161214)
 ![라이선스: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![플랫폼: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -92,7 +92,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 
 잘못된 파일을 삭제하는 것은 디스크가 가득 차는 것보다 나쁩니다. 그래서 LionOrganizer는 일부러 신중하게 설계되었습니다.
 
-- **확인 코드 직접 입력.** 파일을 변경하는 모든 작업(파일 하나든 여러 개든 *모든* 삭제, 정리, 이름 바꾸기, 실행 취소, 카탈로그 지우기)에서는 6자리 코드가 표시되며, 이 코드를 **직접 입력**해야(붙여넣기 불가) 버튼이 활성화됩니다. 코드는 메인 프로세스에서 생성하고 검증하므로 인터페이스에서 건너뛸 수 없습니다. 다섯 번 틀리면 작업이 취소됩니다.
+- **확인 코드 직접 입력.** 파일을 변경하는 모든 작업(파일 하나든 여러 개든 *모든* 삭제, 정리, 이름 바꾸기, 실행 취소, 카탈로그 지우기)에서는 3자리 코드가 표시되며, 이 코드를 **직접 입력**해야(붙여넣기 불가) 버튼이 활성화됩니다. 코드는 메인 프로세스에서 생성하고 검증하므로 인터페이스에서 건너뛸 수 없습니다. 다섯 번 틀리면 작업이 취소됩니다.
 - **영구 삭제가 아닌 휴지통.** 삭제한 파일은 Windows 휴지통으로 이동됩니다.
 - **범위가 제한된 작업.** 메인 프로세스는 분석한 폴더에 속하고 마지막 스캔에서 확인된 파일만 다룹니다.
 - **실행 취소.** 정리와 이름 바꾸기 작업은 기록되며 *카탈로그 → 최근 작업*에서 되돌릴 수 있습니다.

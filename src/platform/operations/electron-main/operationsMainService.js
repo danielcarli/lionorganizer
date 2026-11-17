@@ -15,7 +15,7 @@ const crypto = require('crypto');
 const { t, tn, formatBytes } = require('../../nls/common/nls');
 
 const ALPHABET = 'ACDEFHJKMNPRTUVWXY34679'; // no ambiguous characters (0/O, 1/I/L, 5/S, 8/B, 2/Z)
-const CODE_LENGTH = 6;
+const CODE_LENGTH = 3; // the same for every operation that needs a confirmation
 const TTL_MS = 10 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
 const MAX_ITEMS = 50000;
@@ -23,9 +23,9 @@ const PREVIEW = 8;
 const WIN_RESERVED = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(\..*)?$/i;
 const INVALID_CHARS = /[<>:"/\\|?*\u0000-\u001f]/;
 
-function newCode() {
+function newCode(length = CODE_LENGTH) {
   let c = '';
-  for (let i = 0; i < CODE_LENGTH; i++) c += ALPHABET[crypto.randomInt(ALPHABET.length)];
+  for (let i = 0; i < length; i++) c += ALPHABET[crypto.randomInt(ALPHABET.length)];
   return c;
 }
 const normalizeCode = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');

@@ -11,7 +11,7 @@ See what takes up space in your folders, find true duplicates by content and saf
 
 **English** · [Português (Brasil)](docs/README.pt-BR.md) · [Português (Portugal)](docs/README.pt-PT.md) · [Español](docs/README.es.md) · [Français](docs/README.fr.md) · [Deutsch](docs/README.de.md) · [Italiano](docs/README.it.md) · [简体中文](docs/README.zh-CN.md) · [日本語](docs/README.ja.md) · [한국어](docs/README.ko.md)
 
-![Version 1.2.1](https://img.shields.io/badge/version-1.2.1-161214)
+![Version 1.2.3](https://img.shields.io/badge/version-1.2.3-161214)
 ![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Platforms: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -92,7 +92,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 
 Deleting the wrong file is worse than a full disk, so LionOrganizer is deliberately careful:
 
-- **Typed confirmation code.** Every action that changes files — *any* deletion (one file or many), organizing, renaming, undoing and clearing the catalog — shows a 6-character code that must be **typed** (pasting is disabled) before the button unlocks. The code is generated and checked by the main process, so the interface cannot skip it. Five wrong attempts cancel the operation.
+- **Typed confirmation code.** Every action that changes files — *any* deletion (one file or many), organizing, renaming, undoing and clearing the catalog — shows a 3-character code that must be **typed** (pasting is disabled) before the button unlocks. The code is generated and checked by the main process, so the interface cannot skip it. Five wrong attempts cancel the operation.
 - **Recycle Bin, not permanent delete.** Deleted files go to the Windows Recycle Bin.
 - **Scoped actions.** The main process only touches files that belong to the folder you analyzed and were seen in the last scan.
 - **Undo.** Organize and rename operations are logged and can be reverted from *Catalog → Recent operations*.
@@ -216,7 +216,7 @@ $env:E2E_FOLDER="C:\temp\lion-test"; $env:E2E_OUT="C:\temp\lion-out"; npm run te
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) — current version: **1.2.1**.
+See [CHANGELOG.md](CHANGELOG.md) — current version: **1.2.3**.
 
 ## Contributing
 

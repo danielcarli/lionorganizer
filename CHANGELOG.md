@@ -2,6 +2,18 @@
 
 All notable changes to LionOrganizer are documented here. The project follows [Semantic Versioning](https://semver.org).
 
+## [1.2.3] — 2026-11-16
+
+### Fixed
+- **Size shown in Windows Settings › Apps › Installed apps:** it showed about 164 GB for an install of about 350 MB. The wizard reads the source of the app's files as soon as it starts, but that folder only gets its path when the app is assembled; until then the source was the root of the current drive, so Setup walked the whole disk and took its size as the app's. The source is now always the assembly folder (empty until the app is assembled), and the wizard also measures the installed folder at the end of every install or update and records it as the entry's `EstimatedSize` (the Setup log shows `Installed size: N KB`), since Setup cannot know the size of files assembled during the install. The console installer (`install.ps1`) already did this.
+- **The wizard opens faster:** that walk through the whole disk also happened every time the wizard started, before anything was shown or installed — a large part of the wait between "Update now" and the installer on a full disk.
+
+## [1.2.2] — 2026-11-11
+
+### Shorter confirmation code
+- Every action that needs a confirmation — moving files or empty folders to the Recycle Bin, organizing, renaming, undoing and clearing the catalog — now asks for a **3-character** code instead of 6. It is still typed (pasting stays disabled), still generated and checked by the main process, and five wrong attempts still cancel the operation.
+- Nothing is ever deleted permanently: every deletion in LionOrganizer goes to the system's Recycle Bin (Trash).
+
 ## [1.2.1] — 2026-11-10
 
 ### Faster updates, and an installer that never freezes

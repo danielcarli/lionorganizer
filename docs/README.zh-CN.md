@@ -11,7 +11,7 @@
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · **简体中文** · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.2.1](https://img.shields.io/badge/version-1.2.1-161214)
+![Version 1.2.3](https://img.shields.io/badge/version-1.2.3-161214)
 ![许可证：GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![平台：Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -92,7 +92,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 
 删错文件比磁盘满了更糟糕，因此 LionOrganizer 在设计上格外谨慎：
 
-- **手动输入确认代码。** 每个会更改文件的操作——*任何*删除（无论一个还是多个文件）、整理、重命名、撤消以及清除索引库——都会显示一个 6 位代码，必须**手动输入**（已禁用粘贴）后按钮才会解锁。代码由主进程生成和校验，因此界面无法绕过。输错五次即取消操作。
+- **手动输入确认代码。** 每个会更改文件的操作——*任何*删除（无论一个还是多个文件）、整理、重命名、撤消以及清除索引库——都会显示一个 3 位代码，必须**手动输入**（已禁用粘贴）后按钮才会解锁。代码由主进程生成和校验，因此界面无法绕过。输错五次即取消操作。
 - **移到回收站，而非永久删除。** 被删除的文件会进入 Windows 回收站。
 - **限定操作范围。** 主进程只处理属于你所分析的文件夹、且在上次扫描中出现过的文件。
 - **撤消。** 整理和重命名操作都会被记录，可以在 *索引库 → 最近的操作* 中还原。

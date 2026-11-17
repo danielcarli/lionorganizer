@@ -11,7 +11,7 @@ Veja o que ocupa espaço nas suas pastas, encontre duplicados de verdade pelo co
 
 [English](../README.md) · **Português (Brasil)** · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.2.1](https://img.shields.io/badge/version-1.2.1-161214)
+![Version 1.2.3](https://img.shields.io/badge/version-1.2.3-161214)
 ![Licença: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Plataforma: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -92,7 +92,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 
 Excluir o arquivo errado é pior do que um disco cheio, por isso o LionOrganizer é cuidadoso de propósito:
 
-- **Código de confirmação digitado.** Toda ação que altera arquivos — *qualquer* exclusão (de um arquivo ou de vários), organizar, renomear, desfazer e limpar o catálogo — mostra um código de 6 caracteres que precisa ser **digitado** (colar está desativado) antes de o botão ser liberado. O código é gerado e verificado pelo processo principal, então a interface não consegue pulá-lo. Cinco tentativas erradas cancelam a operação.
+- **Código de confirmação digitado.** Toda ação que altera arquivos — *qualquer* exclusão (de um arquivo ou de vários), organizar, renomear, desfazer e limpar o catálogo — mostra um código de 3 caracteres que precisa ser **digitado** (colar está desativado) antes de o botão ser liberado. O código é gerado e verificado pelo processo principal, então a interface não consegue pulá-lo. Cinco tentativas erradas cancelam a operação.
 - **Lixeira, não exclusão permanente.** Os arquivos excluídos vão para a Lixeira do Windows.
 - **Ações restritas.** O processo principal só mexe em arquivos que pertencem à pasta analisada e que apareceram na última análise.
 - **Desfazer.** As operações de organizar e renomear ficam registradas e podem ser revertidas em *Catálogo → Operações recentes*.

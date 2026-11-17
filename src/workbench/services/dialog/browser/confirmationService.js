@@ -24,11 +24,13 @@ export class ConfirmationService {
     this.#open?.close(null);
     return new Promise((resolve) => {
       const code = view.code;
-      const pretty = code.slice(0, 3) + ' ' + code.slice(3);
+      // codes longer than 4 characters are shown in groups of 3 (ABC DEF); short ones as they are
+      const groups = code.length > 4 ? [code.slice(0, 3), code.slice(3)] : [code];
+      const pretty = groups.join(' ');
       const error = h('p.cm-error', { role: 'alert', hidden: true });
       const input = h('input.cm-input', {
-        type: 'text', inputmode: 'text', autocomplete: 'off', spellcheck: false, maxlength: 12,
-        'aria-label': t('confirm.inputLabel', { code: pretty }), placeholder: '— — —  — — —',
+        type: 'text', inputmode: 'text', autocomplete: 'off', spellcheck: false, maxlength: code.length * 2,
+        'aria-label': t('confirm.inputLabel', { code: pretty }), placeholder: groups.map((g) => [...g].map(() => '—').join(' ')).join('  '),
       });
       const submit = h(`button.btn.${view.danger ? 'btn-danger' : 'btn-primary'}`, { disabled: true }, view.confirmLabel || t('common.confirm'));
       const cancel = h('button.btn.btn-secondary', t('common.cancel'));
@@ -81,7 +83,7 @@ export class ConfirmationService {
         view.skipped ? h('p.cm-note', view.skippedText || tn('confirm.skipped', view.skipped)) : null,
         h('div.cm-code-box',
           h('p.cm-code-label', t('confirm.codeLabel')),
-          h('div.cm-code', { 'aria-hidden': 'true' }, [...code].map((c, i) => h(`span${i === 3 ? '.gap' : ''}`, c))),
+          h('div.cm-code', { 'aria-hidden': 'true' }, [...code].map((c, i) => h(`span${i === 3 && groups.length > 1 ? '.gap' : ''}`, c))),
           input,
           error),
         h('footer.cm-actions', cancel, submit));

@@ -11,7 +11,7 @@ Veja o que ocupa espaço nas suas pastas, encontre duplicados verdadeiros pelo c
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · **Português (Portugal)** · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.2.1](https://img.shields.io/badge/version-1.2.1-161214)
+![Version 1.2.3](https://img.shields.io/badge/version-1.2.3-161214)
 ![Licença: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Plataforma: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -92,7 +92,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 
 Eliminar o ficheiro errado é pior do que ter o disco cheio, por isso o LionOrganizer é deliberadamente cuidadoso:
 
-- **Código de confirmação escrito.** Todas as ações que alteram ficheiros — *qualquer* eliminação (de um ficheiro ou de vários), organizar, mudar o nome, anular e limpar o catálogo — mostram um código de 6 carateres que tem de ser **escrito** (colar está desativado) para que o botão fique disponível. O código é gerado e verificado pelo processo principal, pelo que a interface não o pode contornar. Cinco tentativas erradas cancelam a operação.
+- **Código de confirmação escrito.** Todas as ações que alteram ficheiros — *qualquer* eliminação (de um ficheiro ou de vários), organizar, mudar o nome, anular e limpar o catálogo — mostram um código de 3 carateres que tem de ser **escrito** (colar está desativado) para que o botão fique disponível. O código é gerado e verificado pelo processo principal, pelo que a interface não o pode contornar. Cinco tentativas erradas cancelam a operação.
 - **Reciclagem, não eliminação permanente.** Os ficheiros eliminados vão para a Reciclagem do Windows.
 - **Ações delimitadas.** O processo principal só mexe em ficheiros que pertencem à pasta analisada e que foram vistos na última análise.
 - **Anular.** As operações de organizar e de mudar o nome ficam registadas e podem ser revertidas em *Catálogo → Operações recentes*.

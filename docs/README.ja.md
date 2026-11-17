@@ -11,7 +11,7 @@
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · **日本語** · [한국어](README.ko.md)
 
-![Version 1.2.1](https://img.shields.io/badge/version-1.2.1-161214)
+![Version 1.2.3](https://img.shields.io/badge/version-1.2.3-161214)
 ![ライセンス：GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![プラットフォーム：Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -92,7 +92,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 
 間違ったファイルを削除するのは、ディスクがいっぱいになるよりも困ります。そのため LionOrganizer は意図的に慎重な設計になっています。
 
-- **確認コードの手入力。** ファイルを変更するすべての操作（1 個でも複数でも*あらゆる*削除、整理、名前の変更、元に戻す操作、カタログの消去）では 6 文字のコードが表示され、それを**入力**しないとボタンが有効になりません（貼り付けはできません）。コードはメインプロセスで生成・検証されるため、画面側で省略することはできません。5 回間違えると操作はキャンセルされます。
+- **確認コードの手入力。** ファイルを変更するすべての操作（1 個でも複数でも*あらゆる*削除、整理、名前の変更、元に戻す操作、カタログの消去）では 3 文字のコードが表示され、それを**入力**しないとボタンが有効になりません（貼り付けはできません）。コードはメインプロセスで生成・検証されるため、画面側で省略することはできません。5 回間違えると操作はキャンセルされます。
 - **完全削除ではなく、ごみ箱へ。** 削除したファイルは Windows のごみ箱に移動されます。
 - **対象を限定した操作。** メインプロセスが扱うのは、分析したフォルダーに含まれ、前回のスキャンで確認されたファイルだけです。
 - **元に戻す。** 整理と名前の変更の操作は記録され、*カタログ → 最近の操作* から元に戻せます。

@@ -11,7 +11,7 @@ Voyez ce qui occupe de l’espace dans vos dossiers, trouvez les vrais doublons 
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · **Français** · [Deutsch](README.de.md) · [Italiano](README.it.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.2.1](https://img.shields.io/badge/version-1.2.1-161214)
+![Version 1.2.3](https://img.shields.io/badge/version-1.2.3-161214)
 ![Licence : GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Plateforme : Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -92,7 +92,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 
 Supprimer le mauvais fichier est pire qu’un disque plein ; LionOrganizer est donc volontairement prudent :
 
-- **Code de confirmation à saisir.** Chaque action qui modifie des fichiers — *toute* suppression (un fichier ou plusieurs), l’organisation, le renommage, l’annulation et la suppression du catalogue — affiche un code de 6 caractères qui doit être **saisi au clavier** (le collage est désactivé) avant que le bouton se déverrouille. Le code est généré et vérifié par le processus principal : l’interface ne peut donc pas le contourner. Cinq tentatives erronées annulent l’opération.
+- **Code de confirmation à saisir.** Chaque action qui modifie des fichiers — *toute* suppression (un fichier ou plusieurs), l’organisation, le renommage, l’annulation et la suppression du catalogue — affiche un code de 3 caractères qui doit être **saisi au clavier** (le collage est désactivé) avant que le bouton se déverrouille. Le code est généré et vérifié par le processus principal : l’interface ne peut donc pas le contourner. Cinq tentatives erronées annulent l’opération.
 - **La Corbeille, pas de suppression définitive.** Les fichiers supprimés vont dans la Corbeille de Windows.
 - **Actions circonscrites.** Le processus principal ne touche qu’aux fichiers qui appartiennent au dossier analysé et qui ont été vus lors de la dernière analyse.
 - **Annulation.** Les opérations d’organisation et de renommage sont journalisées et peuvent être annulées depuis *Catalogue → Opérations récentes*.

@@ -7,7 +7,7 @@
 ; file (SHA-256 for the release files, Electron's own checksums for the runtime) and assembles LionOrganizer in a
 ; temporary folder. The assembled files are then installed like with any installer.
 ;
-; Build:  iscc /DAppVersion=1.2.1 installer\lionorganizer.iss    (creates dist-installer\LionOrganizer-Setup.exe)
+; Build:  iscc /DAppVersion=1.2.3 installer\lionorganizer.iss    (creates dist-installer\LionOrganizer-Setup.exe)
 ; The release workflow builds it on every v* tag. Signing (recommended once there is a certificate): define a
 ; SignTool with the code-signing certificate and uncomment SignTool= below.
 
@@ -312,6 +312,8 @@ Type: filesandordirs; Name: "{localappdata}\LionOrganizer-Installer"
 const
   TOTAL_STEPS = 4;
   SCRIPT_UNINSTALL_KEY = 'Software\Microsoft\Windows\CurrentVersion\Uninstall\LionOrganizer';
+  { this installer's own entry in Settings > Apps: the AppId of [Setup] (one brace) + '_is1' }
+  APP_UNINSTALL_KEY = 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{3DB12C40-AF27-4CC9-93C6-10C9EB0AA79B}_is1';
 
 type
   { room for a Windows MSG structure on a 32-bit or 64-bit Setup }
@@ -344,9 +346,16 @@ begin
   end;
 end;
 
+{ Never empty: Setup reads the [Files] source as soon as it starts (to know the space needed), long
+  before PrepareToInstall assembles the app. An empty answer made the source "\*" - the root of the
+  current drive - so Setup walked the whole disk at startup (a slow start) and took its size as the
+  app's (about 164 GB in Settings > Apps). Until the app is assembled this folder is empty or absent. }
 function AssembledDir(Param: String): String;
 begin
-  Result := Staging;
+  if Staging <> '' then
+    Result := Staging
+  else
+    Result := ExpandConstant('{localappdata}\LionOrganizer-Installer\staging');
 end;
 
 function AssembledVersion(Param: String): String;
@@ -609,6 +618,42 @@ begin
   if CurUninstallStep = usUninstall then StopRunningApp;
 end;
 
+{ The size of a folder and everything in it, in KB (whole files; up to 4 TB). }
+function FolderKB(const Dir: String): Cardinal;
+var
+  F: TFindRec;
+begin
+  Result := 0;
+  if FindFirst(AddBackslash(Dir) + '*', F) then
+  try
+    repeat
+      if (F.Name <> '.') and (F.Name <> '..') then
+      begin
+        if (F.Attributes and FILE_ATTRIBUTE_DIRECTORY) <> 0 then
+          Result := Result + FolderKB(AddBackslash(Dir) + F.Name)
+        else
+          Result := Result + F.SizeHigh * 4194304 + F.SizeLow div 1024;
+      end;
+    until not FindNext(F);
+  finally
+    FindClose(F);
+  end;
+end;
+
+{ The app's files are installed with "Flags: external" from the copy assembled during the install, so
+  Setup does not know their size and Settings > Apps showed a wrong one (about 164 GB for ~350 MB).
+  The installed folder is measured instead, and written where Windows reads it. Per-user install
+  (PrivilegesRequired=lowest): the entry is under HKCU. }
+procedure WriteEstimatedSize;
+var
+  KB: Cardinal;
+begin
+  KB := FolderKB(ExpandConstant('{app}'));
+  Log(Format('Installed size: %d KB', [KB]));
+  if KB > 0 then
+    RegWriteDWordValue(HKCU, APP_UNINSTALL_KEY, 'EstimatedSize', KB);
+end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   Location: String;
@@ -618,6 +663,8 @@ begin
     { the assembled copy is no longer needed }
     DelTree(Staging, True, True, True);
     KeepNewSetup;
+    { after the uninstall entry was created }
+    WriteEstimatedSize;
     { an earlier install made with install.ps1 in the same folder: drop its entry in Settings > Apps,
       so only this installer's entry remains }
     if RegQueryStringValue(HKCU, SCRIPT_UNINSTALL_KEY, 'InstallLocation', Location) and

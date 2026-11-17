@@ -142,11 +142,16 @@ app.on('browser-window-created', (_e, win) => {
       const srv = await js(`(async () => {
         const files = await window.host.catalog.search({ query: 'song' });
         const v = await window.host.ops.prepare('trash', { paths: [files.rows[0].path] });
-        const bad = await window.host.ops.commit(v.id, 'AAAAAA');
+        // a wrong code of the right length: every character changed
+        const wrong = [...v.code].map((c) => (c === 'A' ? 'C' : 'A')).join('');
+        const bad = await window.host.ops.commit(v.id, wrong);
         await window.host.ops.cancel(v.id);
         const gone = await window.host.ops.commit(v.id, v.code);
-        return { bad, gone };
+        const clear = await window.host.ops.prepare('catalogClear', {});
+        await window.host.ops.cancel(clear.id);
+        return { bad, gone, trashLen: v.code.length, clearLen: clear.code.length };
       })()`);
+      check(srv.trashLen === 3 && srv.clearLen === 3, `every confirmation asks for a 3-character code (${srv.trashLen}, ${srv.clearLen})`);
       check(srv.bad.ok === false && !!srv.bad.error, 'main process rejects a wrong code');
       check(srv.gone.ok === false, 'a cancelled confirmation cannot be reused');
       check(exists('Loose/song.mp3'), 'file untouched after invalid attempts');

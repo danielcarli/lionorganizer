@@ -11,7 +11,7 @@ Scopri cosa occupa spazio nelle tue cartelle, trova i veri duplicati in base al 
 
 [English](../README.md) · [Português (Brasil)](README.pt-BR.md) · [Português (Portugal)](README.pt-PT.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · **Italiano** · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-![Version 1.2.1](https://img.shields.io/badge/version-1.2.1-161214)
+![Version 1.2.3](https://img.shields.io/badge/version-1.2.3-161214)
 ![Licenza: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-d4145a)
 ![Piattaforma: Windows, macOS, Linux](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-161214)
 ![Electron](https://img.shields.io/badge/Electron-45-f4a30c)
@@ -92,7 +92,7 @@ curl -fsSL https://github.com/danielcarli/lionorganizer/releases/latest/download
 
 Eliminare il file sbagliato è peggio di un disco pieno, per questo LionOrganizer è volutamente prudente:
 
-- **Codice di conferma da digitare.** Ogni azione che modifica i file (*qualsiasi* eliminazione, di uno o più file, organizzazione, ridenominazione, annullamento e svuotamento del catalogo) mostra un codice di 6 caratteri che deve essere **digitato** (incollare è disattivato) prima che il pulsante si sblocchi. Il codice viene generato e verificato dal processo principale, quindi l'interfaccia non può saltarlo. Cinque tentativi errati annullano l'operazione.
+- **Codice di conferma da digitare.** Ogni azione che modifica i file (*qualsiasi* eliminazione, di uno o più file, organizzazione, ridenominazione, annullamento e svuotamento del catalogo) mostra un codice di 3 caratteri che deve essere **digitato** (incollare è disattivato) prima che il pulsante si sblocchi. Il codice viene generato e verificato dal processo principale, quindi l'interfaccia non può saltarlo. Cinque tentativi errati annullano l'operazione.
 - **Cestino, non eliminazione definitiva.** I file eliminati finiscono nel Cestino di Windows.
 - **Azioni circoscritte.** Il processo principale tocca solo i file che appartengono alla cartella analizzata e che sono stati rilevati nell'ultima scansione.
 - **Annulla.** Le operazioni di organizzazione e ridenominazione vengono registrate e possono essere annullate da *Catalogo → Operazioni recenti*.
